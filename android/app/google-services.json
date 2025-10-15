@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1026530209585",
+    "project_id": "orcanet-4612",
+    "storage_bucket": "orcanet-4612.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1026530209585:android:b15df7bd3a18fc52ee8a10",
+        "android_client_info": {
+          "package_name": "com.sailors.orcanet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1026530209585-4re9nqfc6cscjpd6np1ut08olp9e6h56.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sailors.orcanet",
+            "certificate_hash": "65bea1838b5ced4a2acb603552d977ef634659ec"
+          }
+        },
+        {
+          "client_id": "1026530209585-q4h9vf92tt91o0u7qdvgts4agpsidm8o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2z_dwcv6dJX4AYmizVaUJFtosJWOdleM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1026530209585-q4h9vf92tt91o0u7qdvgts4agpsidm8o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
