@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:orcanet/firebase_options.dart';
 import 'package:orcanet/feedAndPodsPage.dart';
+import 'package:orcanet/feedPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,7 +11,7 @@ void main() async {
   );
   runApp(
     MaterialApp(
-      home: const Feedandpodspage()
+      home: Feedandpodspage()
     )
   );
 }

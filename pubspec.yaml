@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   firebase_core: ^4.1.1
   stroke_text: ^1.0.0
+  firebase_messaging: ^16.0.3
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +63,7 @@ flutter:
   uses-material-design: true
   assets:
     - lib/images/placeholder.jpg
+    - lib/images/Logo.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
