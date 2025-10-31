@@ -99,8 +99,8 @@ class _makePostPageState extends State<makePostPage> {
                             ),
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
-                              child: Row(
-                                spacing: 10,
+                              child: Wrap(
+                                spacing: 8.0,
                                 children: _allTags.map((tag){
                                   final isSelected = _isSelected(tag);
 

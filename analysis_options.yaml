@@ -12,6 +12,7 @@ analyzer:
     unused_import: ignore
     file_names: ignore
     camel_case_types: ignore
+    prefer_final_fields: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

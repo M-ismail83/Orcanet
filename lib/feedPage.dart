@@ -1,24 +1,26 @@
 import "package:flutter/material.dart";
+import 'package:orcanet/main.dart';
+import 'package:orcanet/utilityClass.dart';
 
 class feedPage extends StatelessWidget {
-  feedPage({super.key});
-
-  static Container tagContainer(String tagName) {
+  const feedPage({super.key, required this.currentColors});
+  final Map<String, Color> currentColors;
+  Container tagContainer(String tagName) {
     return Container(
       alignment: Alignment.center,
       height: 30,
       width: 65,
       decoration: BoxDecoration(
-          border: Border.all(color: Color.fromRGBO(189, 76, 237, 1)),
+          border: Border.all(color: currentColors['acc1']!),
           borderRadius: BorderRadius.circular(10)),
       child: Text(
         "Hello",
-        style: TextStyle(color: Color.fromRGBO(240, 232, 230, 1)),
+        style: TextStyle(color: currentColors['text']),
       ),
     );
   }
 
-  static Container nameCard(BuildContext context, Image profilePhoto, String name, String desc) {
+  Container nameCard(BuildContext context, Image profilePhoto, String name, String desc) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 3),
       height: 45,
@@ -48,12 +50,12 @@ class feedPage extends StatelessWidget {
               Text(
                 name,
                 style: TextStyle(
-                    color: Color.fromRGBO(240, 232, 230, 1),
+                    color: currentColors['text'],
                     fontWeight: FontWeight.bold),
               ),
               Text(desc,
                   style: TextStyle(
-                    color: Color.fromRGBO(240, 232, 230, 1),
+                    color: currentColors['text'],
                   ))
             ],
           ),
@@ -62,20 +64,20 @@ class feedPage extends StatelessWidget {
             decoration: ShapeDecoration(
                 shape: CircleBorder(
                     side:
-                        BorderSide(color: Color.fromRGBO(143, 222, 89, 1)))),
+                        BorderSide(color: currentColors['acc2']!))),
             child: IconButton(
               onPressed: () {
                 showModalBottomSheet(
                   elevation: 4.0,
-                  backgroundColor: Color.fromRGBO(60, 49, 43, 1),
+                  backgroundColor: currentColors['bg'],
                     context: context,
                     builder: (BuildContext context) {
-                      return const CommentsSection();
+                      return CommentsSection(currentColorsComment: currentColors);
                     }
                 );
               },
               icon: Icon(Icons.message),
-              color: Color.fromRGBO(240, 232, 230, 1),
+              color: currentColors['text'],
               iconSize: 18,
               alignment: Alignment.center,
             ),
@@ -84,11 +86,11 @@ class feedPage extends StatelessWidget {
             decoration: ShapeDecoration(
                 shape: CircleBorder(
                     side:
-                        BorderSide(color: Color.fromRGBO(143, 222, 89, 1)))),
+                        BorderSide(color: currentColors['acc2']!))),
             child: IconButton(
               onPressed: () {},
               icon: Icon(Icons.group),
-              color: Color.fromRGBO(240, 232, 230, 1),
+              color: currentColors['text'],
               iconSize: 20,
               alignment: Alignment.center,
             ),
@@ -97,8 +99,10 @@ class feedPage extends StatelessWidget {
       ),
     );
   }
+  @override
+  Widget build(BuildContext context) {
 
-  final List<Widget> tagList = [
+    List<Widget> tagList = [
     tagContainer("Yes"),
     tagContainer("Yes"),
     tagContainer("Yes"),
@@ -111,22 +115,26 @@ class feedPage extends StatelessWidget {
     tagContainer("Yes"),
   ];
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color.fromRGBO(60, 49, 43, 1),
+        backgroundColor: currentColors['bg'],
         appBar: AppBar(
-          backgroundColor: Color.fromRGBO(145, 118, 104, 1),
+          backgroundColor: currentColors['bar'],
           title: Text(
             "ORCA/NET",
             style: TextStyle(
                 fontSize: 17,
-                color: Color.fromRGBO(240, 232, 230, 1),
+                color: currentColors['text'],
                 fontWeight: FontWeight.w600),
           ),
-          leading: Image.asset(
-            "lib/images/Logo.png",
-            alignment: Alignment.centerRight,
+          leading: InkWell(
+            onTap: () {
+              isDarkModeNotifier.value = !isDarkModeNotifier.value;
+            },
+            splashColor: Colors.transparent,
+            child: CircleAvatar(
+              backgroundColor: currentColors['bar'],
+              backgroundImage: AssetImage("lib/images/Logo.png"),
+            ),
           ),
           leadingWidth: 55,
         ),
@@ -139,8 +147,9 @@ class feedPage extends StatelessWidget {
                   bodyText:
                       "Hello. I need exeactly 1313 people for my project and yes I have enough money and I'm fucin rich.",
                   tags: tagList,
-                  nameCard: nameCard(context, Image.asset("lib/images/placeholder.jpg"),
-                      "Steve", "Short desc")),
+                  nameCard: nameCard(context, Image.asset("lib/images/placeholder.jpg"),"Steve", "Short desc"),
+                  currentColorsPost: currentColors,
+                 ), 
               postCard(
                   image: AssetImage("lib/images/placeholder.jpg"),
                   title: "I need people",
@@ -148,7 +157,8 @@ class feedPage extends StatelessWidget {
                       "Hello. I need exeactly 1313 people for my project and yes I have enough money and I'm fucin rich.",
                   tags: tagList,
                   nameCard: nameCard(context, Image.asset("lib/images/placeholder.jpg"),
-                      "Steve", "Short desc"))
+                      "Steve", "Short desc"),
+                      currentColorsPost: currentColors,)
             ]));
   }
 }
@@ -159,6 +169,7 @@ class postCard extends StatefulWidget {
   final String bodyText;
   final List<Widget> tags;
   final Container nameCard;
+  final Map<String, Color> currentColorsPost;
 
   const postCard(
       {super.key,
@@ -166,15 +177,15 @@ class postCard extends StatefulWidget {
       required this.title,
       required this.bodyText,
       required this.tags,
-      required this.nameCard});
+      required this.nameCard,
+      required this.currentColorsPost
+      });
   @override
   State<StatefulWidget> createState() => _postCardState();
 }
 
 class _postCardState extends State<postCard> {
   bool _isExtended = false;
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +201,7 @@ class _postCardState extends State<postCard> {
         child: Text(
           "...",
           style: TextStyle(
-              color: Color.fromRGBO(189, 76, 237, 1),
+              color: widget.currentColorsPost['acc1'],
               fontWeight: FontWeight.bold,
               fontSize: 17),
         ),
@@ -205,7 +216,7 @@ class _postCardState extends State<postCard> {
       },
       splashColor: Colors.transparent,
       child: Card(
-        color: Color.fromRGBO(92, 81, 68, 1),
+        color: widget.currentColorsPost['container'],
         clipBehavior: Clip.antiAlias,
         elevation: 4.0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -229,21 +240,21 @@ class _postCardState extends State<postCard> {
                 SizedBox(height: 7),
                 Text(
                   widget.title,
-                  style: TextStyle(color: Color.fromRGBO(240, 232, 230, 1)),
+                  style: TextStyle(color: widget.currentColorsPost['text']),
                 ),
                 Divider(
-                    thickness: 2, color: Color.fromRGBO(145, 118, 104, 1)),
+                    thickness: 2, color: widget.currentColorsPost['bar']),
                 if (!_isExtended)
                   Text(
                     widget.bodyText,
-                    style: TextStyle(color: Color.fromRGBO(240, 232, 230, 1)),
+                    style: TextStyle(color: widget.currentColorsPost['text']),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   )
                 else
                   Text(
                     widget.bodyText,
-                    style: TextStyle(color: Color.fromRGBO(240, 232, 230, 1)),
+                    style: TextStyle(color: widget.currentColorsPost['text']),
                   ),
                 SizedBox(height: 7),
                 SingleChildScrollView(
@@ -265,7 +276,9 @@ class _postCardState extends State<postCard> {
 }
 
 class CommentsSection extends StatelessWidget {
-  const CommentsSection({super.key});
+  const CommentsSection({super.key, required this.currentColorsComment});
+
+  final Map<String, Color> currentColorsComment;
 
   @override
   Widget build(BuildContext context) {
@@ -277,11 +290,11 @@ class CommentsSection extends StatelessWidget {
       builder: (BuildContext context, ScrollController scrollController) {
         return Column(
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
               child: Text(
                 'Comments (125)',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color.fromRGBO(240, 232, 230, 1)),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: currentColorsComment['text']),
               ),
             ),
             Expanded(
@@ -291,10 +304,9 @@ class CommentsSection extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return ListTile(
                     leading: CircleAvatar(child: Text('${index + 1}')),
-                    tileColor: Color.fromRGBO(92, 81, 68, 100)  ,
-                    title: Text('User ${index + 1}', style: TextStyle(color: Color.fromRGBO(240, 232, 230, 1)),),
-                    subtitle: const Text('This is a great post! I totally agree.', style: TextStyle(color: Color.fromRGBO(240, 232, 230, 1)),
-                  )
+                    tileColor: currentColorsComment['container'],
+                    title: Text('User ${index + 1}', style: TextStyle(color: currentColorsComment['text'])),
+                    subtitle: Text('This is a great post! I totally agree.', style: TextStyle(color: currentColorsComment['text'])),
                   );
                 },
               ),
