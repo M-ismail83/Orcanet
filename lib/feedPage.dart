@@ -11,6 +11,7 @@ class feedPage extends StatelessWidget {
       height: 30,
       width: 65,
       decoration: BoxDecoration(
+        color: currentColors['acc1'],
           border: Border.all(color: currentColors['acc1']!),
           borderRadius: BorderRadius.circular(10)),
       child: Text(
@@ -45,7 +46,8 @@ class feedPage extends StatelessWidget {
           ),
           SizedBox(width: 10),
           Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 name,
@@ -62,6 +64,7 @@ class feedPage extends StatelessWidget {
           Spacer(),
           Ink(
             decoration: ShapeDecoration(
+              color: currentColors['acc2'],
                 shape: CircleBorder(
                     side:
                         BorderSide(color: currentColors['acc2']!))),
@@ -84,6 +87,7 @@ class feedPage extends StatelessWidget {
           ),
           Ink(
             decoration: ShapeDecoration(
+              color: currentColors['acc2'],
                 shape: CircleBorder(
                     side:
                         BorderSide(color: currentColors['acc2']!))),

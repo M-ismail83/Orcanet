@@ -22,7 +22,7 @@ class Utilityclass {
   'selected':  Color.fromRGBO(184, 167, 148, 1.0),
   'text':      Color.fromRGBO(240, 232, 230, 1.0),
   'hintText':  Color.fromRGBO(240, 232, 230, 0.5),
-  'acc1':      Color.fromRGBO(120, 83, 193, 1.0),
+  'acc1':      Color.fromRGBO(149, 82, 199, 1),
   'acc2':      Color.fromRGBO(17, 123, 77, 1.0)
   };
 }
