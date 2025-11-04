@@ -121,27 +121,7 @@ class feedPage extends StatelessWidget {
 
     return Scaffold(
         backgroundColor: currentColors['bg'],
-        appBar: AppBar(
-          backgroundColor: currentColors['bar'],
-          title: Text(
-            "ORCA/NET",
-            style: TextStyle(
-                fontSize: 17,
-                color: currentColors['text'],
-                fontWeight: FontWeight.w600),
-          ),
-          leading: InkWell(
-            onTap: () {
-              isDarkModeNotifier.value = !isDarkModeNotifier.value;
-            },
-            splashColor: Colors.transparent,
-            child: CircleAvatar(
-              backgroundColor: currentColors['bar'],
-              backgroundImage: AssetImage("lib/images/Logo.png"),
-            ),
-          ),
-          leadingWidth: 55,
-        ),
+        
         body: ListView(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             children: [

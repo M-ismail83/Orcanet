@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:orcanet/message.dart';
 
 //groups or chats iq
 class ChatRoom {
@@ -28,12 +29,6 @@ class chatPage extends StatelessWidget {
     return DefaultTabController(
       length: 2, // Pods and Orcas
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('ORCA/NET', style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromRGBO(240, 232, 230, 1))),
-          elevation: 4,
-          backgroundColor: Color.fromRGBO(145, 118, 104, 1),
-
-        ),
         
         //body :)
         body: Column(
@@ -105,7 +100,7 @@ class ChatRoomTile extends StatelessWidget {
   const ChatRoomTile({required this.chat, super.key});
 
   void _logChatRoomTap() {
-    print('Tapped main tile for chat: ${chat.name}');
+    print('Tapped chat room: ${chat.name}');
   }
   
   void _logProfileTap() {
@@ -140,7 +135,14 @@ class ChatRoomTile extends StatelessWidget {
           ),
           
           //Tapping the rest of the tile logs the chat room tap
-          onTap: _logChatRoomTap, 
+          onTap: () {
+            Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatScreen(kisiAdi: chat.name),
+      ),  
+    );
+          }, 
 
           //chat room name
           title: Text(

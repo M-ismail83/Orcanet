@@ -28,12 +28,6 @@ class _makePostPageState extends State<makePostPage> {
 
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromRGBO(145, 118, 104, 1),
-        title: Text("ORCA/NET", style: TextStyle(
-          color: Color.fromRGBO(240, 232, 230, 1), fontWeight: FontWeight.bold
-        ),),
-      ),
       backgroundColor: Color.fromRGBO(60, 49, 43, 1),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,6 +45,7 @@ class _makePostPageState extends State<makePostPage> {
                       width: double.infinity,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             DropdownMenu(
                             width: 300,
@@ -89,14 +84,16 @@ class _makePostPageState extends State<makePostPage> {
                             },
 
                           ),
+                            SizedBox(height: 10),
                             Divider(
                               thickness: 1.0,
                               color: Colors.grey,
                             ),
                             Text(
                               'Tags:',
-                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Color.fromRGBO(240, 232, 230, 1)),
                             ),
+                            SizedBox(height: 4),
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Wrap(
@@ -141,7 +138,6 @@ class _makePostPageState extends State<makePostPage> {
                   Container(
                       padding: const EdgeInsets.all(10.0),
                       width: double.infinity,
-                      height: 360,
                       decoration: BoxDecoration(
                         color: Color.fromRGBO(92, 81, 68, 1),
                         borderRadius: BorderRadius.circular(10),
@@ -160,7 +156,7 @@ class _makePostPageState extends State<makePostPage> {
                         Divider(),
                         TextField(
                           minLines: 1,
-                          maxLines: 10,
+                          maxLines: 8,
                           textAlignVertical: TextAlignVertical.top,
                           decoration: InputDecoration(
                               border: InputBorder.none,

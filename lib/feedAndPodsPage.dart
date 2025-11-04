@@ -73,7 +73,8 @@ class _FeedandpodspageState extends State<Feedandpodspage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: SingleChildScrollView(
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -135,10 +136,8 @@ class _FeedandpodspageState extends State<Feedandpodspage> {
           ),
           Container(
             padding: const EdgeInsets.all(10),
-            height: 260,
             color: Color.fromARGB(255, 242, 228, 242),
-            child: SingleChildScrollView(
-                child: Column(
+            child: Column(
               children: [
                 customContainerOrca(context, "Label", "Second Label"),
                 customContainerOrca(context, "Label", "Second Label"),
@@ -146,10 +145,11 @@ class _FeedandpodspageState extends State<Feedandpodspage> {
                 customContainerOrca(context, "Label", "Second Label"),
                 customContainerOrca(context, "Label", "Second Label"),
               ],
-            )),
+            ) ,
           )
         ],
       ),
+      )
     );
   }
 }
