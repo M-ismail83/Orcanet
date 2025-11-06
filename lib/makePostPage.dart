@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class makePostPage extends StatefulWidget {
-  const makePostPage({super.key});
+  const makePostPage({super.key, required this.currentColors});
+
+  final Map<String, Color> currentColors;
 
   @override State<StatefulWidget> createState() => _makePostPageState(); //what is this ughhhhhhhhhhh im so tireddd
 }
@@ -28,7 +30,7 @@ class _makePostPageState extends State<makePostPage> {
 
 
     return Scaffold(
-      backgroundColor: Color.fromRGBO(60, 49, 43, 1),
+      backgroundColor: widget.currentColors['bg'],
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -51,8 +53,9 @@ class _makePostPageState extends State<makePostPage> {
                             width: 300,
                             // 2. To style the text field (the "box")
                             inputDecorationTheme: InputDecorationTheme(
+                              hintStyle: TextStyle(color: widget.currentColors['hintText']),
                               // Set the background color of the text field
-                              fillColor: Color.fromRGBO(240, 232, 230, 1),
+                              fillColor: widget.currentColors['container'],
                               filled: true,
                               // Apply a border radius
                               border: OutlineInputBorder(
@@ -65,7 +68,7 @@ class _makePostPageState extends State<makePostPage> {
                             // 3. To style the dropdown list that appears
                             menuStyle: MenuStyle(
                               // Set the background color of the menu list
-                              backgroundColor: WidgetStateProperty.all(Color.fromRGBO(240, 232, 230, 1)),
+                              backgroundColor: WidgetStateProperty.all(widget.currentColors['container']),
                               // Apply a border radius to the menu list
                               shape: WidgetStateProperty.all(RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10.0),
@@ -91,7 +94,7 @@ class _makePostPageState extends State<makePostPage> {
                             ),
                             Text(
                               'Tags:',
-                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Color.fromRGBO(240, 232, 230, 1)),
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: widget.currentColors['text']),
                             ),
                             SizedBox(height: 4),
                             SingleChildScrollView(
@@ -105,16 +108,16 @@ class _makePostPageState extends State<makePostPage> {
                                       showCheckmark: false,
                                       label: Text(tag),
                                       selected: isSelected,
-                                      selectedColor: Color.fromRGBO(189, 76, 237, 1),
-                                      backgroundColor: Color.fromRGBO(60, 49, 43, 1),
+                                      selectedColor: widget.currentColors['acc1'],
+                                      backgroundColor: widget.currentColors['bg'],
                                       shape: StadiumBorder(
                                         side: BorderSide(
-                                          color: Color.fromRGBO(189, 76, 237, 1),
+                                          color: widget.currentColors['acc1']!,
                                           width: 1.0,
                                         ),
                                       ),
                                       labelStyle: TextStyle(
-                                        color: Color.fromRGBO(240, 232, 230, 1),
+                                        color: widget.currentColors['text']!,
                                         fontWeight: FontWeight.w500,
                                       ),
                                       onSelected: (bool selected) {
@@ -139,18 +142,18 @@ class _makePostPageState extends State<makePostPage> {
                       padding: const EdgeInsets.all(10.0),
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Color.fromRGBO(92, 81, 68, 1),
+                        color: widget.currentColors['container'],
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Color.fromRGBO(92, 81, 68, 1), width: 1.0),),
+                        border: Border.all(color: widget.currentColors['container']!, width: 1.0),),
                     child: Column(
                       children: [
                         TextField(
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             labelText: 'Title',
-                            labelStyle: TextStyle(color: Color.fromRGBO(240, 232, 230, 1), fontWeight: FontWeight.bold),
+                            labelStyle: TextStyle(color: widget.currentColors['text'], fontWeight: FontWeight.bold),
                             hintText: 'What is your post about?',
-                            hintStyle: TextStyle(color: Color.fromRGBO(240, 232, 230, 0.5))
+                            hintStyle: TextStyle(color: widget.currentColors['hintText'])
                           ),
                         ),
                         Divider(),
@@ -161,9 +164,9 @@ class _makePostPageState extends State<makePostPage> {
                           decoration: InputDecoration(
                               border: InputBorder.none,
                               labelText: 'Content',
-                              labelStyle: TextStyle(color: Color.fromRGBO(240, 232, 230, 1), fontWeight: FontWeight.bold),
+                              labelStyle: TextStyle(color: widget.currentColors['text'], fontWeight: FontWeight.bold),
                               hintText: 'What is your post about?',
-                              hintStyle: TextStyle(color: Color.fromRGBO(240, 232, 230, 0.5))
+                              hintStyle: TextStyle(color: widget.currentColors['hintText'])
                           ),
                         )
                       ],

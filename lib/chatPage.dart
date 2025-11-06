@@ -21,7 +21,8 @@ final List<ChatRoom> allChats = [
 
 //idk what this is ai helped wit it
 class chatPage extends StatelessWidget {
-  const chatPage({super.key});
+  const chatPage({super.key, required this.currentColors});
+  final Map<String, Color> currentColors;
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +37,9 @@ class chatPage extends StatelessWidget {
             //places the tab bar at the top of the body
             //it goes purple whenever it is chosen how does one fix that 
             TabBar(
-              labelColor: Color.fromRGBO(240, 248, 230, 1),
-              unselectedLabelColor: const Color.fromRGBO(240, 232, 230, 0.7), 
-              indicatorColor: Color.fromRGBO(240, 248, 230, 1),
+              labelColor: currentColors['text'],
+              unselectedLabelColor: currentColors['text']?.withOpacity(0.7),
+              indicatorColor: currentColors['selected'],
               tabs: const [
                 Tab(text: 'Pods'),
                 Tab(text: 'Orcas'),
@@ -52,10 +53,12 @@ class chatPage extends StatelessWidget {
                   // Filter chats for the 'Pods' tab
                   ChatTabView(
                     chats: allChats.where((chat) => chat.type == 'Pods').toList(),
+                    currentColorsView: currentColors,
                   ),
                   // Filter chats for the 'Orcas' tab
                   ChatTabView(
                     chats: allChats.where((chat) => chat.type == 'Orcas').toList(),
+                    currentColorsView: currentColors,
                   ),
                 ],
               ),
@@ -70,16 +73,16 @@ class chatPage extends StatelessWidget {
 //idont understand this part aswell?
 class ChatTabView extends StatelessWidget {
   final List<ChatRoom> chats;
-
-  const ChatTabView({required this.chats, super.key});
+  final Map<String, Color> currentColorsView;
+  const ChatTabView({required this.chats, super.key, required this.currentColorsView});
 
   @override
   Widget build(BuildContext context) {
     if (chats.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No chat rooms in this section.',
-          style: TextStyle(color: Color.fromRGBO(240, 232, 230, 1), fontWeight: FontWeight.w600),
+          style: TextStyle(color: currentColorsView['text'], fontWeight: FontWeight.w600),
         ),
       );
     }
@@ -88,7 +91,7 @@ class ChatTabView extends StatelessWidget {
       itemCount: chats.length,
       itemBuilder: (context, index) {
         final chat = chats[index];
-        return ChatRoomTile(chat: chat);
+        return ChatRoomTile(chat: chat, currentColorsTile: currentColorsView);
       },
     );
   }
@@ -96,8 +99,8 @@ class ChatTabView extends StatelessWidget {
 
 class ChatRoomTile extends StatelessWidget {
   final ChatRoom chat;
-
-  const ChatRoomTile({required this.chat, super.key});
+  final Map<String, Color> currentColorsTile;
+  const ChatRoomTile({required this.chat, super.key, required this.currentColorsTile});
 
   void _logChatRoomTap() {
     print('Tapped chat room: ${chat.name}');
@@ -112,7 +115,7 @@ class ChatRoomTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 1.0),
       child: Card(
-        color: Color.fromRGBO(92, 81, 68, 1),
+        color: currentColorsTile['container'],
         elevation: 1,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -148,20 +151,20 @@ class ChatRoomTile extends StatelessWidget {
           title: Text(
             chat.name,
 
-            style: const TextStyle(color: Color.fromRGBO(240, 232, 230, 1), fontWeight: FontWeight.w600),
+            style: TextStyle(color: currentColorsTile['text'], fontWeight: FontWeight.w600),
           ),
           
           subtitle: Text(
             chat.lastMessage,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: Color.fromRGBO(240, 232, 230, 0.8), fontWeight: FontWeight.w400),
+            style: TextStyle(color: currentColorsTile['text']?.withOpacity(0.8), fontWeight: FontWeight.w400),
           ),
 
-          trailing: const Icon(
-            Icons.chevron_right, 
-            size: 20, 
-            color: Color.fromRGBO(240, 232, 230, 0.5), // Changed to fit dark theme
+          trailing: Icon(
+            Icons.chevron_right,
+            size: 20,
+            color: currentColorsTile['text']?.withOpacity(0.5),
           ),
         ),
       ),

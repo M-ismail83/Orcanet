@@ -133,8 +133,8 @@ Widget build(BuildContext context) {
         ),
         body: <Widget>[
           feedPage(currentColors: currentColors),
-          makePostPage(),
-          chatPage(),
+          makePostPage(currentColors: currentColors),
+          chatPage(currentColors: currentColors),
           Feedandpodspage(),
           const Center(
             child: Text('Donation Page'),
