@@ -129,7 +129,7 @@ class feedPage extends StatelessWidget {
                   image: AssetImage("lib/images/placeholder.jpg"),
                   title: "I need people",
                   bodyText:
-                      "Hello. I need exeactly 1313 people for my project and yes I have enough money and I'm fucin rich.",
+                      "Hello. I need exeactly 1313 people for my project and yes I have enough money and I'm rich.",
                   tags: tagList,
                   nameCard: nameCard(context, Image.asset("lib/images/placeholder.jpg"),"Steve", "Short desc"),
                   currentColorsPost: currentColors,
@@ -138,7 +138,7 @@ class feedPage extends StatelessWidget {
                   image: AssetImage("lib/images/placeholder.jpg"),
                   title: "I need people",
                   bodyText:
-                      "Hello. I need exeactly 1313 people for my project and yes I have enough money and I'm fucin rich.",
+                      "Hello. I need exeactly 1313 people for my project and yes I have enough money and I'm rich.",
                   tags: tagList,
                   nameCard: nameCard(context, Image.asset("lib/images/placeholder.jpg"),
                       "Steve", "Short desc"),

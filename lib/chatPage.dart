@@ -11,12 +11,12 @@ class ChatRoom {
 }
 
 final List<ChatRoom> allChats = [
-  ChatRoom('Hasan yiit hate club', 'we hate that mf frfr type shi', 'Pods'),
+  ChatRoom('HYHFC', 'What is our purpose?', 'Pods'),
   ChatRoom('Sailors', 'tonight is the night, its gonna happen again', 'Pods'),
   ChatRoom('Thank you god', 'For you have given us ai!!', 'Pods'),
-  ChatRoom('Ismail', 'Big Boss', 'Orcas'),
-  ChatRoom('Dildar', 'Big Bossette?', 'Orcas'),
-  ChatRoom('Deno', 'the msku urinal shi**er', 'Orcas'),
+  ChatRoom('Ismail', 'Neo', 'Orcas'),
+  ChatRoom('Dildar', 'Trinity', 'Orcas'),
+  ChatRoom('Deno', 'Morpheus', 'Orcas'),
 ];
 
 //idk what this is ai helped wit it

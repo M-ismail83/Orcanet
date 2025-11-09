@@ -113,9 +113,10 @@ Widget build(BuildContext context) {
               isDarkModeNotifier.value = !isDarkModeNotifier.value;
             },
             splashColor: Colors.transparent,
+            radius: 15,
             child: CircleAvatar(
               backgroundColor: currentColors['bar'],
-              backgroundImage: AssetImage("lib/images/Logo.png"),
+              backgroundImage: Image.asset("lib/images/Logo.png", fit: BoxFit.fill,).image
             ),
           ),
           leadingWidth: 55,
@@ -135,9 +136,11 @@ Widget build(BuildContext context) {
           feedPage(currentColors: currentColors),
           makePostPage(currentColors: currentColors),
           chatPage(currentColors: currentColors),
-          Feedandpodspage(),
-          const Center(
-            child: Text('Donation Page'),
+          Center(
+            child: Text('Search Page (WORK IN PROGRESS)', style: TextStyle(fontSize: 20, color: currentColors['text']),),
+          ),
+          Center(
+            child: Text('Donation Page (WORK IN PROGRESS)', style: TextStyle(fontSize: 20, color: currentColors['text'])),
           ),
         ][currentPageIndex],
       );
