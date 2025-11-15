@@ -45,7 +45,8 @@ class feedPage extends StatelessWidget {
             ),
           ),
           SizedBox(width: 10),
-          Column(
+          SingleChildScrollView(
+            child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -60,6 +61,7 @@ class feedPage extends StatelessWidget {
                     color: currentColors['text'],
                   ))
             ],
+          ),
           ),
           Spacer(),
           Ink(
