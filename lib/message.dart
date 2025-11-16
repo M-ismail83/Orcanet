@@ -22,6 +22,14 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _loadMessages();
   }
+
+  // I already have all the necessary functions in another file so no shared preference??????????
+  // Firestore should hanlde the storing and shit like that
+  // I have no idea tbh
+  // Really tho how do I get the other person's uid??
+  // Maybe store it in Firestore and get it by searching the user with this name????
+  // That doesn't sound too secure tho. Plus Cihat already talked about security
+
   Future<void> _saveMessages() async {
     final prefs = await SharedPreferences.getInstance();
     final messagesAsString = _messages
@@ -76,13 +84,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   padding: const EdgeInsets.symmetric(
                       vertical: 4.0, horizontal: 20.0),
                   child: Align(
-                    alignment: message['sender'] == 'Me'
+                    alignment: message['sender'] == 'Me' // This will change with firebase user uis
                         ? Alignment.centerRight
                         : Alignment.centerLeft,
                     child: Container(
                       padding: const EdgeInsets.all(15.0),
                       decoration: BoxDecoration(
-                        color: message['sender'] == 'Me'
+                        color: message['sender'] == 'Me' // Also this with uid
                             ? const Color.fromRGBO(129, 238, 205, 1)
                             : const Color.fromARGB(255, 26, 119, 86),
                         borderRadius: BorderRadius.circular(15.0),

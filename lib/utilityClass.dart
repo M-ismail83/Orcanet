@@ -25,4 +25,11 @@ class Utilityclass {
   'acc1':      Color.fromRGBO(149, 82, 199, 1),
   'acc2':      Color.fromRGBO(17, 123, 77, 1.0)
   };
+
+  void navigator(BuildContext context, Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => page),
+    );
+  }
 }
