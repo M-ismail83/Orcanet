@@ -9,7 +9,6 @@ import 'package:orcanet/loginPage.dart';
 import 'package:orcanet/makePostPage.dart';
 import 'package:orcanet/message.dart';
 import 'package:orcanet/utilityClass.dart';
-import 'package:orcanet/chatPage.dart';
 
 final ValueNotifier<bool> isDarkModeNotifier = ValueNotifier<bool>(true);
 
@@ -18,7 +17,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  final notificationSettings = await FirebaseMessaging.instance.requestPermission(provisional: true);
+  await FirebaseMessaging.instance.requestPermission(provisional: true);
   final fcmToken = await FirebaseMessaging.instance.getToken();
   print("FCM Token: $fcmToken");
   runApp(const MyApp());
@@ -49,7 +48,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
-            home: LoginScreen(),
+            home: MyHomePage(),
           );
         });
   }

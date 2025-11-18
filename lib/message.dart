@@ -56,6 +56,10 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void _pickAttachment() async{
+    print("pick an attachment");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,18 +83,19 @@ class _ChatScreenState extends State<ChatScreen> {
                     alignment: message['sender'] == 'Me'
                         ? Alignment.centerRight
                         : Alignment.centerLeft,
+                        
                     child: Container(
                       padding: const EdgeInsets.all(15.0),
                       decoration: BoxDecoration(
                         color: message['sender'] == 'Me'
-                            ? const Color.fromRGBO(129, 238, 205, 1)
-                            : const Color.fromARGB(255, 26, 119, 86),
-                        borderRadius: BorderRadius.circular(15.0),
+                            ? const Color.fromRGBO(214, 195, 174, 1)
+                            : const Color.fromRGBO(92, 81, 68, 1),
+                        borderRadius: BorderRadius.circular(30.0),
                       ),
                       child: Text(
                         message['text'] ?? '',
                         style: const TextStyle(
-                          fontSize: 17.0,
+                          fontSize: 20.0,
                         ),
                       ),
                     ),
@@ -99,36 +104,84 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
+
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.only(left: 10.0, right: 10.0, bottom: 15.0, top: 0.0),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _controller,
+                    style: TextStyle(
+                      color: Color.fromRGBO(235, 222, 214, 1),
+                    ),
+                    cursorColor: Color.fromRGBO(235, 222, 214, 0.50),
                     decoration: InputDecoration(
-                      hintText: 'Type a message',
-                      hintStyle: TextStyle(color: Color.fromRGBO(240, 232, 230, 0.5)),
-                      
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: const Color.fromRGBO(60, 49, 43, 0.70)
+                        ),
+                        borderRadius: BorderRadius.circular(35.0),
                       ),
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 20.0),
+
+                      filled: true,
+                      fillColor: Color.fromRGBO(92, 81, 68, 1),
+                      hintText: 'Type a message',
+                      hintStyle: TextStyle(
+                        color: Color.fromRGBO(235, 222, 214, 0.65),
+                      
+                      ),
+
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          style: BorderStyle.solid,
+                          color: const Color.fromRGBO(60, 49, 43, 0.70)
+                        ),
+                        borderRadius: BorderRadius.circular(35.0),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20.0),
+
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.only(left: 0.1, top: 7.0, bottom: 7.0),
+                          child: ElevatedButton(
+                            onPressed: _pickAttachment,
+                            style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromRGBO(184, 167, 148, 1), 
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(12.0),
+                            elevation: 0,
+                            ), 
+                            child: const Icon(
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromRGBO(60, 49, 43, 1),
+                              size: 25.0,
+                              Icons.attach_file
+                              ),
+                          ),
+                        ),
+                        
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.only(right: 0.1, top: 7.0, bottom: 7.0),
+                        child: ElevatedButton(
+                          onPressed: _sendMessage,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromRGBO(184, 167, 148, 1),
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(12.0),
+                            elevation: 0,
+                          ),
+                          child: const Icon(
+                            color: Color.fromRGBO(60, 49, 43, 1),
+                            size: 25,
+                            Icons.send
+                            ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 10.0),
-                ElevatedButton(
-                  onPressed: _sendMessage,
-                  style: ElevatedButton.styleFrom(
-                    shape: const CircleBorder(),
-                    padding: const EdgeInsets.all(20.0),
-                  ),
-                  child: const Icon(Icons.send),
-                ),
               ],
-            ),
+            )
           ),
         ],
       ),
