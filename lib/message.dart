@@ -6,10 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatScreen extends StatefulWidget {
+  const ChatScreen({super.key, required this.kisiAdi, required this.currentColors});
+
   final String kisiAdi;
-
-  const ChatScreen({super.key, required this.kisiAdi});
-
+  final Map<String, Color> currentColors;
+  
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
@@ -88,8 +89,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       padding: const EdgeInsets.all(15.0),
                       decoration: BoxDecoration(
                         color: message['sender'] == 'Me'
-                            ? const Color.fromRGBO(214, 195, 174, 1)
-                            : const Color.fromRGBO(92, 81, 68, 1),
+                            ? widget.currentColors['msgBubbleSender']
+                            : widget.currentColors['msgBubbleReciever'],
                         borderRadius: BorderRadius.circular(30.0),
                       ),
                       child: Text(
@@ -113,9 +114,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: TextField(
                     controller: _controller,
                     style: TextStyle(
-                      color: Color.fromRGBO(235, 222, 214, 1),
+                      color: widget.currentColors['text']
                     ),
-                    cursorColor: Color.fromRGBO(235, 222, 214, 0.50),
+                    cursorColor: widget.currentColors['hintText'],
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
@@ -125,10 +126,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
 
                       filled: true,
-                      fillColor: Color.fromRGBO(92, 81, 68, 1),
+                      fillColor: widget.currentColors['container'],
                       hintText: 'Type a message',
                       hintStyle: TextStyle(
-                        color: Color.fromRGBO(235, 222, 214, 0.65),
+                        color: widget.currentColors['hintText'],
                       
                       ),
 

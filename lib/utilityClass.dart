@@ -10,8 +10,9 @@ class Utilityclass {
   'text':      Color.fromRGBO(0, 0, 0, 1.0),
   'hintText':  Color.fromRGBO(0, 0, 0, 0.5),
   'acc1':      Color.fromRGBO(187, 124, 250, 1.0),
-  'acc2':      Color.fromRGBO(116, 212, 111, 1.0)
-
+  'acc2':      Color.fromRGBO(116, 212, 111, 1.0),
+  'msgBubbleSender': Color.fromRGBO(92, 81, 68, 1.0),
+  'msgBubbleReciever': Color.fromRGBO(214, 195, 174, 1.0)
   };
 
   static Map<String, Color> darkModeColor = {
@@ -23,6 +24,8 @@ class Utilityclass {
   'text':      Color.fromRGBO(240, 232, 230, 1.0),
   'hintText':  Color.fromRGBO(240, 232, 230, 0.5),
   'acc1':      Color.fromRGBO(149, 82, 199, 1),
-  'acc2':      Color.fromRGBO(17, 123, 77, 1.0)
+  'acc2':      Color.fromRGBO(17, 123, 77, 1.0),
+  'msgBubbleSender': Color.fromRGBO(214, 195, 174, 1.0),
+  'msgBubbleReciever': Color.fromRGBO(92, 81, 68, 1.0)
   };
 }

@@ -8,6 +8,7 @@ import 'package:orcanet/feedPage.dart';
 import 'package:orcanet/loginPage.dart';
 import 'package:orcanet/makePostPage.dart';
 import 'package:orcanet/message.dart';
+import 'package:orcanet/searchPage.dart';
 import 'package:orcanet/utilityClass.dart';
 
 final ValueNotifier<bool> isDarkModeNotifier = ValueNotifier<bool>(true);
@@ -140,9 +141,7 @@ Widget build(BuildContext context) {
           feedPage(currentColors: currentColors),
           makePostPage(currentColors: currentColors),
           chatPage(currentColors: currentColors),
-          Center(
-            child: Text('Search Page (WORK IN PROGRESS)', style: TextStyle(fontSize: 20, color: currentColors['text']),),
-          ),
+          searchPage(currentColors: currentColors),
           Center(
             child: Text('Donation Page (WORK IN PROGRESS)', style: TextStyle(fontSize: 20, color: currentColors['text'])),
           ),
