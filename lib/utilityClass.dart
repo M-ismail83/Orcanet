@@ -28,4 +28,11 @@ class Utilityclass {
   'msgBubbleSender': Color.fromRGBO(214, 195, 174, 1.0),
   'msgBubbleReciever': Color.fromRGBO(92, 81, 68, 1.0)
   };
+
+  void navigator(BuildContext context, Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => page),
+    );
+  }
 }

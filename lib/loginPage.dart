@@ -1,4 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:orcanet/authLoginandLogout.dart';
+import 'package:orcanet/googleSignIn.dart';
+import 'package:orcanet/homePage.dart';
+import 'package:orcanet/messagingService.dart';
+import 'package:orcanet/utilityClass.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -8,6 +14,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 5),
               Text(
-                "Log inn and find yourself a pod!!",
+                "Log in and find yourself a pod!",
                 style: TextStyle(fontSize: 18, color: Color.fromRGBO(240, 232, 230, 1.0),),
               ),
               SizedBox(height: 30),
@@ -40,6 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: TextField(
+                  controller: emailController,
                   decoration: InputDecoration(
                       labelText: "Email",
                       labelStyle: TextStyle(color: Color.fromRGBO(240, 232, 230, 1.0),),
@@ -60,6 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: TextField(
+                  controller: passwordController,
                   decoration: InputDecoration(
                       labelText: "Password",
                       labelStyle: TextStyle(color: Color.fromRGBO(240, 232, 230, 1.0),),
@@ -77,7 +89,14 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    await logIn(email: emailController.text, password: passwordController.text);
+                    String? fcmToken = await FirebaseMessaging.instance.getToken();
+                    createAndSaveUser(fcmToken: fcmToken ?? "");
+                    if (context.mounted) {
+                      Utilityclass().navigator(context, homePage());
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Color.fromRGBO(17, 123, 77, 1.0),
@@ -98,7 +117,14 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    await signInWithGoogle();
+                    String? fcmToken = await FirebaseMessaging.instance.getToken();
+                    createAndSaveUser(fcmToken: fcmToken ?? "");
+                    if (context.mounted) {
+                      Utilityclass().navigator(context, homePage());
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Color.fromRGBO(17, 123, 77, 1.0),
