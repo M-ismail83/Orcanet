@@ -2,21 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:orcanet/message.dart';
 
 //groups or chats iq
-class ChatRoom {
+class orcaChatRoom {
   final String name;
   final String lastMessage;
   final String type; // 'Pods' or 'Orcas'
+  final String id;
 
-  ChatRoom(this.name, this.lastMessage, this.type);
+  orcaChatRoom(this.name, this.lastMessage, this.type, this.id);
 }
 
-final List<ChatRoom> allChats = [
-  ChatRoom('HYHFC', 'What is our purpose?', 'Pods'),
-  ChatRoom('Sailors', 'tonight is the night, its gonna happen again', 'Pods'),
-  ChatRoom('Thank you god', 'For you have given us ai!!', 'Pods'),
-  ChatRoom('Ismail', 'Neo', 'Orcas'),
-  ChatRoom('Dildar', 'Trinity', 'Orcas'),
-  ChatRoom('Deno', 'Morpheus', 'Orcas'),
+class podChatRoom {
+  final String name;
+  final String lastMessage;
+  final String type; // 'Pods' or 'Orcas'
+  final String id;
+
+  podChatRoom(this.name, this.lastMessage, this.type, this.id);
+}
+
+final List allChats = [
+  podChatRoom('Sailors', 'tonight is the night, its gonna happen again', 'Pods', '2'),
+  orcaChatRoom('Ismail', 'Neo', 'Orcas', '4'),
+  orcaChatRoom('Dildar', 'Trinity', 'Orcas', '5'),
+  orcaChatRoom('Deno', 'Morpheus', 'Orcas', '6'),
 ];
 
 //idk what this is ai helped wit it
@@ -72,7 +80,7 @@ class chatPage extends StatelessWidget {
 
 //idont understand this part aswell?
 class ChatTabView extends StatelessWidget {
-  final List<ChatRoom> chats;
+  final List chats;
   final Map<String, Color> currentColorsView;
   const ChatTabView({required this.chats, super.key, required this.currentColorsView});
 
@@ -98,17 +106,9 @@ class ChatTabView extends StatelessWidget {
 }
 
 class ChatRoomTile extends StatelessWidget {
-  final ChatRoom chat;
+  final dynamic chat;
   final Map<String, Color> currentColorsTile;
   const ChatRoomTile({required this.chat, super.key, required this.currentColorsTile});
-
-  void _logChatRoomTap() {
-    print('Tapped chat room: ${chat.name}');
-  }
-  
-  void _logProfileTap() {
-    print('Tapped profile avatar for chat: ${chat.name}');
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +125,7 @@ class ChatRoomTile extends StatelessWidget {
         child: ListTile(
           //Tapping the leading CircleAvatar logs the profile tap
           leading: InkWell(
-            onTap: _logProfileTap, 
+            onTap: () {},
             borderRadius: BorderRadius.circular(50), 
             child: CircleAvatar(
               backgroundColor: const Color.fromRGBO(137, 139, 139, 1),
