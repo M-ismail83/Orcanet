@@ -5,11 +5,10 @@ import 'package:orcanet/chatPage.dart';
 import 'package:orcanet/firebase_options.dart';
 import 'package:orcanet/feedAndPodsPage.dart';
 import 'package:orcanet/feedPage.dart';
-import 'package:orcanet/loginPage.dart';
 import 'package:orcanet/makePostPage.dart';
 import 'package:orcanet/message.dart';
+import 'package:orcanet/profilePage.dart';
 import 'package:orcanet/utilityClass.dart';
-import 'package:orcanet/chatPage.dart';
 
 final ValueNotifier<bool> isDarkModeNotifier = ValueNotifier<bool>(true);
 
@@ -49,7 +48,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
-            home: LoginScreen(),
+            home: MyHomePage(),
           );
         });
   }
@@ -125,6 +124,28 @@ Widget build(BuildContext context) {
             ),
           ),
           leadingWidth: 55,
+
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.notifications_outlined),
+              tooltip: 'Your Notifications',
+              onPressed: () {
+                // handle the press
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.person_2),
+              tooltip: 'Open shopping cart',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (context) => profilePage(currentColors: currentColors),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
         bottomNavigationBar: NavigationBar(
           onDestinationSelected: (int index) {

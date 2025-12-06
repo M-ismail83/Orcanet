@@ -144,7 +144,8 @@ class _makePostPageState extends State<makePostPage> {
                       decoration: BoxDecoration(
                         color: widget.currentColors['container'],
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: widget.currentColors['container']!, width: 1.0),),
+                        border: Border.all(color: widget.currentColors['container']!, width: 1.0),
+                      ),
                     child: Column(
                       children: [
                         TextField(
@@ -189,4 +190,5 @@ class _makePostPageState extends State<makePostPage> {
         ],
       )
     );
-  }}
+  }
+}
