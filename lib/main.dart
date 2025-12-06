@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:orcanet/chatPage.dart';
 import 'package:orcanet/firebase_options.dart';
 import 'package:orcanet/feedAndPodsPage.dart';
 import 'package:orcanet/feedPage.dart';
@@ -12,14 +12,23 @@ import 'package:orcanet/utilityClass.dart';
 
 final ValueNotifier<bool> isDarkModeNotifier = ValueNotifier<bool>(true);
 
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  if (kDebugMode) {
+    print("Handling a background message: ${message.messageId}");
+  }
+}
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   final notificationSettings = await FirebaseMessaging.instance.requestPermission(provisional: true);
   final fcmToken = await FirebaseMessaging.instance.getToken();
-  print("FCM Token: $fcmToken");
+  createAndSaveUser(fcmToken: fcmToken ?? "");
+  if (kDebugMode) {
+    print("FCM Token: $fcmToken");
+  }
   runApp(const MyApp());
 }
 
