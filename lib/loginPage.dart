@@ -94,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     String? fcmToken = await FirebaseMessaging.instance.getToken();
                     createAndSaveUser(fcmToken: fcmToken ?? "");
                     if (context.mounted) {
-                      Utilityclass().navigator(context, homePage());
+                      Utilityclass().navigator(context, MyHomePage());
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -122,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     String? fcmToken = await FirebaseMessaging.instance.getToken();
                     createAndSaveUser(fcmToken: fcmToken ?? "");
                     if (context.mounted) {
-                      Utilityclass().navigator(context, homePage());
+                      Utilityclass().navigator(context, MyHomePage());
                     }
                   },
                   style: ElevatedButton.styleFrom(

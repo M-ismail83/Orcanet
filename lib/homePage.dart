@@ -5,16 +5,17 @@ import 'package:orcanet/feedPage.dart';
 import 'package:orcanet/loginPage.dart';
 import 'package:orcanet/main.dart';
 import 'package:orcanet/makePostPage.dart';
+import 'package:orcanet/profilePage.dart';
 import 'package:orcanet/utilityClass.dart';
 
-class homePage extends StatefulWidget {
-  const homePage({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
 
   @override
-  State<homePage> createState() => _homePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _homePageState extends State<homePage> {
+class _MyHomePageState extends State<MyHomePage> {
   final currentColors = isDarkModeNotifier.value
       ? Utilityclass.darkModeColor
       : Utilityclass.ligthModeColor;
@@ -43,9 +44,6 @@ class _homePageState extends State<homePage> {
       icon: Icon(Icons.coffee),
       label: 'Donation',
     ),
-    NavigationDestination(
-      icon: Icon(Icons.exit_to_app), 
-      label: 'Logout')
   ];
 
   @override
@@ -80,6 +78,28 @@ Widget build(BuildContext context) {
             ),
           ),
           leadingWidth: 55,
+
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.notifications_outlined),
+              tooltip: 'Your Notifications',
+              onPressed: () {
+                // handle the press
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.person_2),
+              tooltip: 'Open shopping cart',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (context) => profilePage(currentColors: currentColors),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
         bottomNavigationBar: NavigationBar(
           onDestinationSelected: (int index) {
@@ -101,21 +121,6 @@ Widget build(BuildContext context) {
           ),
           Center(
             child: Text('Donation Page (WORK IN PROGRESS)', style: TextStyle(fontSize: 20, color: currentColors['text'])),
-          ),
-          Center(
-            child: ElevatedButton(
-              onPressed: () async {
-                await logOut();
-                if (context.mounted) {
-                  Utilityclass().navigator(context, const LoginScreen());
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: currentColors['text'],
-                backgroundColor: currentColors['bar'],
-              ),
-              child: Text('Log Out', style: TextStyle(color: currentColors['text']),),
-            ),
           ),
         ][currentPageIndex],
       );
