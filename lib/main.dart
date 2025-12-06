@@ -6,6 +6,7 @@ import 'package:orcanet/firebase_options.dart';
 import 'package:orcanet/loginPage.dart';
 import 'package:orcanet/utilityClass.dart';
 import 'package:orcanet/messagingService.dart';
+import 'package:orcanet/homePage.dart';
 
 final ValueNotifier<bool> isDarkModeNotifier = ValueNotifier<bool>(true);
 
@@ -54,7 +55,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
-            home: MyHomePage(),
+            home: LoginScreen(),
           );
         });
   }
