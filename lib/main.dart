@@ -9,6 +9,8 @@ import 'package:orcanet/makePostPage.dart';
 import 'package:orcanet/message.dart';
 import 'package:orcanet/profilePage.dart';
 import 'package:orcanet/utilityClass.dart';
+import 'package:orcanet/messagingService.dart';
+import 'package:orcanet/homePage.dart';
 
 final ValueNotifier<bool> isDarkModeNotifier = ValueNotifier<bool>(true);
 
@@ -57,7 +59,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
-            home: MyHomePage(),
+            home: LoginScreen(),
           );
         });
   }
