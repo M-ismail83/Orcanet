@@ -6,59 +6,83 @@ User? user = FirebaseAuth.instance.currentUser;
 var docRef = FirebaseFirestore.instance.collection('users').doc('${user?.displayName}');
 
 Future<void> createAndSaveUser({required String fcmToken}) async {
-  var doc = await docRef.get();
+  User? currentUser = FirebaseAuth.instance.currentUser;
 
-  if (!doc.exists) {
-    docRef.set({
-      'fcmToken': fcmToken,
-      'id': user?.uid,
-      'name': user?.displayName,
-      'email': user?.email,
-    });
-  }
+  if (currentUser == null) return;
 
-  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+  DocumentReference userRef = FirebaseFirestore.instance
+      .collection('users')
+      .doc(currentUser.uid);
+
+  try {
+     await userRef.set({
+      'fcmToken': fcmToken, // Always update this
+      'id': currentUser.uid,
+      'name': currentUser.displayName ?? 'No Name', // Handle null names
+      'email': currentUser.email,
+      'lastActive': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
     docRef.update({'fcmToken': newToken});
   });
-
+  } catch (e) {
+    print("Error $e");
+  }
 }
-
 Future<void> sendMessage({
   required String senderId,
   required String receiverId,
-  required String chatId,
-  required String messageId,
+  required String chatId, // Format: "uid1_uid2" (sorted)
   required String text,
 }) async {
-  var messageRef = FirebaseFirestore.instance
-      .collection('chats')
-      .doc(chatId)
-      .collection('messages')
-      .doc(messageId);
+  final firestore = FirebaseFirestore.instance;
+  final chatDocRef = firestore.collection('chats').doc(chatId);
 
-  var chatRef = FirebaseFirestore.instance
-      .collection('chats')
-      .doc(chatId);
+  try {
+    
+    await firestore.runTransaction((transaction) async {
+      DocumentSnapshot chatSnapshot = await transaction.get(chatDocRef);
 
-  var chat = await chatRef.get();
+      int nextId = 0;
 
-  if (!chat.exists) {
-    chatRef.set({
-      'participants': [senderId, receiverId],
-      'lastMessage': text
+      if (!chatSnapshot.exists) {
+        // Create the chat document inside the transaction
+        transaction.set(chatDocRef, {
+          'participants': [senderId, receiverId],
+          'lastMessageId': 0, // Start at 0 so next is 1
+        });
+      } else {
+        // Read the last ID
+        int currentId = chatSnapshot.get('lastMessageId') ?? 0;
+        nextId = currentId + 1;
+      }
+
+      DocumentReference messageRef = chatDocRef
+          .collection('messages')
+          .doc(nextId.toString());
+
+      
+      transaction.set(messageRef, {
+        'id': nextId, // Save as number for easy sorting later
+        'senderId': senderId,
+        'receiverId': receiverId,
+        'text': text,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      transaction.update(chatDocRef, {
+        'lastMessageId': nextId,
+        'lastMessage': text,
+        'lastMessageTime': FieldValue.serverTimestamp(),
+      });
+
     });
+
+  } catch (e) {
+    print("Error sending message: $e");
+    rethrow;
   }
-
-  await chatRef.update({
-    'lastMessage': text
-  });
-
-  await messageRef.set({
-    'senderId': senderId,
-    'receiverId': receiverId,
-    'text': text,
-    'timestamp': FieldValue.serverTimestamp(),
-  });
 }
 
 Stream<QuerySnapshot> getMessagesStream(String chatId) {
@@ -66,7 +90,7 @@ Stream<QuerySnapshot> getMessagesStream(String chatId) {
       .collection('chats')
       .doc(chatId)
       .collection('messages')
-      .orderBy('timestamp', descending: false)
+      .orderBy('id', descending: true)
       .snapshots();
 }
 

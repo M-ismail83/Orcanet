@@ -3,9 +3,15 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:orcanet/firebase_options.dart';
+import 'package:orcanet/feedAndPodsPage.dart';
+import 'package:orcanet/feedPage.dart';
 import 'package:orcanet/loginPage.dart';
+import 'package:orcanet/makePostPage.dart';
+import 'package:orcanet/message.dart';
+import 'package:orcanet/profilePage.dart';
 import 'package:orcanet/utilityClass.dart';
 import 'package:orcanet/messagingService.dart';
+import 'package:orcanet/homePage.dart';
 
 final ValueNotifier<bool> isDarkModeNotifier = ValueNotifier<bool>(true);
 
@@ -54,7 +60,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
-            home: MyHomePage(),
+            home: LoginScreen(),
           );
         });
   }
