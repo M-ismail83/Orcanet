@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:orcanet/utilityClass.dart';
+import 'package:orcanet/authLoginandLogout.dart';
+import 'package:orcanet/googleSignIn.dart';
+import 'package:orcanet/utilityClass.dart';
+import 'package:orcanet/loginPage.dart';
 
 class profilePage extends StatefulWidget {
   const profilePage({super.key, required this.currentColors}); //constructor
@@ -280,7 +284,19 @@ class _profilePageState extends State<profilePage> {
                   ),
                 ],
               ),
-            )
+            ),
+            TextButton.icon(
+              onPressed: () async {
+                await logOut();
+                await signOutWithGoogle();
+
+                if (context.mounted){
+                  Utilityclass().navigator(context, LoginScreen());
+                }
+              },
+              icon: const Icon(Icons.logout),
+              label: const Text('Sign Out'),
+            ),
           ],
         ),
       )
