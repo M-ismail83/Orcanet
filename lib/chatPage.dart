@@ -40,7 +40,6 @@ class chatPage extends StatelessWidget {
               stream: FirebaseFirestore.instance
                   .collection('chats')
                   .where('participants', arrayContains: currentUserId)
-                  .orderBy('lastMessageTime', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
