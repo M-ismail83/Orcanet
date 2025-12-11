@@ -1,6 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:orcanet/firebase_options.dart';
 import 'package:orcanet/feedAndPodsPage.dart';
@@ -15,23 +15,20 @@ import 'package:orcanet/homePage.dart';
 
 final ValueNotifier<bool> isDarkModeNotifier = ValueNotifier<bool>(true);
 
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  if (kDebugMode) {
-    print("Handling a background message: ${message.messageId}");
-  }
+  await Firebase.initializeApp();
+  print("Handling a background message: ${message.messageId}");
 }
+
 void main() async {
+  
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  final notificationSettings = await FirebaseMessaging.instance.requestPermission(provisional: true);
-  final fcmToken = await FirebaseMessaging.instance.getToken();
-  createAndSaveUser(fcmToken: fcmToken ?? "");
-  if (kDebugMode) {
-    print("FCM Token: $fcmToken");
-  }
+
   runApp(const MyApp());
 }
 
@@ -60,7 +57,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
-            home: LoginScreen(),
+            home: FirebaseAuth.instance.currentUser != null ? MyHomePage() : LoginScreen(),
           );
         });
   }
