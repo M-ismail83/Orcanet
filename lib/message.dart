@@ -109,12 +109,26 @@ class _ChatScreenState extends State<ChatScreen> {
                             : widget.currentColors['msgBubbleReciever'],
                         borderRadius: BorderRadius.circular(30.0),
                       ),
-                      child: Text(
-                        message['text'],
-                        style: const TextStyle(
-                          fontSize: 20.0,
-                        ),
-                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            message['text'],
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: widget.currentColors["text"]
+                            ),
+                          ),
+                          Text(
+                            _auth.currentUser!.displayName ?? "No name",
+                            style: TextStyle(
+                              fontSize: 12.0,
+                              color: widget.currentColors["text"]?.withAlpha(128)
+                            ),
+                          )
+                        ],
+                      )
                     ),
                   );
                 },
@@ -174,7 +188,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               right: 0.1, top: 7.0, bottom: 7.0),
                           child: ElevatedButton(
                             onPressed: () {
-                              if (_controller.text.isNotEmpty) {
+                              if (_controller.text.isNotEmpty && !_controller.text.contains(" ")) {
                                 sendMessage(
                                     senderId:
                                         FirebaseAuth.instance.currentUser!.uid,
