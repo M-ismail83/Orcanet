@@ -1,10 +1,14 @@
+import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:orcanet/authLoginandLogout.dart';
 import 'package:orcanet/chatPage.dart';
 import 'package:orcanet/feedPage.dart';
 import 'package:orcanet/loginPage.dart';
 import 'package:orcanet/main.dart';
 import 'package:orcanet/makePostPage.dart';
+import 'package:orcanet/messagingService.dart';
 import 'package:orcanet/profilePage.dart';
 import 'package:orcanet/utilityClass.dart';
 
@@ -19,6 +23,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final currentColors = isDarkModeNotifier.value
       ? Utilityclass.darkModeColor
       : Utilityclass.ligthModeColor;
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   int currentPageIndex = 0;
 
   var colors = <Color>{Colors.red, Colors.green, Colors.blue};
@@ -45,6 +51,99 @@ class _MyHomePageState extends State<MyHomePage> {
       label: 'Donation',
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    setupNotification();
+    FirebaseMessaging.instance.getToken().then((token) {
+    if (token != null) {
+      createAndSaveUser(fcmToken: token);
+    }
+  });
+  }
+  
+  void setupNotification() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+    }
+
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/notif_icon');
+
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings();
+
+    const InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsIOS,
+    );
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (details) {
+        // This handles when a user taps on a LOCAL notification (Foreground)
+        print("Tapped local notification: ${details.payload}");
+      },
+    );
+
+    if (Platform.isAndroid) {
+      const AndroidNotificationChannel channel = AndroidNotificationChannel(
+        'high_importance_channel', // id
+        'High Importance Notifications', // title
+        description: 'This channel is used for important notifications.', 
+        importance: Importance.max,
+      );
+
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(channel);
+    }
+
+
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print(message.notification?.body);
+
+      if (message.notification != null && Platform.isAndroid) {
+        flutterLocalNotificationsPlugin.show(
+          message.hashCode,
+          message.notification!.title,
+          message.notification!.body,
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'high_importance_channel',
+              'High Importance Notifications',
+              icon: '@mipmap/notif_icon', // Your icon
+            ),
+          ),
+        );
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("I just tapped a notification wtf just happened?!!?!!");
+    });
+
+    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null) {
+        print("App launched from Terminated state by notification!");
+        // Navigate to the chat screen
+        // Note: You might need to delay this slightly or use a global navigator key
+        // if your Context isn't fully ready yet.
+      }
+    });
+
+  }
 
   @override
 Widget build(BuildContext context) {
@@ -126,6 +225,6 @@ Widget build(BuildContext context) {
       );
     },
   );
+ }
 }
-
-}
+  
