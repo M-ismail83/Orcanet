@@ -35,4 +35,9 @@ class Utilityclass {
       MaterialPageRoute(builder: (context) => page),
     );
   }
+
+  Future<void> _signUpPopUp() async {
+    
+  }
+
 }

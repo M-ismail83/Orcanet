@@ -20,13 +20,15 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     print("Handling a background message: ${message.messageId}");
   }
 }
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  final notificationSettings = await FirebaseMessaging.instance.requestPermission(provisional: true);
+  final notificationSettings =
+      await FirebaseMessaging.instance.requestPermission(provisional: true);
   final fcmToken = await FirebaseMessaging.instance.getToken();
   createAndSaveUser(fcmToken: fcmToken ?? "");
   if (kDebugMode) {
@@ -60,7 +62,9 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
-            home: LoginScreen(),
+            home: LoginScreen(
+              currentColors: currentColors,
+            ),
           );
         });
   }
