@@ -38,6 +38,10 @@ class Utilityclass {
     );
   }
 
+  Future<void> _signUpPopUp() async {
+    
+  }
+
   String getChatId(String uid1, List uid2) {
   List<String> ids = List<String>.from(uid2);
   ids.add(uid1);

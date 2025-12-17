@@ -5,21 +5,21 @@ import 'package:orcanet/pageIndex.dart';
 import 'package:orcanet/serviceIndex.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, required this.currentColors});
 
+  final Map<String, Color> currentColors;
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(60, 49, 43, 1.0),
+      backgroundColor: widget.currentColors['bg'],
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height,
@@ -34,12 +34,19 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: 10),
               Text(
                 "ORCA/NET",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color.fromRGBO(240, 232, 230, 1.0),),
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: widget.currentColors['text'],
+                ),
               ),
               SizedBox(height: 5),
               Text(
                 "Log in and find yourself a pod!",
-                style: TextStyle(fontSize: 18, color: Color.fromRGBO(240, 232, 230, 1.0),),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: widget.currentColors['text'],
+                ),
               ),
               SizedBox(height: 30),
               Container(
@@ -51,53 +58,60 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: emailController,
                   decoration: InputDecoration(
                       labelText: "Email",
-                      labelStyle: TextStyle(color: Color.fromRGBO(240, 232, 230, 1.0),),
+                      labelStyle: TextStyle(
+                        color: widget.currentColors['text'],
+                      ),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Color.fromRGBO(145, 118, 104, 1.0), width: 1)),
+                          borderSide: BorderSide(
+                              color: widget.currentColors['bar']!, width: 1)),
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide:
-                              BorderSide(color: Color.fromRGBO(145, 118, 104, 1.0), width: 1))),
+                          borderSide: BorderSide(
+                              color: widget.currentColors['bar']!, width: 1))),
                 ),
               ),
-
               SizedBox(height: 15),
               Container(
                 decoration: BoxDecoration(
-                  color: Color.fromRGBO(92, 81, 68, 1.0),
+                  color: widget.currentColors['msgBubbleReciever'],
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: TextField(
                   controller: passwordController,
                   decoration: InputDecoration(
                       labelText: "Password",
-                      labelStyle: TextStyle(color: Color.fromRGBO(240, 232, 230, 1.0),),
+                      labelStyle: TextStyle(
+                        color: widget.currentColors['text'],
+                      ),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Color.fromRGBO(145, 118, 104, 1.0), width: 1)),
+                          borderSide: BorderSide(
+                              color: widget.currentColors['bar']!, width: 1)),
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide:
-                              BorderSide(color: Color.fromRGBO(145, 118, 104, 1.0), width: 1))),
+                          borderSide: BorderSide(
+                              color: widget.currentColors['bar']!, width: 1))),
                 ),
               ),
-
               SizedBox(height: 25),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    await logIn(email: emailController.text, password: passwordController.text);
-                    String? fcmToken = await FirebaseMessaging.instance.getToken();
+                    await logIn(
+                        email: emailController.text,
+                        password: passwordController.text);
+                    String? fcmToken =
+                        await FirebaseMessaging.instance.getToken();
                     createAndSaveUser(fcmToken: fcmToken ?? "");
                     if (context.mounted) {
                       Utilityclass().navigator(context, MyHomePage());
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Color.fromRGBO(17, 123, 77, 1.0),
+                      foregroundColor: widget.currentColors['text'],
+                      backgroundColor: widget.currentColors['acc2'],
                       padding: EdgeInsets.all(16),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15))),
@@ -107,25 +121,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               SizedBox(height: 5),
-              Divider(color: Color.fromRGBO(145, 118, 104, 1.0), ),
+              Divider(
+                color: widget.currentColors['bar'],
+              ),
               SizedBox(height: 5),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
                     await signInWithGoogle();
-                    String? fcmToken = await FirebaseMessaging.instance.getToken();
+                    String? fcmToken =
+                        await FirebaseMessaging.instance.getToken();
                     createAndSaveUser(fcmToken: fcmToken ?? "");
                     if (context.mounted) {
                       Utilityclass().navigator(context, MyHomePage());
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Color.fromRGBO(17, 123, 77, 1.0),
+                      foregroundColor: widget.currentColors['text'],
+                      backgroundColor: widget.currentColors['acc2'],
                       padding: EdgeInsets.all(16),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15))),
@@ -135,22 +150,36 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Don't have an account?",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color.fromRGBO(240, 232, 230, 1.0),),
-                  ),
-                  Text(
-                    " Sign Up",
                     style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Color.fromRGBO(17, 123, 77, 1.0)),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: widget.currentColors['text'],
+                    ),
                   ),
+                  TextButton(
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (context) => signUpPage(
+                              currentColors: widget.currentColors,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        "Sign Up",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: widget.currentColors['acc2']),
+                      )),
                 ],
               )
             ],
