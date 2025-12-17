@@ -14,6 +14,8 @@ analyzer:
     camel_case_types: ignore
     prefer_final_fields: ignore
     library_private_types_in_public_api: ignore
+    unused_field: ignore
+    avoid_print: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:
