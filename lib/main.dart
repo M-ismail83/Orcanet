@@ -2,23 +2,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:orcanet/firebase_options.dart';
-import 'package:orcanet/feedAndPodsPage.dart';
-import 'package:orcanet/feedPage.dart';
-import 'package:orcanet/loginPage.dart';
-import 'package:orcanet/makePostPage.dart';
-import 'package:orcanet/message.dart';
-import 'package:orcanet/profilePage.dart';
-import 'package:orcanet/utilityClass.dart';
-import 'package:orcanet/messagingService.dart';
-import 'package:orcanet/homePage.dart';
+import 'package:orcanet/pageIndex.dart';
+import 'package:orcanet/serviceIndex.dart';
 
 final ValueNotifier<bool> isDarkModeNotifier = ValueNotifier<bool>(true);
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  print("Handling a background message: ${message.messageId}");
+  if (message.data['type'] == 'call_offer') {
+      // Wakes up phone and shows UI
+      await CallService.showIncomingCall(
+            uuid: message.data['uuid'],
+            callerName: message.data['callerName'] ?? "UnknownId",
+            callerId: message.data['callerId'] ?? "000",
+            hasVideo: message.data['hasVideo'] == 'true',
+      );
+  }
 }
 
 void main() async {
@@ -28,6 +27,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(const MyApp());
 }
