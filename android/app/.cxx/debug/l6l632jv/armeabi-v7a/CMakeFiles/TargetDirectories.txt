@@ -1,0 +1,2 @@
+C:/src/Orcanet/android/app/.cxx/debug/l6l632jv/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/src/Orcanet/android/app/.cxx/debug/l6l632jv/armeabi-v7a/CMakeFiles/rebuild_cache.dir

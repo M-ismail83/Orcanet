@@ -1,12 +1,8 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:orcanet/authLoginandLogout.dart';
-import 'package:orcanet/chatPage.dart';
-import 'package:orcanet/feedPage.dart';
-import 'package:orcanet/loginPage.dart';
 import 'package:orcanet/main.dart';
-import 'package:orcanet/makePostPage.dart';
-import 'package:orcanet/profilePage.dart';
-import 'package:orcanet/utilityClass.dart';
+import 'package:orcanet/pageIndex.dart';
+import 'package:orcanet/serviceIndex.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -19,6 +15,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final currentColors = isDarkModeNotifier.value
       ? Utilityclass.darkModeColor
       : Utilityclass.ligthModeColor;
+
+  
   int currentPageIndex = 0;
 
   var colors = <Color>{Colors.red, Colors.green, Colors.blue};
@@ -45,6 +43,20 @@ class _MyHomePageState extends State<MyHomePage> {
       label: 'Donation',
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    Callnotifservice(context: context).setupNotification();
+    Callnotifservice(context: context).listenForCallEvents();
+    Callnotifservice(context: context).checkAndNavigationCallingPage();
+    FirebaseMessaging.instance.getToken().then((token) {
+    if (token != null) {
+      createAndSaveUser(fcmToken: token);
+    }
+  });
+  }
 
   @override
 Widget build(BuildContext context) {
@@ -116,9 +128,7 @@ Widget build(BuildContext context) {
           feedPage(currentColors: currentColors),
           makePostPage(currentColors: currentColors),
           chatPage(currentColors: currentColors),
-          Center(
-            child: Text('Search Page (WORK IN PROGRESS)', style: TextStyle(fontSize: 20, color: currentColors['text']),),
-          ),
+          searchPage(currentColors: currentColors),
           Center(
             child: Text('Donation Page (WORK IN PROGRESS)', style: TextStyle(fontSize: 20, color: currentColors['text'])),
           ),
@@ -126,6 +136,6 @@ Widget build(BuildContext context) {
       );
     },
   );
+ }
 }
-
-}
+  

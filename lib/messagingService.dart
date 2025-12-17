@@ -32,7 +32,7 @@ Future<void> createAndSaveUser({required String fcmToken}) async {
 }
 Future<void> sendMessage({
   required String senderId,
-  required String receiverId,
+  required List receiverId,
   required String chatId, // Format: "uid1_uid2" (sorted)
   required String text,
 }) async {
@@ -93,5 +93,6 @@ Stream<QuerySnapshot> getMessagesStream(String chatId) {
       .orderBy('id', descending: true)
       .snapshots();
 }
+
 
 

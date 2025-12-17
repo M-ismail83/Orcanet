@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 class Utilityclass {
   static Map<String, Color> ligthModeColor = {
@@ -40,4 +42,14 @@ class Utilityclass {
     
   }
 
+  String getChatId(String uid1, List uid2) {
+  List<String> ids = List<String>.from(uid2);
+  ids.add(uid1);
+  ids.sort(); 
+  String channelId = ids.join("_");
+  var bytes = utf8.encode(channelId);
+  var digest = md5.convert(bytes);
+
+  return digest.toString();
+}
 }

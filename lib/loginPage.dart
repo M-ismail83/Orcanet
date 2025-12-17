@@ -1,11 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:orcanet/authLoginandLogout.dart';
-import 'package:orcanet/googleSignIn.dart';
 import 'package:orcanet/homePage.dart';
-import 'package:orcanet/messagingService.dart';
-import 'package:orcanet/utilityClass.dart';
-import 'package:orcanet/signUpPage.dart';
+import 'package:orcanet/pageIndex.dart';
+import 'package:orcanet/serviceIndex.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.currentColors});
