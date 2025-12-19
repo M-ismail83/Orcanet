@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:orcanet/main.dart';
-import 'package:orcanet/utilityClass.dart';
+import 'package:orcanet/pageIndex.dart';
+import 'package:orcanet/serviceIndex.dart';
 
 class feedPage extends StatelessWidget {
   const feedPage({super.key, required this.currentColors});
@@ -34,7 +35,14 @@ class feedPage extends StatelessWidget {
         children: [
           ClipOval(
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Utilityclass().navigator(
+                    context,
+                    profilePage(
+                      currentColors: currentColors,
+                      uid: "2u6hqirtZTdl7gBI85wUap9qJni1",
+                    ));
+              },
               splashColor: Colors.transparent,
               child: Image.asset(
                 "lib/images/placeholder.jpg",

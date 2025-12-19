@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:orcanet/main.dart';
@@ -60,6 +61,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
 Widget build(BuildContext context) {
+
+  FirebaseAuth auth = FirebaseAuth.instance;
+
   return ValueListenableBuilder<bool>(
     valueListenable: isDarkModeNotifier,
     builder: (context, isDarkMode, _) {
@@ -106,7 +110,7 @@ Widget build(BuildContext context) {
                 Navigator.push(
                   context,
                   MaterialPageRoute<void>(
-                    builder: (context) => profilePage(currentColors: currentColors),
+                    builder: (context) => profilePage(currentColors: currentColors, uid: auth.currentUser!.uid,),
                   ),
                 );
               },
