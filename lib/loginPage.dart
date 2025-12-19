@@ -1,6 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:orcanet/homePage.dart';
 import 'package:orcanet/pageIndex.dart';
 import 'package:orcanet/serviceIndex.dart';
 
@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     String? fcmToken =
                         await FirebaseMessaging.instance.getToken();
                     createAndSaveUser(fcmToken: fcmToken ?? "");
-                    if (context.mounted) {
+                    if (context.mounted && FirebaseAuth.instance.currentUser != null) {
                       Utilityclass().navigator(context, MyHomePage());
                     }
                   },

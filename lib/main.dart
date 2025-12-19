@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
-            home: FirebaseAuth.instance.currentUser != null ? MyHomePage() : LoginScreen(),
+            home: FirebaseAuth.instance.currentUser != null ? MyHomePage() : LoginScreen(currentColors: currentColors,),
           );
         });
   }
