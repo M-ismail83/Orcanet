@@ -2,7 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:orcanet/message.dart';
+import 'package:orcanet/pageIndex.dart';
+import 'package:orcanet/serviceIndex.dart';
 
 //idk what this is ai helped wit it
 class chatPage extends StatelessWidget {
@@ -111,8 +112,7 @@ class ChatTabView extends StatelessWidget {
         String docId = chats[index].id;
 
         List<dynamic> participants = chat['participants'] ?? [];
-        String receiverId = participants.firstWhere((id) => id != currentUserId,
-            orElse: () => 'Unknown');
+        List receiverId = participants.where((id) => id != currentUserId).toList();
 
         String displayName = chat['chatName'] ?? 'User';
 
@@ -132,7 +132,7 @@ class ChatRoomTile extends StatelessWidget {
   final String name;
   final String lastMessage;
   final String chatId;
-  final String receiverId;
+  final List receiverId;
   final Map<String, Color> currentColors;
 
   const ChatRoomTile({
