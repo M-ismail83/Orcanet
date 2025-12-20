@@ -59,6 +59,12 @@ class _MyHomePageState extends State<MyHomePage> {
   });
   }
 
+  void _goToFeed() {
+    setState(() {
+      currentPageIndex = 0; // Assuming Feed is Index 0
+    });
+  }
+
   @override
 Widget build(BuildContext context) {
 
@@ -130,7 +136,7 @@ Widget build(BuildContext context) {
         ),
         body: <Widget>[
           feedPage(currentColors: currentColors),
-          makePostPage(currentColors: currentColors),
+          makePostPage(currentColors: currentColors, onPost: _goToFeed),
           chatPage(currentColors: currentColors),
           searchPage(currentColors: currentColors),
           Center(

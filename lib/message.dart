@@ -149,7 +149,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   color: widget.currentColors["text"]),
                             ),
                             Text(
-                              _auth.currentUser!.displayName ?? "No name",
+                              isMe ? "You" : widget.kisiAdi,
                               style: TextStyle(
                                   fontSize: 12.0,
                                   color: widget.currentColors["text"]
