@@ -1,28 +1,36 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
 import 'package:orcanet/main.dart';
 import 'package:orcanet/pageIndex.dart';
 import 'package:orcanet/serviceIndex.dart';
+import 'package:orcanet/postCard.dart';
 
-class feedPage extends StatelessWidget {
+class feedPage extends StatefulWidget {
   const feedPage({super.key, required this.currentColors});
   final Map<String, Color> currentColors;
+
+  @override
+  State<feedPage> createState() => _feedPageState();
+}
+
+class _feedPageState extends State<feedPage> {
   Container tagContainer(String tagName) {
     return Container(
       alignment: Alignment.center,
       height: 30,
       width: 65,
       decoration: BoxDecoration(
-        color: currentColors['acc1'],
-          border: Border.all(color: currentColors['acc1']!),
+          color: widget.currentColors['acc1'],
+          border: Border.all(color: widget.currentColors['acc1']!),
           borderRadius: BorderRadius.circular(10)),
       child: Text(
         "Hello",
-        style: TextStyle(color: currentColors['text']),
+        style: TextStyle(color: widget.currentColors['text']),
       ),
     );
   }
 
-  Container nameCard(BuildContext context, Image profilePhoto, String name, String desc) {
+  Container nameCard(BuildContext context, String name, String tag) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 3),
       height: 45,
@@ -39,7 +47,7 @@ class feedPage extends StatelessWidget {
                 Utilityclass().navigator(
                     context,
                     profilePage(
-                      currentColors: currentColors,
+                      currentColors: widget.currentColors,
                       uid: "2u6hqirtZTdl7gBI85wUap9qJni1",
                     ));
               },
@@ -55,56 +63,54 @@ class feedPage extends StatelessWidget {
           SizedBox(width: 10),
           SingleChildScrollView(
             child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                style: TextStyle(
-                    color: currentColors['text'],
-                    fontWeight: FontWeight.bold),
-              ),
-              Text(desc,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
                   style: TextStyle(
-                    color: currentColors['text'],
-                  ))
-            ],
-          ),
+                      color: widget.currentColors['text'],
+                      fontWeight: FontWeight.bold),
+                ),
+                Text(tag,
+                    style: TextStyle(
+                      color: widget.currentColors['text'],
+                    ))
+              ],
+            ),
           ),
           Spacer(),
           Ink(
             decoration: ShapeDecoration(
-              color: currentColors['acc2'],
+                color: widget.currentColors['acc2'],
                 shape: CircleBorder(
-                    side:
-                        BorderSide(color: currentColors['acc2']!))),
+                    side: BorderSide(color: widget.currentColors['acc2']!))),
             child: IconButton(
               onPressed: () {
                 showModalBottomSheet(
-                  elevation: 4.0,
-                  backgroundColor: currentColors['bg'],
+                    elevation: 4.0,
+                    backgroundColor: widget.currentColors['bg'],
                     context: context,
                     builder: (BuildContext context) {
-                      return CommentsSection(currentColorsComment: currentColors);
-                    }
-                );
+                      return CommentsSection(
+                          currentColorsComment: widget.currentColors);
+                    });
               },
               icon: Icon(Icons.message),
-              color: currentColors['text'],
+              color: widget.currentColors['text'],
               iconSize: 18,
               alignment: Alignment.center,
             ),
           ),
           Ink(
             decoration: ShapeDecoration(
-              color: currentColors['acc2'],
+                color: widget.currentColors['acc2'],
                 shape: CircleBorder(
-                    side:
-                        BorderSide(color: currentColors['acc2']!))),
+                    side: BorderSide(color: widget.currentColors['acc2']!))),
             child: IconButton(
               onPressed: () {},
               icon: Icon(Icons.group),
-              color: currentColors['text'],
+              color: widget.currentColors['text'],
               iconSize: 20,
               alignment: Alignment.center,
             ),
@@ -113,201 +119,127 @@ class feedPage extends StatelessWidget {
       ),
     );
   }
+
+  final ScrollController _scroolController = ScrollController();
+  List<DocumentSnapshot> posts = [];
+  bool _isLoading = false;
+  bool hasMore = true;
+  int _limit = 5;
+  Map<String, String> _nicknameCache = {};
+
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+    _getPosts();
 
-    List<Widget> tagList = [
-    tagContainer("Yes"),
-    tagContainer("Yes"),
-    tagContainer("Yes"),
-    tagContainer("Yes"),
-    tagContainer("Yes"),
-    tagContainer("Yes"),
-    tagContainer("Yes"),
-    tagContainer("Yes"),
-    tagContainer("Yes"),
-    tagContainer("Yes"),
-  ];
-
-    return Scaffold(
-        backgroundColor: currentColors['bg'],
-        
-        body: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            children: [
-              postCard(
-                  image: AssetImage("lib/images/placeholder.jpg"),
-                  title: "I need people",
-                  bodyText:
-                      "Hello. I need exeactly 1313 people for my project and yes I have enough money and I'm rich.",
-                  tags: tagList,
-                  nameCard: nameCard(context, Image.asset("lib/images/placeholder.jpg"),"Steve", "Short desc"),
-                  currentColorsPost: currentColors,
-                 ), 
-              postCard(
-                  image: AssetImage("lib/images/placeholder.jpg"),
-                  title: "I need people",
-                  bodyText:
-                      "Hello. I need exeactly 1313 people for my project and yes I have enough money and I'm rich.",
-                  tags: tagList,
-                  nameCard: nameCard(context, Image.asset("lib/images/placeholder.jpg"),
-                      "Steve", "Short desc"),
-                      currentColorsPost: currentColors,)
-            ]));
+    _scroolController.addListener(() {
+      if (_scroolController.position.pixels ==
+          _scroolController.position.maxScrollExtent) {
+        _getPosts();
+      }
+    });
   }
-}
 
-class postCard extends StatefulWidget {
-  final AssetImage image;
-  final String title;
-  final String bodyText;
-  final List<Widget> tags;
-  final Container nameCard;
-  final Map<String, Color> currentColorsPost;
+  Future<void> _getPosts() async {
+    if (_isLoading || !hasMore) return;
 
-  const postCard(
-      {super.key,
-      required this.image,
-      required this.title,
-      required this.bodyText,
-      required this.tags,
-      required this.nameCard,
-      required this.currentColorsPost
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      Query query = FirebaseFirestore.instance
+          .collection('posts')
+          .limit(_limit);
+
+      if (posts.isNotEmpty) {
+        query = query.startAfterDocument(posts.last);
+      }
+
+      QuerySnapshot snapshot = await query.get();
+
+      if (snapshot.docs.length < _limit) {
+        hasMore = false;
+      }
+
+      // ... (Your existing user nickname fetching loop is fine) ...
+      for (var doc in snapshot.docs) {
+        var data = doc.data() as Map<String, dynamic>;
+        // Get the UID from the post
+        String uid = data['sednerUid'] ?? "";
+
+        // Only fetch if we have a UID and we haven't fetched this user yet
+        if (uid.isNotEmpty && !_nicknameCache.containsKey(uid)) {
+          // Go to 'profile' collection -> Find the document with that UID
+          var profileDoc = await FirebaseFirestore.instance
+              .collection('profile')
+              .doc(uid)
+              .get();
+
+          if (profileDoc.exists) {
+            var profileData = profileDoc.data() as Map<String, dynamic>;
+            // Save the nickname to our cache
+            _nicknameCache[uid] = profileData['nickname'] ?? "Unknown Orca";
+          }
+        }
+      }
+
+      setState(() {
+        posts.addAll(snapshot.docs);
+        _isLoading = false;
       });
-  @override
-  State<StatefulWidget> createState() => _postCardState();
-}
-
-class _postCardState extends State<postCard> {
-  bool _isExtended = false;
-
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> displayedTags = [];
-    const maxTagCount = 3;
-    if (_isExtended || widget.tags.length <= maxTagCount) {
-      displayedTags = widget.tags;
-    } else {
-      displayedTags = widget.tags.take(maxTagCount).toList();
-      displayedTags.add(SizedBox(
-        height: 30,
-        width: 65,
-        child: Text(
-          "...",
-          style: TextStyle(
-              color: widget.currentColorsPost['acc1'],
-              fontWeight: FontWeight.bold,
-              fontSize: 17),
-        ),
-      ));
+    } catch (e) {
+      print("Error getting posts: $e"); // Added error printing to help debug
+      setState(() => _isLoading = false);
     }
-
-    return InkWell(
-      onTap: () {
-        setState(() {
-          _isExtended = !_isExtended;
-        });
-      },
-      splashColor: Colors.transparent,
-      child: Card(
-        color: widget.currentColorsPost['container'],
-        clipBehavior: Clip.antiAlias,
-        elevation: 4.0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: Padding(
-          padding: EdgeInsets.all(15),
-          child: AnimatedSize(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 250,
-                  width: 350,
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(10),
-                      image: DecorationImage(
-                          fit: BoxFit.fill, image: widget.image)),
-                ),
-                SizedBox(height: 7),
-                Text(
-                  widget.title,
-                  style: TextStyle(color: widget.currentColorsPost['text']),
-                ),
-                Divider(
-                    thickness: 2, color: widget.currentColorsPost['bar']),
-                if (!_isExtended)
-                  Text(
-                    widget.bodyText,
-                    style: TextStyle(color: widget.currentColorsPost['text']),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  )
-                else
-                  Text(
-                    widget.bodyText,
-                    style: TextStyle(color: widget.currentColorsPost['text']),
-                  ),
-                SizedBox(height: 7),
-                SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 4,
-                      children: displayedTags,
-                    )),
-                SizedBox(height: 7),
-                widget.nameCard
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
-}
-
-class CommentsSection extends StatelessWidget {
-  const CommentsSection({super.key, required this.currentColorsComment});
-
-  final Map<String, Color> currentColorsComment;
 
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      expand: false,
-      initialChildSize: 0.8,
-      minChildSize: 0.3,
-      maxChildSize: 0.95,
-      builder: (BuildContext context, ScrollController scrollController) {
-        return Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: Text(
-                'Comments (125)',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: currentColorsComment['text']),
-              ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                controller: scrollController,
-                itemCount: 50,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: CircleAvatar(child: Text('${index + 1}')),
-                    tileColor: currentColorsComment['container'],
-                    title: Text('User ${index + 1}', style: TextStyle(color: currentColorsComment['text'])),
-                    subtitle: Text('This is a great post! I totally agree.', style: TextStyle(color: currentColorsComment['text'])),
+    return Scaffold(
+      backgroundColor: widget.currentColors['bg'],
+      body: ListView.builder(
+        controller: _scroolController,
+        // Add 1 for the spinner at the bottom
+        itemCount: posts.length + 1,
+        itemBuilder: (context, index) {
+          // 1. CHECK IF WE ARE AT THE BOTTOM
+          if (index == posts.length) {
+            return hasMore
+                ? const Center(
+                    child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: CircularProgressIndicator()))
+                : const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Center(child: Text("No more posts!")),
                   );
-                },
-              ),
-            ),
-          ],
-        );
-      },
+          }
+
+          // 2. GET DATA safely
+          final data = posts[index].data() as Map<String, dynamic>;
+
+          // 3. GENERATE TAGS ON THE FLY (Don't use global list)
+          List<Container> currentPostTags = (data['tags'] as List<dynamic>?)
+                  ?.map((tag) => tagContainer(tag.toString()))
+                  .toList() ??
+              [];
+
+          return postCard(
+            title: data['title'] ?? 'No Title',
+            bodyText: data['subTitle'] ??
+                'No Content', // FIXED: 'suTitle' -> 'subTitle'
+            tags: currentPostTags, // Pass the local list
+            currentColorsPost: widget.currentColors,
+            nameCard: nameCard(
+                context,
+                // Use nickname cache, fallback to 'Unknown'
+                _nicknameCache[data['sednerUid']] ?? "Unknown User",
+                "Member" // Or fetch their role if you have it
+                ),
+          );
+        },
+      ),
     );
   }
 }
