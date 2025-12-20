@@ -156,19 +156,15 @@ class _profilePageState extends State<profilePage> {
                         'linkedin': linkLinkController.text
                       };
 
-                      // --- FIX FOR PROBLEM 2 (Data Deletion) ---
                       await profRec.set({
                         'desc': descController.text,
                         'links': links,
                         'tags': tags
-                      }, SetOptions(merge: true)); // <--- IMPORTANT: Merge keeps old data!
+                      }, SetOptions(merge: true));
 
                       if (mounted) {
                         Navigator.of(context).pop();
                       }
-
-                      // --- FIX FOR PROBLEM 1 (UI Update) ---
-                      // Don't just setState, reload the data from server!
                       _loadData(); 
                     },
                   ),
@@ -223,13 +219,10 @@ class _profilePageState extends State<profilePage> {
                 margin: EdgeInsets.all(15.0),
                 width: double.infinity,
 
-                // *** FIX 1: Removed the Expanded widget here ***
                 child: Column(children: [
                   Row(
-                    // Use a Row to align the CircleAvatar and the text/progress bar
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 1. Profile Picture
                       CircleAvatar(
                         backgroundImage: Image.asset(
                           "lib/images/placeholder.jpg",
@@ -238,18 +231,14 @@ class _profilePageState extends State<profilePage> {
                       ),
                       const SizedBox(width: 12),
 
-                      // 2. User Info (Username, Name, Progress Bar)
-                      // We wrap this entire section in an Expanded so it takes the remaining space
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Stack the two Text widgets
                             Text(
                               userData!['nickname'] ?? "Yes",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                // *** FIX 2: Adjusted or removed unnecessary height property ***
                                 fontSize: 18,
                                 color: widget.currentColors['text'],
                               ),

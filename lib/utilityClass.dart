@@ -55,47 +55,37 @@ class Utilityclass {
 
   Future<void> startChat(BuildContext context, String targetUid, String targetName, String ownUid, Map<String, Color> currentColors) async {
   final currentUser = FirebaseAuth.instance.currentUser;
-  if (currentUser == null) return; // Safety check
+  if (currentUser == null) return;
 
-  // A. Generate the Unique 32-char ID
   String chatId = getChatId(ownUid, [targetUid]);
 
-  // B. Reference the Document
   DocumentReference chatDoc = FirebaseFirestore.instance.collection('chats').doc(chatId);
 
-  // C. Check if it exists (To prevent overwriting an existing chat history)
   DocumentSnapshot snapshot = await chatDoc.get();
 
   if (!snapshot.exists) {
-    // D. CREATE NEW CHAT DOCUMENT
     await chatDoc.set({
       'chatId': chatId,
-      'type': 'Orcas', // Or 'Pods' depending on your logic
+      'type': 'Orcas', 
       'participants': [currentUser.uid, targetUid],
       'lastMessage': "Chat started",
       'lastMessageId': 0,
       'lastMessageTime': FieldValue.serverTimestamp(),
       
-      // Optional: Store names so you don't have to fetch them again immediately
-      'chatName': targetName, 
+      'chatName': "${targetName.split(' ')[0]} - ${currentUser.displayName?.split(' ')[0]}" , 
       'createdBy': currentUser.uid,
     });
-    print("New Chat Created: $chatId");
-  } else {
-    print("Chat already exists, opening it...");
   }
 
-  // E. Navigate to the Chat Screen
-  // (Make sure your ChatScreen constructor matches this!)
   if (context.mounted) {
      Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ChatScreen(
           chatId: chatId,
-          receiverId: [targetUid], // Your ChatScreen expects a List
-          kisiAdi: targetName,     // The name to display at the top
-          currentColors: currentColors, // Pass your theme colors
+          receiverId: [targetUid],
+          kisiAdi: targetName,    
+          currentColors: currentColors, 
         ),
       ),
     );
