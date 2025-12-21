@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:orcanet/utilityClass.dart';
+import 'package:orcanet/pageIndex.dart';
+import 'package:orcanet/serviceIndex.dart';
 
 class signUpPage extends StatefulWidget {
   const signUpPage({super.key, required this.currentColors});
@@ -16,6 +20,9 @@ class _signUpPageState extends State<signUpPage> {
   final _formKey = GlobalKey<FormState>();
 
   // 2. controllers
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _nicknameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
@@ -28,10 +35,24 @@ class _signUpPageState extends State<signUpPage> {
     super.dispose();
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // If form is valid, sign up
-      print("Passwords match and are valid! // Signed Up Successfully! ");
+      User? currentUser = await createUserWithEmailAndPassword(_emailController.text, _passwordController.text);
+      await currentUser!.updateDisplayName(_nicknameController.text);
+      await currentUser.reload();
+      createAndSaveUser(fcmToken: await FirebaseMessaging.instance.getToken() ?? "");
+
+      DocumentReference profRef = FirebaseFirestore.instance
+        .collection('profile')
+        .doc(currentUser.uid);
+
+      await profRef.set({
+        'email': currentUser.email,
+        'nickname': _nicknameController.text,
+        'userName': _usernameController.text
+      }, SetOptions(merge: true));
+
+      if (mounted) Utilityclass().navigator(context, MyHomePage());
     }
   }
 
@@ -47,6 +68,7 @@ class _signUpPageState extends State<signUpPage> {
             children: [
               TextFormField(
                 // --- email---
+                controller: _emailController,
                 decoration: InputDecoration(
                     icon: Icon(Icons.mail),
                     hintText: 'Your email address',
@@ -61,13 +83,14 @@ class _signUpPageState extends State<signUpPage> {
                 },
                 validator: (String? value) {
                   return (value != null && EmailValidator.validate(value))
-                      ? "Please provide a valid email"
-                      : null;
+                      ? null
+                      : "Please provide a valid email";
                 },
               ),
 
               TextFormField(
                 //--- username ---
+                controller: _usernameController,
                 decoration: InputDecoration(
                     icon: Icon(Icons.alternate_email),
                     hintText: 'Please select a unique username.',
@@ -89,6 +112,7 @@ class _signUpPageState extends State<signUpPage> {
 
               TextFormField(
                 // --- nickname ----
+                controller: _nicknameController,
                 decoration: InputDecoration(
                     icon: Icon(Icons.person),
                     hintText: 'What should people call you?',

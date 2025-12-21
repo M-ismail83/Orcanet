@@ -1,19 +1,180 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:orcanet/utilityClass.dart';
-import 'package:orcanet/authLoginandLogout.dart';
-import 'package:orcanet/googleSignIn.dart';
-import 'package:orcanet/utilityClass.dart';
 import 'package:orcanet/loginPage.dart';
+import 'package:orcanet/pageIndex.dart';
+import 'package:orcanet/serviceIndex.dart';
 
 class profilePage extends StatefulWidget {
-  const profilePage({super.key, required this.currentColors}); //constructor
+  const profilePage(
+      {super.key,
+      required this.currentColors,
+      required this.uid}); //constructor
   final Map<String, Color> currentColors; //field for constructor
+  final String uid;
 
   @override
   State<StatefulWidget> createState() => _profilePageState();
 }
 
 class _profilePageState extends State<profilePage> {
+  Map<String, dynamic>? userData; // 1. Variable starts as null
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData(); // 2. Trigger the fetch immediately
+  }
+
+  void _loadData() async {
+    var result = await getProfileData(widget.uid);
+    // 3. Update the UI when data arrives
+    if (mounted) {
+      setState(() {
+        userData = result;
+        isLoading = false;
+      });
+    }
+  }
+
+  final List<String> _allTags = [
+    'Flutter',
+    'Dart',
+    'Widgets',
+    'Design',
+    'Mobile',
+    'Backend',
+  ];
+
+  static FirebaseAuth auth = FirebaseAuth.instance;
+
+  late DocumentReference profRec =
+      FirebaseFirestore.instance.collection('profile').doc(widget.uid);
+
+  Future<void> editProfile() async {  
+    // BONUS TIP: Pre-fill the boxes with existing data!
+    // It's annoying for users to type from scratch every time.
+    TextEditingController descController = TextEditingController(text: userData!['desc'] ?? "");
+    TextEditingController linkGithubController = TextEditingController(text: userData!['links']?['github'] ?? "");
+    TextEditingController linkLinkController = TextEditingController(text: userData!['links']?['linkedin'] ?? "");
+    
+    List<dynamic> tags = List.from(userData!['tags'] ?? []); // Copy existing tags
+
+    bool _isSelected(String tag) {
+      return tags.contains(tag);
+    }
+
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return StatefulBuilder( // Use StatefulBuilder to make the Dialog update (for tags)
+            builder: (context, setStateDialog) {
+              return AlertDialog(
+                backgroundColor: widget.currentColors['bg'],
+                title: Text("Customize Your Profile",
+                    style: TextStyle(color: widget.currentColors['text'])),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: [
+                      TextFormField(
+                          controller: descController,
+                          maxLength: 350,
+                          decoration: InputDecoration(
+                            label: Text("Description",
+                                style: TextStyle(
+                                    color: widget.currentColors['text'])),
+                            hintText: "Describe yourself...",
+                            hintStyle: TextStyle(
+                              color: widget.currentColors['hintText'],
+                            ),
+                          )),
+                      TextFormField(
+                        controller: linkGithubController,
+                        decoration: InputDecoration(
+                          label: Text("GitHub Link",
+                              style: TextStyle(
+                                  color: widget.currentColors['text'])),
+                        ),
+                      ),
+                      TextFormField(
+                        controller: linkLinkController,
+                        decoration: InputDecoration(
+                          label: Text("LinkedIn Link",
+                              style: TextStyle(
+                                  color: widget.currentColors['text'])),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Wrap(
+                            spacing: 8.0,
+                            children: _allTags.map((tag) {
+                              final isSelected = _isSelected(tag);
+
+                              return FilterChip(
+                                showCheckmark: false,
+                                label: Text(tag),
+                                selected: isSelected,
+                                selectedColor: widget.currentColors['acc1'],
+                                backgroundColor:
+                                    widget.currentColors['container'],
+                                shape: StadiumBorder(
+                                  side: BorderSide(
+                                    color: widget.currentColors['acc1']!,
+                                    width: 1.0,
+                                  ),
+                                ),
+                                labelStyle: TextStyle(
+                                  color: widget.currentColors['text']!,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                onSelected: (bool selected) {
+                                  // Update the DIALOG state, not the page state
+                                  setStateDialog(() {
+                                    if (selected) {
+                                      tags.add(tag);
+                                    } else {
+                                      tags.remove(tag);
+                                    }
+                                  });
+                                },
+                              );
+                            }).toList()),
+                      )
+                    ],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    child: const Text('Approve'),
+                    onPressed: () async {
+                      Map<String, String> links = {
+                        "github": linkGithubController.text,
+                        'linkedin': linkLinkController.text
+                      };
+
+                      await profRec.set({
+                        'desc': descController.text,
+                        'links': links,
+                        'tags': tags
+                      }, SetOptions(merge: true));
+
+                      if (mounted) {
+                        Navigator.of(context).pop();
+                      }
+                      _loadData(); 
+                    },
+                  ),
+                ],
+              );
+            }
+          );
+        });
+  }
+
   Container tagContainer(String tagName) {
     return Container(
       alignment: Alignment.center,
@@ -30,8 +191,17 @@ class _profilePageState extends State<profilePage> {
     );
   }
 
+  Future<Map<String, dynamic>> getProfileData(String docId) async {
+    DocumentSnapshot snapshot = await profRec.get();
+    return snapshot.data() as Map<String, dynamic>;
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Scaffold(
         backgroundColor: widget.currentColors['bg'],
         body: SafeArea(
@@ -39,8 +209,6 @@ class _profilePageState extends State<profilePage> {
             //padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             children: [
               Container(
-                //uppermost container structure:
-                //
                 decoration: BoxDecoration(
                   color: widget.currentColors['container'],
                   borderRadius: BorderRadius.circular(10),
@@ -51,13 +219,10 @@ class _profilePageState extends State<profilePage> {
                 margin: EdgeInsets.all(15.0),
                 width: double.infinity,
 
-                // *** FIX 1: Removed the Expanded widget here ***
                 child: Column(children: [
                   Row(
-                    // Use a Row to align the CircleAvatar and the text/progress bar
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 1. Profile Picture
                       CircleAvatar(
                         backgroundImage: Image.asset(
                           "lib/images/placeholder.jpg",
@@ -66,29 +231,25 @@ class _profilePageState extends State<profilePage> {
                       ),
                       const SizedBox(width: 12),
 
-                      // 2. User Info (Username, Name, Progress Bar)
-                      // We wrap this entire section in an Expanded so it takes the remaining space
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Stack the two Text widgets
                             Text(
-                              "Herald W. Hidepain",
+                              userData!['nickname'] ?? "Yes",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                // *** FIX 2: Adjusted or removed unnecessary height property ***
                                 fontSize: 18,
                                 color: widget.currentColors['text'],
                               ),
                             ),
                             Text(
-                              "@username",
+                              userData!['userName'] ?? "Yes",
                               style: TextStyle(
                                 fontStyle: FontStyle.italic,
                                 fontSize: 12,
-                                color: widget.currentColors['text']!
-                                    .withOpacity(0.7),
+                                color:
+                                    widget.currentColors['text']!.withAlpha(70),
                               ),
                             ),
 
@@ -110,10 +271,30 @@ class _profilePageState extends State<profilePage> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          ElevatedButton(
-                              onPressed: () {}, child: Text("Invite")),
-                          IconButton(
-                              onPressed: () {}, icon: const Icon(Icons.message))
+                          if (auth.currentUser!.uid == widget.uid)
+                            IconButton(
+                              icon: Icon(
+                                Icons.edit,
+                                color: widget.currentColors['text'],
+                              ),
+                              onPressed: () {
+                                editProfile();
+                              },
+                            ),
+                          if (auth.currentUser!.uid != widget.uid)
+                            ElevatedButton(
+                                onPressed: () {}, child: Text("Invite")),
+                          if (auth.currentUser!.uid != widget.uid)
+                            IconButton(
+                                onPressed: () {
+                                  Utilityclass().startChat(
+                                      context,
+                                      widget.uid,
+                                      userData!['nickname'] ?? "NoName",
+                                      auth.currentUser!.uid,
+                                      widget.currentColors);
+                                },
+                                icon: const Icon(Icons.message))
                         ],
                       ))
                     ],
@@ -145,11 +326,16 @@ class _profilePageState extends State<profilePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 10.0,
                       children: [
-                        tagContainer("orca"),
-                        tagContainer("orca"),
-                        tagContainer("orca"),
-                        tagContainer("orca"),
-                        tagContainer("orca"),
+                        userData!['tags'] != null
+                            ? Wrap(
+                                spacing: 8.0,
+                                children: List<Widget>.from(
+                                  userData!['tags'].map<Widget>(
+                                    (tag) => tagContainer(tag),
+                                  ),
+                                ),
+                              )
+                            : Container(),
                       ],
                     ),
                   )
@@ -168,11 +354,7 @@ class _profilePageState extends State<profilePage> {
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: Text(
-                    """I am a visual learner, i worked at valve and microsoft at the same time. I am a machine that turns using pain i suffer from the work load. These are some of the jobs i worked on:
--Red alert 2
--Team fortress as a red spy
--Microsoft store algotihm
--Minecraft as Steve""",
+                    userData!['desc'] ?? "No description provided.",
                     style: TextStyle(
                       fontSize: 15,
                       color: widget.currentColors['text'],
@@ -191,11 +373,9 @@ class _profilePageState extends State<profilePage> {
                   margin: EdgeInsets.all(15.0),
                   width: double.infinity,
                   child: Text(
-                    """Links:
--linkedin_link
--github_link
--steam_link
--clashroyale_account_link""",
+                    userData!['links'] != null
+                        ? "GitHub: ${userData!['links']['github']}\nLinkedIn: ${userData!['links']['linkedin']}"
+                        : "No links provided.",
                     style: TextStyle(
                       fontSize: 15,
                       color: widget.currentColors['text'],

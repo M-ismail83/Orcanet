@@ -1,11 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class makePostPage extends StatefulWidget {
-  const makePostPage({super.key, required this.currentColors});
+  const makePostPage(
+      {super.key, required this.currentColors, required this.onPost});
 
   final Map<String, Color> currentColors;
+  final VoidCallback onPost;
 
-  @override State<StatefulWidget> createState() => _makePostPageState(); //what is this ughhhhhhhhhhh im so tireddd
+  @override
+  State<StatefulWidget> createState() =>
+      _makePostPageState(); //what is this ughhhhhhhhhhh im so tireddd
 }
 
 class _makePostPageState extends State<makePostPage> {
@@ -25,68 +31,143 @@ class _makePostPageState extends State<makePostPage> {
     return _selectedTags.contains(tag);
   }
 
+  String? selectedPodName;
+    bool isUploading = false;
+    final List<String> pods = ['Orcas', 'Dolphins', 'Whales', 'Students'];
+
+    TextEditingController titleController = TextEditingController();
+    TextEditingController contentController = TextEditingController();
+
+  Future<void> makePost(
+      String title, String subtitle, String? senderName, String senderUid, String podName) async {
+    CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+    await posts.add({
+      'title': title,
+      'subTitle': subtitle,
+      'tags': _selectedTags.toList(),
+      'senderUid': senderUid,
+      'senderName': senderName,
+      'podName': podName
+    });
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    contentController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-
+    
 
     return Scaffold(
-      backgroundColor: widget.currentColors['bg'],
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Padding(
-              padding: const EdgeInsets.all(16.0), // This is the "padding on the outside"
-              child: Column(
-                children: [
+        floatingActionButton: FloatingActionButton(
+          onPressed: isUploading
+              ? null
+              : () async {
+                  final title = titleController.text.trim();
+                  final content = contentController.text.trim();
+                  final pod = selectedPodName;
+
+                  if (pod == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Please select a Pod first!")));
+                    return;
+                  }
+
+                  if (title.isEmpty || content.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Title and Content cannot be empty!")));
+                    return;
+                  }
+
+                  setState(() {
+                    isUploading = true;
+                  });
+
+                  try {
+                    final currentUser = FirebaseAuth.instance.currentUser;
+
+                    if (currentUser != null) {
+                      await makePost(title, content, currentUser.displayName, currentUser.uid, pod);
+
+                      if (mounted) {
+                        widget.onPost();
+                      }
+                    }
+                  } catch (e) {
+                    print('Error: $e');
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Upload failed: $e")));
+                    }
+                  } finally {
+                    if (mounted) {
+                      setState(() {
+                        isUploading = false;
+                      });
+                    }
+                  }
+                },
+          backgroundColor: widget.currentColors['container'],
+          child: Icon(
+            Icons.plus_one,
+            color: widget.currentColors['text'],
+          ),
+        ),
+        backgroundColor: widget.currentColors['bg'],
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+                padding: const EdgeInsets.all(
+                    16.0), // This is the "padding on the outside"
+                child: Column(children: [
                   Container(
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.transparent)
-                      ),
+                          border: Border.all(color: Colors.transparent)),
                       padding: const EdgeInsets.all(5.0),
                       width: double.infinity,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            DropdownMenu(
-                            width: 300,
-                            // 2. To style the text field (the "box")
-                            inputDecorationTheme: InputDecorationTheme(
-                              hintStyle: TextStyle(color: widget.currentColors['hintText']),
-                              // Set the background color of the text field
-                              fillColor: widget.currentColors['container'],
-                              filled: true,
-                              // Apply a border radius
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                borderSide: BorderSide.none, // No outline border
+                            DropdownButtonFormField<String>(
+                              dropdownColor: widget.currentColors['selected'],
+                              decoration: InputDecoration(
+                                labelText: 'Select Pod',
+                                border: OutlineInputBorder(),
+                                prefixIcon: Icon(Icons.group_work),
+
                               ),
+                              initialValue: selectedPodName, // Connects to your variable
+
+                              // The List of Options
+                              items: pods.map((String pod) {
+                                return DropdownMenuItem(
+                                  value: pod,
+                                  child: Text(pod, style: TextStyle(color: widget.currentColors['text'])),
+                                );
+                              }).toList(),
+
+                              // Update State when picked
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedPodName = value!;
+                                });
+                              },
+
+                              // AUTOMATIC VALIDATION!
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a pod'; // Turns box red
+                                }
+                                return null;
+                              },
                             ),
-                            hintText: "Select a Pod",
-
-                            // 3. To style the dropdown list that appears
-                            menuStyle: MenuStyle(
-                              // Set the background color of the menu list
-                              backgroundColor: WidgetStateProperty.all(widget.currentColors['container']),
-                              // Apply a border radius to the menu list
-                              shape: WidgetStateProperty.all(RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              )),
-                            ),
-
-                            dropdownMenuEntries: <DropdownMenuEntry<Color>>[
-                              DropdownMenuEntry(value: Colors.red, label: 'Orcas'),
-                              DropdownMenuEntry(value: Colors.blue, label: 'Dolphins'),
-                              DropdownMenuEntry(value: Colors.green, label: 'Whales'),
-                              DropdownMenuEntry(value: Colors.amber, label: 'Students')
-                            ],
-
-                            onSelected: (Color? selectedColor) {
-                              // Your logic here
-                            },
-
-                          ),
                             SizedBox(height: 10),
                             Divider(
                               thickness: 1.0,
@@ -94,22 +175,27 @@ class _makePostPageState extends State<makePostPage> {
                             ),
                             Text(
                               'Tags:',
-                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: widget.currentColors['text']),
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: widget.currentColors['text']),
                             ),
                             SizedBox(height: 4),
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Wrap(
-                                spacing: 8.0,
-                                children: _allTags.map((tag){
-                                  final isSelected = _isSelected(tag);
+                                  spacing: 8.0,
+                                  children: _allTags.map((tag) {
+                                    final isSelected = _isSelected(tag);
 
-                                  return FilterChip(
+                                    return FilterChip(
                                       showCheckmark: false,
                                       label: Text(tag),
                                       selected: isSelected,
-                                      selectedColor: widget.currentColors['acc1'],
-                                      backgroundColor: widget.currentColors['bg'],
+                                      selectedColor:
+                                          widget.currentColors['acc1'],
+                                      backgroundColor:
+                                          widget.currentColors['bg'],
                                       shape: StadiumBorder(
                                         side: BorderSide(
                                           color: widget.currentColors['acc1']!,
@@ -124,19 +210,15 @@ class _makePostPageState extends State<makePostPage> {
                                         setState(() {
                                           if (selected) {
                                             _selectedTags.add(tag);
-                                          }
-                                          else {
+                                          } else {
                                             _selectedTags.remove(tag);
                                           }
                                         });
                                       },
-                                      );
-                                }).toList()
-                              ),
+                                    );
+                                  }).toList()),
                             ),
-                          ]
-                      )
-                  ),
+                          ])),
                   SizedBox(height: 10),
                   Container(
                       padding: const EdgeInsets.all(10.0),
@@ -144,51 +226,55 @@ class _makePostPageState extends State<makePostPage> {
                       decoration: BoxDecoration(
                         color: widget.currentColors['container'],
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: widget.currentColors['container']!, width: 1.0),
+                        border: Border.all(
+                            color: widget.currentColors['container']!,
+                            width: 1.0),
                       ),
-                    child: Column(
-                      children: [
-                        TextField(
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            labelText: 'Title',
-                            labelStyle: TextStyle(color: widget.currentColors['text'], fontWeight: FontWeight.bold),
-                            hintText: 'What is your post about?',
-                            hintStyle: TextStyle(color: widget.currentColors['hintText'])
+                      child: Column(
+                        children: [
+                          TextField(
+                            controller: titleController,
+                            decoration: InputDecoration(
+                                border: InputBorder.none,
+                                labelText: 'Title',
+                                labelStyle: TextStyle(
+                                    color: widget.currentColors['text'],
+                                    fontWeight: FontWeight.bold),
+                                hintText: 'What is your post about?',
+                                hintStyle: TextStyle(
+                                    color: widget.currentColors['hintText'])),
                           ),
-                        ),
-                        Divider(),
-                        TextField(
-                          minLines: 1,
-                          maxLines: 8,
-                          textAlignVertical: TextAlignVertical.top,
-                          decoration: InputDecoration(
-                              border: InputBorder.none,
-                              labelText: 'Content',
-                              labelStyle: TextStyle(color: widget.currentColors['text'], fontWeight: FontWeight.bold),
-                              hintText: 'What is your post about?',
-                              hintStyle: TextStyle(color: widget.currentColors['hintText'])
-                          ),
-                        )
-                      ],
-                    )
-                  )
-                ]
-              )
-          )
+                          Divider(),
+                          TextField(
+                            controller: contentController,
+                            keyboardType: TextInputType.multiline,
+                            minLines: 1,
+                            maxLines: 8,
+                            textAlignVertical: TextAlignVertical.top,
+                            decoration: InputDecoration(
+                                border: InputBorder.none,
+                                labelText: 'Content',
+                                labelStyle: TextStyle(
+                                    color: widget.currentColors['text'],
+                                    fontWeight: FontWeight.bold),
+                                hintText: 'What is your post about?',
+                                hintStyle: TextStyle(
+                                    color: widget.currentColors['hintText'])),
+                          )
+                        ],
+                      ))
+                ]))
 
+            //container (column)
+            //  text field for title (col)
+            //  divider (col)
+            //  text field for post (col)
+            //  divider (col)
+            //  (row as a child) SAVE and CANCEL
 
-          //container (column)
-          //  text field for title (col)
-          //  divider (col)
-          //  text field for post (col)
-          //  divider (col)
-          //  (row as a child) SAVE and CANCEL
-
-          // en altta da navigation bar dı sanırsam adı ondan
-          //şimdi çok uykum geldi yatcam
-        ],
-      )
-    );
+            // en altta da navigation bar dı sanırsam adı ondan
+            //şimdi çok uykum geldi yatcam
+          ],
+        ));
   }
 }

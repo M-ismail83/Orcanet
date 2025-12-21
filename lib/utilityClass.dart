@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import 'package:orcanet/pageIndex.dart';
+import 'package:orcanet/serviceIndex.dart';
 
 class Utilityclass {
   static Map<String, Color> ligthModeColor = {
@@ -37,11 +41,7 @@ class Utilityclass {
       MaterialPageRoute(builder: (context) => page),
     );
   }
-
-  Future<void> _signUpPopUp() async {
-    
-  }
-
+  
   String getChatId(String uid1, List uid2) {
   List<String> ids = List<String>.from(uid2);
   ids.add(uid1);
@@ -52,4 +52,44 @@ class Utilityclass {
 
   return digest.toString();
 }
+
+  Future<void> startChat(BuildContext context, String targetUid, String targetName, String ownUid, Map<String, Color> currentColors) async {
+  final currentUser = FirebaseAuth.instance.currentUser;
+  if (currentUser == null) return;
+
+  String chatId = getChatId(ownUid, [targetUid]);
+
+  DocumentReference chatDoc = FirebaseFirestore.instance.collection('chats').doc(chatId);
+
+  DocumentSnapshot snapshot = await chatDoc.get();
+
+  if (!snapshot.exists) {
+    await chatDoc.set({
+      'chatId': chatId,
+      'type': 'Orcas', 
+      'participants': [currentUser.uid, targetUid],
+      'lastMessage': "Chat started",
+      'lastMessageId': 0,
+      'lastMessageTime': FieldValue.serverTimestamp(),
+      
+      'chatName': "${targetName.split(' ')[0]} - ${currentUser.displayName?.split(' ')[0]}" , 
+      'createdBy': currentUser.uid,
+    });
+  }
+
+  if (context.mounted) {
+     Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatScreen(
+          chatId: chatId,
+          receiverId: [targetUid],
+          kisiAdi: targetName,    
+          currentColors: currentColors, 
+        ),
+      ),
+    );
+  }
+}
+
 }

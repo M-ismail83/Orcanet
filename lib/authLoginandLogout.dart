@@ -36,7 +36,7 @@ Future<User?> createUserWithEmailAndPassword(
         .createUserWithEmailAndPassword(email: email, password: password);
     return credentials.user;
   } catch (e) {
-    log("Something went wrong");
+    log("Something went wrong $e");
   }
   return null;
 }
