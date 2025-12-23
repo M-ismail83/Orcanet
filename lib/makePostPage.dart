@@ -39,13 +39,14 @@ class _makePostPageState extends State<makePostPage> {
     TextEditingController contentController = TextEditingController();
 
   Future<void> makePost(
-      String title, String subtitle, String senderUid, String podName) async {
+      String title, String subtitle, String? senderName, String senderUid, String podName) async {
     CollectionReference posts = FirebaseFirestore.instance.collection('posts');
     await posts.add({
       'title': title,
       'subTitle': subtitle,
       'tags': _selectedTags.toList(),
-      'sednerUid': senderUid,
+      'senderUid': senderUid,
+      'senderName': senderName,
       'podName': podName
     });
   }
@@ -90,7 +91,7 @@ class _makePostPageState extends State<makePostPage> {
                     final currentUser = FirebaseAuth.instance.currentUser;
 
                     if (currentUser != null) {
-                      await makePost(title, content, currentUser.uid, pod);
+                      await makePost(title, content, currentUser.displayName, currentUser.uid, pod);
 
                       if (mounted) {
                         widget.onPost();
