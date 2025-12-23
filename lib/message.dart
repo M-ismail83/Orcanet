@@ -3,14 +3,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:orcanet/pageIndex.dart';
 import 'package:orcanet/serviceIndex.dart';
+import 'encryption/message_decryptor.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen(
-      {super.key,
-      required this.receiverId,
-      required this.kisiAdi,
-      required this.currentColors,
-      required this.chatId});
+  const ChatScreen({
+    super.key,
+    required this.receiverId,
+    required this.kisiAdi,
+    required this.currentColors,
+    required this.chatId,
+  });
 
   final String kisiAdi;
   final List receiverId;
@@ -25,24 +27,36 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void handleSend() {
-    if (_controller.text.trim().isEmpty) return;
+  bool _sending = false;
 
-    // Call the function we defined earlier
-    sendMessage(
-      senderId: _auth.currentUser!.uid,
-      receiverId: widget.receiverId,
-      chatId: widget.chatId,
-      text: _controller.text.trim(),
-    );
+  Future<void> handleSend() async {
+    final text = _controller.text.trim();
+    if (text.isEmpty) return;
 
-    _controller.clear();
+    setState(() => _sending = true);
+
+    try {
+      await sendMessage(
+        senderId: _auth.currentUser!.uid,
+        receiverId: widget.receiverId,
+        chatId: widget.chatId,
+        text: text,
+      );
+      _controller.clear();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Send failed: $e")),
+      );
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(60, 49, 43, 1.0),
+      backgroundColor: const Color.fromRGBO(60, 49, 43, 1.0),
       appBar: AppBar(
         title: Text(widget.kisiAdi),
         backgroundColor: const Color.fromRGBO(145, 118, 104, 1.0),
@@ -52,56 +66,53 @@ class _ChatScreenState extends State<ChatScreen> {
             tooltip: 'Opens task menu',
             onPressed: () {
               showModalBottomSheet(
-                  elevation: 4.0,
-                  backgroundColor: widget.currentColors['bg'],
-                  context: context,
-                  builder: (BuildContext context) {
-                    return TaskSection(
-                        currentColorsComment: widget.currentColors);
-                  });
+                elevation: 4.0,
+                backgroundColor: widget.currentColors['bg'],
+                context: context,
+                builder: (BuildContext context) {
+                  return TaskSection(currentColorsComment: widget.currentColors);
+                },
+              );
             },
           ),
-          if (!(widget.receiverId.length >= 2)) 
+          if (!(widget.receiverId.length >= 2))
             IconButton(
-            icon: const Icon(Icons.camera),
-            tooltip: 'Make calls with your friend',
-            onPressed: () {
-              String channelId = Utilityclass()
-                  .getChatId(_auth.currentUser!.uid, widget.receiverId);
-              FirebaseFirestore.instance
-                  .collection('calls')
-                  .doc(channelId)
-                  .set({
-                'callerId': _auth.currentUser!.uid,
-                'callerName': _auth.currentUser!.displayName,
-                'receiverId': widget.receiverId,
-                'channelId': channelId,
-                'type': 'video', // or audio
-                'status': 'dialing', // Initial status
-                'timestamp': FieldValue.serverTimestamp(),
-              });
-              Utilityclass().navigator(context, VideoCallPage(channelId: channelId));
-            },
-          ),
+              icon: const Icon(Icons.camera),
+              tooltip: 'Make calls with your friend',
+              onPressed: () {
+                String channelId =
+                    Utilityclass().getChatId(_auth.currentUser!.uid, widget.receiverId);
+                FirebaseFirestore.instance.collection('calls').doc(channelId).set({
+                  'callerId': _auth.currentUser!.uid,
+                  'callerName': _auth.currentUser!.displayName,
+                  'receiverId': widget.receiverId,
+                  'channelId': channelId,
+                  'type': 'video',
+                  'status': 'dialing',
+                  'timestamp': FieldValue.serverTimestamp(),
+                });
+                Utilityclass().navigator(context, VideoCallPage(channelId: channelId));
+              },
+            ),
           IconButton(
             icon: const Icon(Icons.call),
             tooltip: 'Make calls with your friend',
             onPressed: () {
-              String channelId = Utilityclass()
-                  .getChatId(_auth.currentUser!.uid, widget.receiverId);
-              FirebaseFirestore.instance
-                  .collection('calls')
-                  .doc(channelId)
-                  .set({
+              String channelId =
+                  Utilityclass().getChatId(_auth.currentUser!.uid, widget.receiverId);
+              FirebaseFirestore.instance.collection('calls').doc(channelId).set({
                 'callerId': _auth.currentUser!.uid,
                 'callerName': _auth.currentUser!.displayName,
                 'receiverId': widget.receiverId,
                 'channelId': channelId,
-                'type': 'audio', // or audio
-                'status': 'dialing', // Initial status
+                'type': 'audio',
+                'status': 'dialing',
                 'timestamp': FieldValue.serverTimestamp(),
               });
-              Utilityclass().navigator(context, VoiceCallPage(channelId: channelId, starterId: _auth.currentUser!.uid));
+              Utilityclass().navigator(
+                context,
+                VoiceCallPage(channelId: channelId, starterId: _auth.currentUser!.uid),
+              );
             },
           ),
         ],
@@ -109,27 +120,28 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Column(
         children: [
           Expanded(
-              child: StreamBuilder(
-            stream: getMessagesStream(widget.chatId),
-            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-              if (!snapshot.hasData) {
-                return Center(child: CircularProgressIndicator());
-              }
+            child: StreamBuilder(
+              stream: getMessagesStream(widget.chatId),
+              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-              final messages = snapshot.data!.docs;
+                final messages = snapshot.data!.docs;
 
-              return ListView.builder(
-                reverse: true,
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  final message =
-                      messages[index].data() as Map<String, dynamic>;
-                  bool isMe = message['senderId'] == _auth.currentUser!.uid;
+                return ListView.builder(
+                  reverse: true,
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final message = messages[index].data() as Map<String, dynamic>;
+                    final bool isMe = message['senderId'] == _auth.currentUser!.uid;
 
-                  return Align(
-                    alignment:
-                        isMe ? Alignment.centerRight : Alignment.centerLeft,
-                    child: Container(
+                    // ✅ If it's an old message (plaintext), show it safely.
+                    final bool hasPlainText = message.containsKey('text') && message['text'] != null;
+
+                    return Align(
+                      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                      child: Container(
                         margin: const EdgeInsets.all(8.0),
                         padding: const EdgeInsets.all(10.0),
                         decoration: BoxDecoration(
@@ -139,117 +151,114 @@ class _ChatScreenState extends State<ChatScreen> {
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              message['text'],
-                              style: TextStyle(
+                            if (hasPlainText)
+                              Text(
+                                message['text'].toString(),
+                                style: TextStyle(
                                   fontSize: 16.0,
-                                  color: widget.currentColors["text"]),
-                            ),
+                                  color: widget.currentColors["text"],
+                                ),
+                              )
+                            else
+                              FutureBuilder<String>(
+                                future: decryptMessage(
+                                  chatId: widget.chatId,
+                                  message: message,
+                                  currentUserId: _auth.currentUser!.uid,
+                                ),
+                                builder: (context, snap) {
+                                  if (snap.connectionState == ConnectionState.waiting) {
+                                    return Text(
+                                      "Decrypting...",
+                                      style: TextStyle(color: widget.currentColors["text"]),
+                                    );
+                                  }
+                                  if (snap.hasError) {
+                                    // ✅ No crash: show readable error.
+                                    return Text(
+                                      "🔒 Can't decrypt",
+                                      style: TextStyle(color: widget.currentColors["text"]),
+                                    );
+                                  }
+                                  return Text(
+                                    snap.data ?? "🔒 Can't decrypt",
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      color: widget.currentColors["text"],
+                                    ),
+                                  );
+                                },
+                              ),
+                            const SizedBox(height: 4),
                             Text(
                               isMe ? "You" : widget.kisiAdi,
                               style: TextStyle(
-                                  fontSize: 12.0,
-                                  color: widget.currentColors["text"]
-                                      ?.withAlpha(128)),
+                                fontSize: 12.0,
+                                color: widget.currentColors["text"]?.withAlpha(128),
+                              ),
                             )
                           ],
-                        )),
-                  );
-                },
-              );
-            },
-          )),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
           Padding(
-              padding: const EdgeInsets.only(
-                  left: 10.0, right: 10.0, bottom: 15.0, top: 0.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      style: TextStyle(color: widget.currentColors['text']),
-                      cursorColor: widget.currentColors['hintText'],
-                      decoration: InputDecoration(
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: const Color.fromRGBO(60, 49, 43, 0.70)),
-                          borderRadius: BorderRadius.circular(35.0),
+            padding: const EdgeInsets.only(left: 10, right: 10, bottom: 15),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    style: TextStyle(color: widget.currentColors['text']),
+                    cursorColor: widget.currentColors['hintText'],
+                    decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Color.fromRGBO(60, 49, 43, 0.70),
                         ),
-                        filled: true,
-                        fillColor: widget.currentColors['container'],
-                        hintText: 'Type a message',
-                        hintStyle: TextStyle(
-                          color: widget.currentColors['hintText'],
+                        borderRadius: BorderRadius.circular(35.0),
+                      ),
+                      filled: true,
+                      fillColor: widget.currentColors['container'],
+                      hintText: 'Type a message',
+                      hintStyle: TextStyle(color: widget.currentColors['hintText']),
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          style: BorderStyle.solid,
+                          color: Color.fromRGBO(60, 49, 43, 0.70),
                         ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              style: BorderStyle.solid,
-                              color: const Color.fromRGBO(60, 49, 43, 0.70)),
-                          borderRadius: BorderRadius.circular(35.0),
-                        ),
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 20.0),
-                        prefixIcon: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 0.1, top: 7.0, bottom: 7.0),
-                          child: ElevatedButton(
-                            onPressed: handleSend,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromRGBO(184, 167, 148, 1),
-                              shape: const CircleBorder(),
-                              padding: const EdgeInsets.all(12.0),
-                              elevation: 0,
-                            ),
-                            child: const Icon(
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromRGBO(60, 49, 43, 1),
-                                size: 25.0,
-                                Icons.attach_file),
+                        borderRadius: BorderRadius.circular(35.0),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.only(right: 0.1, top: 7.0, bottom: 7.0),
+                        child: ElevatedButton(
+                          onPressed: _sending ? null : handleSend,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromRGBO(184, 167, 148, 1),
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(12.0),
+                            elevation: 0,
                           ),
-                        ),
-                        suffixIcon: Padding(
-                          padding: const EdgeInsets.only(
-                              right: 0.1, top: 7.0, bottom: 7.0),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_controller.text.isNotEmpty && !_controller.text.startsWith(" ")) {
-                                sendMessage(
-                                    senderId:
-                                        FirebaseAuth.instance.currentUser!.uid,
-                                    receiverId: widget.receiverId,
-                                    chatId: widget.chatId,
-                                    text: _controller.text);
-                                _controller.clear();
-                              } else {
-                                BottomAppBar(
-                                  color: Colors.red,
-                                  child: Text('Cannot send empty message',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold)),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromRGBO(184, 167, 148, 1),
-                              shape: const CircleBorder(),
-                              padding: const EdgeInsets.all(12.0),
-                              elevation: 0,
-                            ),
-                            child: const Icon(
-                                color: Color.fromRGBO(60, 49, 43, 1),
-                                size: 25,
-                                Icons.send),
+                          child: Icon(
+                            Icons.send,
+                            color: const Color.fromRGBO(60, 49, 43, 1),
+                            size: 25,
                           ),
                         ),
                       ),
                     ),
                   ),
-                ],
-              )),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

@@ -48,6 +48,9 @@ dependencies:
   google_sign_in: ^6.2.2
   email_validator: '^2.1.17'
   flutter_callkit_incoming: ^3.0.0
+  flutter_secure_storage: ^9.0.0
+  sodium: ^1.0.4
+  sodium_libs: ^1.0.4
 
 
 dev_dependencies:

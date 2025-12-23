@@ -4,6 +4,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:orcanet/pageIndex.dart';
 import 'package:orcanet/serviceIndex.dart';
+import 'package:sodium_libs/sodium_libs.dart';
+import 'encryption/sodium_singleton.dart';
 
 final ValueNotifier<bool> isDarkModeNotifier = ValueNotifier<bool>(true);
 
@@ -23,6 +25,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   
   WidgetsFlutterBinding.ensureInitialized();
+
+  sodium = await SodiumInit.init();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
