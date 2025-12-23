@@ -32,7 +32,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/src/Orcanet/android/app/.cxx/debug/l6l632jv/armeabi-v7a",
+		"build" : "C:/Orcanet/android/app/.cxx/debug/l6l632jv/x86_64",
 		"source" : "C:/src/flutter/packages/flutter_tools/gradle/src/main/scripts"
 	},
 	"version" : 

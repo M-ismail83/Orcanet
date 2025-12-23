@@ -1,2 +1,2 @@
-C:/src/Orcanet/android/app/.cxx/debug/l6l632jv/x86_64/CMakeFiles/edit_cache.dir
-C:/src/Orcanet/android/app/.cxx/debug/l6l632jv/x86_64/CMakeFiles/rebuild_cache.dir
+C:/Orcanet/android/app/.cxx/debug/l6l632jv/x86_64/CMakeFiles/edit_cache.dir
+C:/Orcanet/android/app/.cxx/debug/l6l632jv/x86_64/CMakeFiles/rebuild_cache.dir

@@ -1,5 +1,5 @@
 @echo off
-"C:\\Users\\mahmu\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\cmake.exe" ^
+"C:\\Users\\DildaR\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\cmake.exe" ^
   "-HC:\\src\\flutter\\packages\\flutter_tools\\gradle\\src\\main\\scripts" ^
   "-DCMAKE_SYSTEM_NAME=Android" ^
   "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON" ^
@@ -7,13 +7,13 @@
   "-DANDROID_PLATFORM=android-24" ^
   "-DANDROID_ABI=arm64-v8a" ^
   "-DCMAKE_ANDROID_ARCH_ABI=arm64-v8a" ^
-  "-DANDROID_NDK=C:\\Users\\mahmu\\AppData\\Local\\Android\\sdk\\ndk\\27.0.12077973" ^
-  "-DCMAKE_ANDROID_NDK=C:\\Users\\mahmu\\AppData\\Local\\Android\\sdk\\ndk\\27.0.12077973" ^
-  "-DCMAKE_TOOLCHAIN_FILE=C:\\Users\\mahmu\\AppData\\Local\\Android\\sdk\\ndk\\27.0.12077973\\build\\cmake\\android.toolchain.cmake" ^
-  "-DCMAKE_MAKE_PROGRAM=C:\\Users\\mahmu\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe" ^
-  "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=C:\\src\\Orcanet\\android\\app\\build\\intermediates\\cxx\\debug\\l6l632jv\\obj\\arm64-v8a" ^
-  "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=C:\\src\\Orcanet\\android\\app\\build\\intermediates\\cxx\\debug\\l6l632jv\\obj\\arm64-v8a" ^
-  "-BC:\\src\\Orcanet\\android\\app\\.cxx\\debug\\l6l632jv\\arm64-v8a" ^
+  "-DANDROID_NDK=C:\\Users\\DildaR\\AppData\\Local\\Android\\sdk\\ndk\\27.0.12077973" ^
+  "-DCMAKE_ANDROID_NDK=C:\\Users\\DildaR\\AppData\\Local\\Android\\sdk\\ndk\\27.0.12077973" ^
+  "-DCMAKE_TOOLCHAIN_FILE=C:\\Users\\DildaR\\AppData\\Local\\Android\\sdk\\ndk\\27.0.12077973\\build\\cmake\\android.toolchain.cmake" ^
+  "-DCMAKE_MAKE_PROGRAM=C:\\Users\\DildaR\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe" ^
+  "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=C:\\Orcanet\\android\\app\\build\\intermediates\\cxx\\debug\\l6l632jv\\obj\\arm64-v8a" ^
+  "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=C:\\Orcanet\\android\\app\\build\\intermediates\\cxx\\debug\\l6l632jv\\obj\\arm64-v8a" ^
+  "-BC:\\Orcanet\\android\\app\\.cxx\\debug\\l6l632jv\\arm64-v8a" ^
   -GNinja ^
   -Wno-dev ^
   --no-warn-unused-cli ^
