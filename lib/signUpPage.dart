@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:orcanet/pageIndex.dart';
 import 'package:orcanet/serviceIndex.dart';
+import 'encryption/sodium_singleton.dart';
 
 class signUpPage extends StatefulWidget {
   const signUpPage({super.key, required this.currentColors});
@@ -16,20 +19,18 @@ class signUpPage extends StatefulWidget {
 }
 
 class _signUpPageState extends State<signUpPage> {
-  // 1. identify the Form
   final _formKey = GlobalKey<FormState>();
 
-  // 2. controllers
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _nicknameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
+  final storage = const FlutterSecureStorage();
 
   @override
   void dispose() {
-    //free up memory
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -37,14 +38,47 @@ class _signUpPageState extends State<signUpPage> {
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      User? currentUser = await createUserWithEmailAndPassword(_emailController.text, _passwordController.text);
-      await currentUser!.updateDisplayName(_nicknameController.text);
+      // 1️⃣ Create Firebase Auth user
+      UserCredential cred = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      User? currentUser = cred.user;
+      if (currentUser == null) return;
+
+      // 2️⃣ Generate sodium keypair
+      final keyPair = sodium.crypto.box.keyPair();
+
+      // extract private key bytes
+      final privateKeyBytes = keyPair.secretKey.extractBytes();
+      final publicKeyBytes = keyPair.publicKey;
+
+      // 3️⃣ Store private key securely on device
+      await storage.write(
+        key: "${currentUser.uid}_privateKey",
+        value: base64Encode(privateKeyBytes),
+      );
+
+      // 4️⃣ Store public key in Firestore
+      await FirebaseFirestore.instance.collection("users").doc(currentUser.uid).set({
+        "uid": currentUser.uid,
+        "email": _emailController.text,
+        "publicKey": base64Encode(publicKeyBytes),
+      }, SetOptions(merge: true));
+
+      // 5️⃣ Update display name (nickname)
+      await currentUser.updateDisplayName(_nicknameController.text);
       await currentUser.reload();
-      createAndSaveUser(fcmToken: await FirebaseMessaging.instance.getToken() ?? "");
+
+      // 6️⃣ Your existing custom user creation logic
+      createAndSaveUser(
+          fcmToken: await FirebaseMessaging.instance.getToken() ?? "");
 
       DocumentReference profRef = FirebaseFirestore.instance
-        .collection('profile')
-        .doc(currentUser.uid);
+          .collection('profile')
+          .doc(currentUser.uid);
 
       await profRef.set({
         'email': currentUser.email,
@@ -52,7 +86,10 @@ class _signUpPageState extends State<signUpPage> {
         'userName': _usernameController.text
       }, SetOptions(merge: true));
 
-      if (mounted) Utilityclass().navigator(context, MyHomePage());
+      // 7️⃣ Navigate to home screen
+      if (mounted) {
+        Utilityclass().navigator(context, MyHomePage());
+      }
     }
   }
 
@@ -67,7 +104,6 @@ class _signUpPageState extends State<signUpPage> {
           child: Column(
             children: [
               TextFormField(
-                // --- email---
                 controller: _emailController,
                 decoration: InputDecoration(
                     icon: Icon(Icons.mail),
@@ -77,11 +113,7 @@ class _signUpPageState extends State<signUpPage> {
                         TextStyle(color: widget.currentColors['hintText']),
                     labelStyle: TextStyle(color: widget.currentColors['text']),
                     iconColor: widget.currentColors['text']),
-                onSaved: (String? value) {
-                  // This optional block of code can be used to run
-                  // code when the user saves the form.
-                },
-                validator: (String? value) {
+                validator: (value) {
                   return (value != null && EmailValidator.validate(value))
                       ? null
                       : "Please provide a valid email";
@@ -89,7 +121,6 @@ class _signUpPageState extends State<signUpPage> {
               ),
 
               TextFormField(
-                //--- username ---
                 controller: _usernameController,
                 decoration: InputDecoration(
                     icon: Icon(Icons.alternate_email),
@@ -99,11 +130,7 @@ class _signUpPageState extends State<signUpPage> {
                         TextStyle(color: widget.currentColors['hintText']),
                     labelStyle: TextStyle(color: widget.currentColors['text']),
                     iconColor: widget.currentColors['text']),
-                onSaved: (String? value) {
-                  // This optional block of code can be used to run
-                  // code when the user saves the form.
-                },
-                validator: (String? value) {
+                validator: (value) {
                   return (value != null && value.contains('@'))
                       ? 'Do not use the @ char.'
                       : null;
@@ -111,7 +138,6 @@ class _signUpPageState extends State<signUpPage> {
               ),
 
               TextFormField(
-                // --- nickname ----
                 controller: _nicknameController,
                 decoration: InputDecoration(
                     icon: Icon(Icons.person),
@@ -121,22 +147,17 @@ class _signUpPageState extends State<signUpPage> {
                         TextStyle(color: widget.currentColors['hintText']),
                     labelStyle: TextStyle(color: widget.currentColors['text']),
                     iconColor: widget.currentColors['text']),
-                onSaved: (String? value) {
-                  // This optional block of code can be used to run
-                  // code when the user saves the form.
-                },
-                validator: (String? value) {
+                validator: (value) {
                   return (value != null && value.contains('@'))
                       ? 'Do not use the @ char.'
                       : null;
                 },
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-              // --- Password Field ---
               TextFormField(
-                controller: _passwordController, // Assign the controller
+                controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                     labelText: "Password",
@@ -147,18 +168,17 @@ class _signUpPageState extends State<signUpPage> {
                     iconColor: widget.currentColors['text']),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a password';
+                    return 'Enter a password';
                   }
                   if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
+                    return 'At least 6 characters required';
                   }
                   return null;
                 },
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-              // --- Confirm Password Field ---
               TextFormField(
                 controller: _confirmPasswordController,
                 obscureText: true,
@@ -169,12 +189,10 @@ class _signUpPageState extends State<signUpPage> {
                         TextStyle(color: widget.currentColors['hintText']),
                     labelStyle: TextStyle(color: widget.currentColors['text']),
                     iconColor: widget.currentColors['text']),
-                // The Magic happens here in the validator
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
+                    return 'Confirm your password';
                   }
-                  // compare user input (value) vs the first controller
                   if (value != _passwordController.text) {
                     return 'Passwords do not match';
                   }
@@ -182,7 +200,7 @@ class _signUpPageState extends State<signUpPage> {
                 },
               ),
 
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
 
               ElevatedButton(
                 onPressed: _submitForm,
