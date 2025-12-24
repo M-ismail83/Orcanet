@@ -5,9 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:orcanet/pageIndex.dart';
-import 'package:orcanet/serviceIndex.dart';
-import 'encryption/sodium_singleton.dart';
+import 'package:orcanet/index/pageIndex.dart';
+import 'package:orcanet/index/serviceIndex.dart';
+import '../encryption/sodium_singleton.dart';
 
 class signUpPage extends StatefulWidget {
   const signUpPage({super.key, required this.currentColors});

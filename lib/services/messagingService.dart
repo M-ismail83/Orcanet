@@ -4,8 +4,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sodium/sodium.dart';
-import 'encryption/room_key_service.dart';
-import 'encryption/sodium_singleton.dart';
+import '../encryption/room_key_service.dart';
+import '../encryption/sodium_singleton.dart';
 
 User? user = FirebaseAuth.instance.currentUser;
 var docRef = FirebaseFirestore.instance.collection('users').doc('${user?.displayName}');

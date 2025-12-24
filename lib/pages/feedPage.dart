@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
 import 'package:orcanet/main.dart';
-import 'package:orcanet/pageIndex.dart';
-import 'package:orcanet/serviceIndex.dart';
-import 'package:orcanet/postCard.dart';
+import 'package:orcanet/index/pageIndex.dart';
+import 'package:orcanet/index/serviceIndex.dart';
+import 'package:orcanet/widgets/postCard.dart';
 
 class feedPage extends StatefulWidget {
   const feedPage({super.key, required this.currentColors});

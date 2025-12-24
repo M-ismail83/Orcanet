@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:orcanet/pageIndex.dart';
-import 'package:orcanet/serviceIndex.dart';
+import 'package:orcanet/index/pageIndex.dart';
+import 'package:orcanet/index/serviceIndex.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.currentColors});
