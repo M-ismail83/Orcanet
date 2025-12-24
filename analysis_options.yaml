@@ -16,6 +16,7 @@ analyzer:
     library_private_types_in_public_api: ignore
     unused_field: ignore
     avoid_print: ignore
+    sized_box_for_whitespace: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

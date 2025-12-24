@@ -1,0 +1,12 @@
+export 'package:orcanet/pages/chatPage.dart';
+export 'package:orcanet/pages/feedPage.dart';
+export 'package:orcanet/pages/homePage.dart';
+export 'package:orcanet/pages/loginPage.dart';
+export 'package:orcanet/pages/makePostPage.dart';
+export 'package:orcanet/pages/orcaAndPodsPage.dart';
+export 'package:orcanet/pages/profilePage.dart';
+export 'package:orcanet/pages/searchPage.dart';
+export 'package:orcanet/pages/videoCallPage.dart';
+export 'package:orcanet/pages/voiceCallPage.dart';
+export 'package:orcanet/pages/message.dart';
+export 'package:orcanet/pages/signUpPage.dart';
