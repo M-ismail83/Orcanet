@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:orcanet/index/serviceIndex.dart';
+import 'package:orcanet/services/firebase_options.dart';
 
 class createPodPage extends StatefulWidget {
   const createPodPage({super.key});
