@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_callkit_incoming/entities/call_event.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:orcanet/callService.dart';
-import 'package:orcanet/pageIndex.dart';
-import 'package:orcanet/serviceIndex.dart';
+import 'package:orcanet/services/callService.dart';
+import 'package:orcanet/index/pageIndex.dart';
+import 'package:orcanet/index/serviceIndex.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
