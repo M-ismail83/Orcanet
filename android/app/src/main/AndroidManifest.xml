@@ -1,6 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.sailors.orcanet"
-    xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.sailors.orcanet" 
+    xmlns:tools="http://schemas.android.com/tools"> <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -11,34 +11,50 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="https" />
-        </intent>
-    </queries>
+    <application
+        android:label="orcanet"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
 
-
-    <application android:label="orcanet" android:name="${applicationName}" android:icon="@mipmap/ic_launcher" android:usesCleartextTraffic="true">
-
-        <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTask" android:showWhenLocked="true" android:turnScreenOn="true" android:taskAffinity="" android:theme="@style/LaunchTheme" android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode" android:hardwareAccelerated="true" android:windowSoftInputMode="adjustResize">
-
-            <meta-data android:name="io.flutter.embedding.android.NormalTheme" android:resource="@style/NormalTheme" />
-
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            
+            <meta-data
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+            
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity> 
+        <activity
+            android:name="com.hiennv.flutter_callkit_incoming.CallkitIncomingActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:launchMode="singleTask"
+            android:excludeFromRecents="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:exported="true"
+            android:taskAffinity="" 
+            tools:replace="android:launchMode,android:theme,android:taskAffinity">
         </activity>
-        <activity android:name="com.hiennv.flutter_callkit_incoming.CallkitIncomingActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar" android:launchMode="singleTask" android:excludeFromRecents="true" android:showWhenLocked="true" android:turnScreenOn="true" android:exported="true" android:taskAffinity="" tools:replace="android:launchMode,android:theme,android:taskAffinity">
-        </activity>
-
-        <receiver android:name="com.hiennv.flutter_callkit_incoming.CallkitIncomingBroadcastReceiver" android:exported="true" android:enabled="true">
+    
+        <receiver
+            android:name="com.hiennv.flutter_callkit_incoming.CallkitIncomingBroadcastReceiver"
+            android:exported="true"
+            android:enabled="true">
             <intent-filter>
                 <action android:name="com.hiennv.flutter_callkit_incoming.ACTION_CALL_INCOMING"/>
                 <action android:name="com.hiennv.flutter_callkit_incoming.ACTION_CALL_START"/>
@@ -49,16 +65,26 @@
                 <action android:name="com.hiennv.flutter_callkit_incoming.ACTION_CALL_CALLBACK"/>
             </intent-filter>
         </receiver>
+            
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/notif_icon"/>
 
-        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@mipmap/notif_icon"/>
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@android:color/black"/>
 
-        <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@android:color/black"/>
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
 
-        <meta-data android:name="flutterEmbedding" android:value="2" />
-
-        <meta-data android:name="firebase_messaging_auto_init_enabled" android:value="false" />
-
-        <meta-data android:name="firebase_analytics_collection_enabled" android:value="false" />
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
+        
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
 
     </application>
 

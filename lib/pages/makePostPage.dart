@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:orcanet/test/testing.dart';
 
 class makePostPage extends StatefulWidget {
   const makePostPage(
@@ -48,8 +47,7 @@ class _makePostPageState extends State<makePostPage> {
       'tags': _selectedTags.toList(),
       'senderUid': senderUid,
       'senderName': senderName,
-      'podName': podName,
-      'createdAt': FieldValue.serverTimestamp(),
+      'podName': podName
     });
   }
 
@@ -101,12 +99,12 @@ class _makePostPageState extends State<makePostPage> {
                     }
                   } catch (e) {
                     print('Error: $e');
-                    if (context.mounted) {
+                    if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Upload failed: $e")));
                     }
                   } finally {
-                    if (context.mounted) {
+                    if (mounted) {
                       setState(() {
                         isUploading = false;
                       });
@@ -264,8 +262,7 @@ class _makePostPageState extends State<makePostPage> {
                                     color: widget.currentColors['hintText'])),
                           )
                         ],
-                      )),
-                      ElevatedButton(onPressed: () async {floodDatabase(1000);}, child: Text("Test"))
+                      ))
                 ]))
 
             //container (column)

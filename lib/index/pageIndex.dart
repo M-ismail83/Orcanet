@@ -1,4 +1,5 @@
 export 'package:orcanet/pages/chatPage.dart';
+export 'package:orcanet/feedAndPodsPage.dart';
 export 'package:orcanet/pages/feedPage.dart';
 export 'package:orcanet/pages/homePage.dart';
 export 'package:orcanet/pages/loginPage.dart';

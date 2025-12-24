@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:orcanet/services/callService.dart';
 
 class VoiceCallPage extends StatefulWidget {
   final String channelId;
@@ -116,15 +115,14 @@ class _VoiceCallPageState extends State<VoiceCallPage> {
     }
     
     await FlutterCallkitIncoming.endAllCalls();
-    await _onCallEnd();
+    _onCallEnd();
   }
 
-  Future<void> _onCallEnd() async {
+  void _onCallEnd() {
     // This is your existing leave logic
     if (_isInitialized) {
       _engine.leaveChannel();
       _engine.release();
-      await CallService.endCall(widget.channelId);
     }
     if (mounted) Navigator.pop(context);
   }

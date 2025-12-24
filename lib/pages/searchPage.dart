@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:orcanet/widgets/customWidgets.dart' as customWidgets;
 
 class searchPage extends StatefulWidget {
   const searchPage({super.key, required this.currentColors});
@@ -33,9 +31,7 @@ class _searchPageState extends State<searchPage> {
 
     return Scaffold(
       backgroundColor: widget.currentColors['bg'],
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -117,56 +113,14 @@ class _searchPageState extends State<searchPage> {
                                 }).toList()
                               ),
                             ),
-                            
                           ]
                       )
                   ),
-                  Divider(
-                    thickness: 2.0,
-                    color: widget.currentColors["text"],
-                  ),
-                  StreamBuilder(
-                    stream: FirebaseFirestore.instance.collection('profile').snapshots(), 
-                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                      
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      if (snapshot.hasError) {
-                        return Center(child: Text("Error: ${snapshot.error}"));
-                      }
-
-                      final users = snapshot.data!.docs;
-
-                      if (snapshot.hasData) {
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: users.length,
-                          itemBuilder: (context, index) {
-                            var userData = users[index].data() as Map<String, dynamic>;
-                            String userName = userData['nickname'] ?? 'No Name';
-                            String nickname = userData['userName'] ?? 'No Nickname';
-                            // Check if user matches selected tags
-                            bool matchesTags = _selectedTags.isEmpty || _selectedTags.any((tag) => (userData['tags'] as List<dynamic>?)?.contains(tag) == true);
-
-                            if (matchesTags) {
-                              return customWidgets.nameCard(context, userName, nickname, users[index].id, widget.currentColors);
-                            } else {
-                              return SizedBox.shrink(); // Return empty widget if no match
-                            }
-                          },
-                        );
-                      }
-                      return Center(child: Text("No users found."));
-                    }
-                  )
+                  SizedBox(height: 10),
                 ]
               )
           )
         ],
-      ),
       )
     );
   }}

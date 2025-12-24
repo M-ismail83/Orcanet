@@ -4,7 +4,7 @@ import 'package:orcanet/main.dart';
 import 'package:orcanet/index/pageIndex.dart';
 import 'package:orcanet/index/serviceIndex.dart';
 import 'package:orcanet/widgets/postCard.dart';
-import 'package:orcanet/widgets/customWidgets.dart';
+
 class feedPage extends StatefulWidget {
   const feedPage({super.key, required this.currentColors});
   final Map<String, Color> currentColors;
@@ -24,8 +24,98 @@ class _feedPageState extends State<feedPage> {
           border: Border.all(color: widget.currentColors['acc1']!),
           borderRadius: BorderRadius.circular(10)),
       child: Text(
-        tagName,
+        "Hello",
         style: TextStyle(color: widget.currentColors['text']),
+      ),
+    );
+  }
+
+  Container nameCard(BuildContext context, String name, String tag) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 3),
+      height: 45,
+      width: 350,
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.transparent),
+          borderRadius: BorderRadius.circular(10)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          ClipOval(
+            child: InkWell(
+              onTap: () {
+                Utilityclass().navigator(
+                    context,
+                    profilePage(
+                      currentColors: widget.currentColors,
+                      uid: "2u6hqirtZTdl7gBI85wUap9qJni1",
+                    ));
+              },
+              splashColor: Colors.transparent,
+              child: Image.asset(
+                "lib/images/placeholder.jpg",
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          SizedBox(width: 10),
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(
+                      color: widget.currentColors['text'],
+                      fontWeight: FontWeight.bold),
+                ),
+                Text(tag,
+                    style: TextStyle(
+                      color: widget.currentColors['text'],
+                    ))
+              ],
+            ),
+          ),
+          Spacer(),
+          Ink(
+            decoration: ShapeDecoration(
+                color: widget.currentColors['acc2'],
+                shape: CircleBorder(
+                    side: BorderSide(color: widget.currentColors['acc2']!))),
+            child: IconButton(
+              onPressed: () {
+                showModalBottomSheet(
+                    elevation: 4.0,
+                    backgroundColor: widget.currentColors['bg'],
+                    context: context,
+                    builder: (BuildContext context) {
+                      return CommentsSection(
+                          currentColorsComment: widget.currentColors);
+                    });
+              },
+              icon: Icon(Icons.message),
+              color: widget.currentColors['text'],
+              iconSize: 18,
+              alignment: Alignment.center,
+            ),
+          ),
+          Ink(
+            decoration: ShapeDecoration(
+                color: widget.currentColors['acc2'],
+                shape: CircleBorder(
+                    side: BorderSide(color: widget.currentColors['acc2']!))),
+            child: IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.group),
+              color: widget.currentColors['text'],
+              iconSize: 20,
+              alignment: Alignment.center,
+            ),
+          )
+        ],
       ),
     );
   }
@@ -60,7 +150,6 @@ class _feedPageState extends State<feedPage> {
     try {
       Query query = FirebaseFirestore.instance
           .collection('posts')
-          .orderBy('createdAt', descending: true)
           .limit(_limit);
 
       if (posts.isNotEmpty) {
@@ -77,7 +166,7 @@ class _feedPageState extends State<feedPage> {
       for (var doc in snapshot.docs) {
         var data = doc.data() as Map<String, dynamic>;
         // Get the UID from the post
-        String uid = data['senderUid'] ?? "";
+        String uid = data['sednerUid'] ?? "";
 
         // Only fetch if we have a UID and we haven't fetched this user yet
         if (uid.isNotEmpty && !_nicknameCache.containsKey(uid)) {
@@ -95,17 +184,13 @@ class _feedPageState extends State<feedPage> {
         }
       }
 
-      if (context.mounted) {
-        setState(() {
+      setState(() {
         posts.addAll(snapshot.docs);
         _isLoading = false;
       });
-      }
     } catch (e) {
       print("Error getting posts: $e"); // Added error printing to help debug
-      if (context.mounted){
-        setState(() => _isLoading = false);
-      }
+      setState(() => _isLoading = false);
     }
   }
 
@@ -146,14 +231,11 @@ class _feedPageState extends State<feedPage> {
                 'No Content', // FIXED: 'suTitle' -> 'subTitle'
             tags: currentPostTags, // Pass the local list
             currentColorsPost: widget.currentColors,
-            uuid: posts[index].id,
             nameCard: nameCard(
                 context,
                 // Use nickname cache, fallback to 'Unknown'
-                _nicknameCache[data['senderUid']] ?? "Unknown User",
-                "Member", // Or fetch their role if you have it
-                data['senderUid'] ?? "Unknown UID",
-                widget.currentColors
+                _nicknameCache[data['sednerUid']] ?? "Unknown User",
+                "Member" // Or fetch their role if you have it
                 ),
           );
         },
