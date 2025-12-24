@@ -1,2 +1,0 @@
-C:/src/Orcanet/android/app/.cxx/release/6u2h4vc3/armeabi-v7a/CMakeFiles/edit_cache.dir
-C:/src/Orcanet/android/app/.cxx/release/6u2h4vc3/armeabi-v7a/CMakeFiles/rebuild_cache.dir

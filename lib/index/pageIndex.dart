@@ -10,3 +10,4 @@ export 'package:orcanet/pages/videoCallPage.dart';
 export 'package:orcanet/pages/voiceCallPage.dart';
 export 'package:orcanet/pages/message.dart';
 export 'package:orcanet/pages/signUpPage.dart';
+export 'package:orcanet/pages/createPodPage.dart';

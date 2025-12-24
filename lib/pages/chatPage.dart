@@ -87,11 +87,13 @@ class ChatTabView extends StatelessWidget {
   final String currentUserId;
   final Map<String, Color> currentColorsView;
 
-  const ChatTabView(
+  ChatTabView(
       {required this.chats,
       super.key,
       required this.currentColorsView,
       required this.currentUserId});
+
+  final auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -105,26 +107,50 @@ class ChatTabView extends StatelessWidget {
       );
     }
 
-    return ListView.builder(
-      itemCount: chats.length,
-      itemBuilder: (context, index) {
-        var chat = chats[index].data() as Map<String, dynamic>;
-        String docId = chats[index].id;
+    try {
+      return Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: chats.length,
+              itemBuilder: (context, index) {
+                var chat = chats[index].data() as Map<String, dynamic>;
+                String docId = chats[index].id;
 
-        List<dynamic> participants = chat['participants'] ?? [];
-        List receiverId = participants.where((id) => id != currentUserId).toList();
+                List<dynamic> participants = chat['participants'] ?? [];
+                List receiverId =
+                    participants.where((id) => id != currentUserId).toList();
 
-        String displayName = chat['chatName'] ?? 'User';
+                String displayName = chat['chatName'] ?? 'User';
 
-        return ChatRoomTile(
-          name: displayName,
-          lastMessage: chat['lastMessage'] ?? "No messages yet",
-          chatId: docId,
-          receiverId: receiverId,
-          currentColors: currentColorsView,
-        );
-      },
-    );
+                return ChatRoomTile(
+                  name: displayName,
+                  lastMessage: chat['lastMessage'] ?? "No messages yet",
+                  chatId: docId,
+                  receiverId: receiverId,
+                  currentColors: currentColorsView,
+                );
+              },
+            ),
+          ),
+
+          // create pod page link button
+          ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (context) => createPodPage(),
+                  ),
+                );
+              },
+              child: Icon(Icons.podcasts)),
+        ],
+      );
+    } catch (e) {
+      print("Error: $e");
+    }
+    return CircularProgressIndicator();
   }
 }
 
