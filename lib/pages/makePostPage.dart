@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:orcanet/test/testing.dart';
 
 class makePostPage extends StatefulWidget {
   const makePostPage(
@@ -15,15 +16,8 @@ class makePostPage extends StatefulWidget {
 }
 
 class _makePostPageState extends State<makePostPage> {
+  final FirebaseFirestore store = FirebaseFirestore.instance;
   //Widget
-  final List<String> _allTags = [
-    'Flutter',
-    'Dart',
-    'Widgets',
-    'Design',
-    'Mobile',
-    'Backend',
-  ];
 
   Set<String> _selectedTags = {};
 
@@ -32,14 +26,13 @@ class _makePostPageState extends State<makePostPage> {
   }
 
   String? selectedPodName;
-    bool isUploading = false;
-    final List<String> pods = ['Orcas', 'Dolphins', 'Whales', 'Students'];
+  bool isUploading = false;
 
-    TextEditingController titleController = TextEditingController();
-    TextEditingController contentController = TextEditingController();
+  TextEditingController titleController = TextEditingController();
+  TextEditingController contentController = TextEditingController();
 
-  Future<void> makePost(
-      String title, String subtitle, String? senderName, String senderUid, String podName) async {
+  Future<void> makePost(String title, String subtitle, String? senderName,
+      String senderUid, String podName) async {
     CollectionReference posts = FirebaseFirestore.instance.collection('posts');
     await posts.add({
       'title': title,
@@ -47,7 +40,31 @@ class _makePostPageState extends State<makePostPage> {
       'tags': _selectedTags.toList(),
       'senderUid': senderUid,
       'senderName': senderName,
-      'podName': podName
+      'podName': podName,
+      'craetedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Stream<List<String>> get podsStream {
+    return store.collection('pods').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => doc['podName'] as String).toList();
+    });
+  }
+
+  Stream<List<String>> get allTagsStream {
+    if (selectedPodName == null) {
+      return Stream.value([]); // Return empty list if no pod selected
+    }
+
+    return store
+        .collection('pods')
+        .where('podName', isEqualTo: selectedPodName)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .expand((doc) => List<String>.from(doc['tags'] as List<dynamic>))
+          .toSet()
+          .toList();
     });
   }
 
@@ -60,8 +77,6 @@ class _makePostPageState extends State<makePostPage> {
 
   @override
   Widget build(BuildContext context) {
-    
-
     return Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: isUploading
@@ -91,7 +106,8 @@ class _makePostPageState extends State<makePostPage> {
                     final currentUser = FirebaseAuth.instance.currentUser;
 
                     if (currentUser != null) {
-                      await makePost(title, content, currentUser.displayName, currentUser.uid, pod);
+                      await makePost(title, content, currentUser.displayName,
+                          currentUser.uid, pod);
 
                       if (mounted) {
                         widget.onPost();
@@ -99,12 +115,12 @@ class _makePostPageState extends State<makePostPage> {
                     }
                   } catch (e) {
                     print('Error: $e');
-                    if (mounted) {
+                    if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Upload failed: $e")));
                     }
                   } finally {
-                    if (mounted) {
+                    if (context.mounted) {
                       setState(() {
                         isUploading = false;
                       });
@@ -119,7 +135,7 @@ class _makePostPageState extends State<makePostPage> {
         ),
         backgroundColor: widget.currentColors['bg'],
         body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
@@ -132,40 +148,55 @@ class _makePostPageState extends State<makePostPage> {
                       padding: const EdgeInsets.all(5.0),
                       width: double.infinity,
                       child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            DropdownButtonFormField<String>(
-                              dropdownColor: widget.currentColors['selected'],
-                              decoration: InputDecoration(
-                                labelText: 'Select Pod',
-                                border: OutlineInputBorder(),
-                                prefixIcon: Icon(Icons.group_work),
-
-                              ),
-                              initialValue: selectedPodName, // Connects to your variable
-
-                              // The List of Options
-                              items: pods.map((String pod) {
-                                return DropdownMenuItem(
-                                  value: pod,
-                                  child: Text(pod, style: TextStyle(color: widget.currentColors['text'])),
-                                );
-                              }).toList(),
-
-                              // Update State when picked
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedPodName = value!;
-                                });
-                              },
-
-                              // AUTOMATIC VALIDATION!
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please select a pod'; // Turns box red
+                            StreamBuilder<List<String>>(
+                              stream:
+                                  podsStream, // Use the stream we defined above
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
                                 }
-                                return null;
+                                if (!snapshot.hasData) {
+                                  return CircularProgressIndicator();
+                                }
+
+                                final podList = snapshot.data!;
+
+                                return Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: widget.currentColors['container'],
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                        color:
+                                            widget.currentColors['container']!,
+                                        width: 1.0),
+                                  ),
+                                  child: DropdownButton<String>(
+                                  alignment: AlignmentGeometry.center,
+                                  menuWidth: MediaQuery.sizeOf(context).width * 0.75,
+                                  underline: SizedBox(),
+                                  borderRadius: BorderRadius.circular(10),
+                                  dropdownColor: widget.currentColors['container'],
+                                  value: selectedPodName,
+                                  hint: Text("Select a Pod", style: TextStyle(color: widget.currentColors['hintText'])),
+                                  items: podList.map((pod) {
+                                    return DropdownMenuItem(
+                                      alignment: AlignmentGeometry.center,
+                                        value: pod, child: Text(pod, style: TextStyle(color: widget.currentColors['text'])));
+                                  }).toList(),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      selectedPodName = val;
+                                      // Clear tags when pod changes if you want
+                                      _selectedTags.clear();
+                                    });
+                                  },
+                                ),
+                                );
                               },
                             ),
                             SizedBox(height: 10),
@@ -181,43 +212,51 @@ class _makePostPageState extends State<makePostPage> {
                                   color: widget.currentColors['text']),
                             ),
                             SizedBox(height: 4),
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Wrap(
-                                  spacing: 8.0,
-                                  children: _allTags.map((tag) {
-                                    final isSelected = _isSelected(tag);
+                            if (selectedPodName != null)
+                              StreamBuilder<List<String>>(
+                                stream: allTagsStream, // Use the tag stream
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Container(); // Loading or empty
+                                  }
 
-                                    return FilterChip(
-                                      showCheckmark: false,
-                                      label: Text(tag),
-                                      selected: isSelected,
-                                      selectedColor:
-                                          widget.currentColors['acc1'],
-                                      backgroundColor:
-                                          widget.currentColors['bg'],
-                                      shape: StadiumBorder(
-                                        side: BorderSide(
-                                          color: widget.currentColors['acc1']!,
-                                          width: 1.0,
+                                  final tagList = snapshot.data!;
+
+                                  return Wrap(
+                                    spacing: 8.0,
+                                    children: tagList.map((tag) {
+                                      return FilterChip(
+                                        label: Text(tag),
+                                        selectedColor:
+                                            widget.currentColors['acc1'],
+                                        backgroundColor:
+                                            widget.currentColors['container'],
+                                        shape: StadiumBorder(
+                                          side: BorderSide(
+                                            color:
+                                                widget.currentColors['acc1']!,
+                                            width: 1.0,
+                                          ),
                                         ),
-                                      ),
-                                      labelStyle: TextStyle(
-                                        color: widget.currentColors['text']!,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      onSelected: (bool selected) {
-                                        setState(() {
-                                          if (selected) {
-                                            _selectedTags.add(tag);
-                                          } else {
-                                            _selectedTags.remove(tag);
-                                          }
-                                        });
-                                      },
-                                    );
-                                  }).toList()),
-                            ),
+                                        labelStyle: TextStyle(
+                                          color: widget.currentColors['text']!,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        selected: _isSelected(tag),
+                                        onSelected: (bool selected) {
+                                          setState(() {
+                                            if (selected) {
+                                              _selectedTags.add(tag);
+                                            } else {
+                                              _selectedTags.remove(tag);
+                                            }
+                                          });
+                                        },
+                                      );
+                                    }).toList(),
+                                  );
+                                },
+                              ),
                           ])),
                   SizedBox(height: 10),
                   Container(
@@ -260,7 +299,7 @@ class _makePostPageState extends State<makePostPage> {
                                 hintText: 'What is your post about?',
                                 hintStyle: TextStyle(
                                     color: widget.currentColors['hintText'])),
-                          )
+                          ),
                         ],
                       ))
                 ]))

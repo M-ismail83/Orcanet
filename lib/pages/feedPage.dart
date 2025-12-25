@@ -4,6 +4,7 @@ import 'package:orcanet/main.dart';
 import 'package:orcanet/index/pageIndex.dart';
 import 'package:orcanet/index/serviceIndex.dart';
 import 'package:orcanet/widgets/postCard.dart';
+import 'package:orcanet/widgets/tagContainer.dart';
 
 class feedPage extends StatefulWidget {
   const feedPage({super.key, required this.currentColors});
@@ -14,23 +15,9 @@ class feedPage extends StatefulWidget {
 }
 
 class _feedPageState extends State<feedPage> {
-  Container tagContainer(String tagName) {
-    return Container(
-      alignment: Alignment.center,
-      height: 30,
-      width: 65,
-      decoration: BoxDecoration(
-          color: widget.currentColors['acc1'],
-          border: Border.all(color: widget.currentColors['acc1']!),
-          borderRadius: BorderRadius.circular(10)),
-      child: Text(
-        "Hello",
-        style: TextStyle(color: widget.currentColors['text']),
-      ),
-    );
-  }
+  
 
-  Container nameCard(BuildContext context, String name, String tag) {
+  Container nameCard(BuildContext context, String name, String tag, String uid) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 3),
       height: 45,
@@ -221,7 +208,7 @@ class _feedPageState extends State<feedPage> {
 
           // 3. GENERATE TAGS ON THE FLY (Don't use global list)
           List<Container> currentPostTags = (data['tags'] as List<dynamic>?)
-                  ?.map((tag) => tagContainer(tag.toString()))
+                  ?.map((tag) => tagContainer(tag.toString(), widget.currentColors))
                   .toList() ??
               [];
 
@@ -234,8 +221,9 @@ class _feedPageState extends State<feedPage> {
             nameCard: nameCard(
                 context,
                 // Use nickname cache, fallback to 'Unknown'
-                _nicknameCache[data['sednerUid']] ?? "Unknown User",
-                "Member" // Or fetch their role if you have it
+                _nicknameCache[data['senderUid']] ?? "Unknown User",
+                "Member",
+                data['senderUid'] ?? "", // Or fetch their role if you have it
                 ),
           );
         },

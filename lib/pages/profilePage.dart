@@ -283,7 +283,9 @@ class _profilePageState extends State<profilePage> {
                             ),
                           if (auth.currentUser!.uid != widget.uid)
                             ElevatedButton(
-                                onPressed: () {}, child: Text("Invite")),
+                                onPressed: () {
+                                  
+                                }, child: Text("Invite")),
                           if (auth.currentUser!.uid != widget.uid)
                             IconButton(
                                 onPressed: () {
@@ -312,7 +314,7 @@ class _profilePageState extends State<profilePage> {
                     width: 300.0,
                     height: 80.0,
                     child: Text(
-                      "asdfghjklşrtyuıowertyuıcv",
+                      "",
                       style: TextStyle(
                         fontSize: 15,
                         color: widget.currentColors['text'],
