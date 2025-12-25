@@ -136,15 +136,20 @@ class ChatTabView extends StatelessWidget {
 
           // create pod page link button
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: currentColorsView['acc1'],
+              foregroundColor: currentColorsView['text'],
+            ),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute<void>(
-                    builder: (context) => createPodPage(),
+                    builder: (context) => createPodPage(currentColors: currentColorsView,),
                   ),
                 );
               },
-              child: Icon(Icons.podcasts)),
+              child: Text("Create a New Pod!", style: TextStyle(color: currentColorsView['text']),)),
+          SizedBox(height: 20),
         ],
       );
     } catch (e) {
