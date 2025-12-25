@@ -6,7 +6,8 @@ import 'package:orcanet/index/serviceIndex.dart';
 import 'package:orcanet/services/firebase_options.dart';
 
 class createPodPage extends StatefulWidget {
-  const createPodPage({super.key});
+  const createPodPage({super.key, required this.currentColors});
+  final Map<String, Color> currentColors;
 
   @override
   State<createPodPage> createState() => _createPodPageState();
@@ -14,12 +15,27 @@ class createPodPage extends StatefulWidget {
 
 class _createPodPageState extends State<createPodPage> {
   final TextEditingController _podNameController = TextEditingController();
+  final TextEditingController _podDescController = TextEditingController();
   final TextEditingController _userController = TextEditingController();
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   // List to keep track of added users
   final List<String> _addedUsers = [];
+  final List<String> _allTags = [
+    'Flutter',
+    'Dart',
+    'Widgets',
+    'Design',
+    'Mobile',
+    'Backend',
+  ];
+
+  Set<String> _selectedTags = {};
+
+  bool _isSelected(String tag) {
+    return _selectedTags.contains(tag);
+  }
 
   // loading the state
   bool _isLoading = false;
@@ -31,38 +47,14 @@ class _createPodPageState extends State<createPodPage> {
     super.dispose();
   }
 
-  // Logic to add a user to the list
-  void _addUser() {
-    final String user = _userController.text.trim();
-    if (user.isNotEmpty && !_addedUsers.contains(user)) {
-      setState(() {
-        _addedUsers.add(user);
-        _userController.clear(); // Clear input after adding
-      });
-    } else if (_addedUsers.contains(user)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User already added!')),
-      );
-    }
-  }
-
-  // Logic to remove a user from the list
-  void _removeUser(String user) {
-    setState(() {
-      _addedUsers.remove(user);
-    });
-  }
-
   // Firebase Logic to handle the create button press
   Future<void> _createChatroom() async {
     if (_podNameController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a chatroom name')),
+         SnackBar(content: Text('Please enter a chatroom name', style: TextStyle(color: widget.currentColors['text']),)),
       );
       return;
     }
-
-    // TODO: Add your backend logic here (e.g., Firebase, API call)
 
     setState(() {
       _isLoading = true;
@@ -82,20 +74,21 @@ class _createPodPageState extends State<createPodPage> {
       });
 
       await FirebaseFirestore.instance.collection('pods').add({
-        'podId': Utilityclass().getChatId(auth.currentUser!.uid, []),
-        'chatName': _podNameController.text.trim(),
-        'lastMessage': '', ///////////////////////////////////////////////////
-        'lastMessageId': 0,
-        'type': "Pods",
-        'created_by': auth.currentUser!.uid,
+        "createdAt": FieldValue.serverTimestamp(),
+        "createrId": auth.currentUser!.uid,
+        "members": _addedUsers,
+        "podId": Utilityclass().getChatId(auth.currentUser!.uid, []),
+        "podName": _podNameController.text.trim(),
+        "podDesc": _podDescController.text.trim(),
+        "tags": _selectedTags.toList()
       });
 
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+         SnackBar(
             content: Text(
-                'Chatroom created successfully!')), ///////// go back to pods page after?
+                'Chatroom created successfully!', style: TextStyle(color: widget.currentColors['text']))), ///////// go back to pods page after?
       );
 
       // Optional: Navigate back or clear form
@@ -126,7 +119,7 @@ class _createPodPageState extends State<createPodPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("New Pod"),
+        title:  Text("New Pod", style: TextStyle(color: widget.currentColors['text'])),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -139,85 +132,84 @@ class _createPodPageState extends State<createPodPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // pod name field
-                    const Text("Pod Details",
+                     Text("Pod Details",
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
+                            fontSize: 16, fontWeight: FontWeight.bold, color: widget.currentColors['text'])),
                     const SizedBox(height: 10),
                     TextField(
                       controller: _podNameController,
-                      decoration: const InputDecoration(
+                      decoration:  InputDecoration(
                         labelText: "Pod Name",
                         hintText: "A Pod is a group for your project teammates",
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.group),
+                        labelStyle: TextStyle(color: widget.currentColors['text']),
+                        hintStyle: TextStyle(color: widget.currentColors['hintText']),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text("Pod Details",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold, color: widget.currentColors['text'])),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _podDescController,
+                      decoration:  InputDecoration(
+                        labelText: "Pod Description",
+                        hintText: "Describe your pod",
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.group),
+                        labelStyle: TextStyle(color: widget.currentColors['text']),
+                        hintStyle: TextStyle(color: widget.currentColors['hintText']),
                       ),
                     ),
                     const SizedBox(height: 24),
                     //user field
-                    const Text(
-                      "Add Members",
+                     Text(
+                      "Add Tags",
                       style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: widget.currentColors['text']),
                     ),
                     const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _userController,
-                            decoration: const InputDecoration(
-                              labelText: "Username or Email",
-                              hintText: "Enter user identifier",
-                              border: OutlineInputBorder(),
-                              prefixIcon: Icon(Icons.person_add),
-                            ),
-                            //
-                            onSubmitted: (_) => _addUser(),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        IconButton.filled(
-                          onPressed: _addUser,
-                          icon: const Icon(Icons.add),
-                          iconSize: 28,
-                          style: IconButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                              minimumSize: const Size(56, 56)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    // users list
-                    if (_addedUsers.isNotEmpty) ...[
-                      const Text("Participants:",
-                          style: TextStyle(color: Colors.grey)),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8.0,
-                        runSpacing: 4.0,
-                        children: _addedUsers.map((user) {
-                          return Chip(
-                            avatar: CircleAvatar(
-                              backgroundColor: Colors.deepPurple.shade100,
-                              radius: 12,
-                              child: Text(user[0].toUpperCase()),
-                            ),
-                            label: Text(user),
-                            deleteIcon: const Icon(Icons.close, size: 18),
-                            onDeleted: () => _removeUser(user),
-                          );
-                        }).toList(),
-                      ),
-                    ] else
-                      const Padding(
-                        padding: EdgeInsets.only(top: 20),
-                        child: Center(
-                            child: Text("No users added yet",
-                                style: TextStyle(color: Colors.grey))),
-                      ),
-                  ],
-                ),
+                    SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Wrap(
+                                  spacing: 8.0,
+                                  children: _allTags.map((tag) {
+                                    final isSelected = _isSelected(tag);
+
+                                    return FilterChip(
+                                      showCheckmark: false,
+                                      label: Text(tag, style: TextStyle(color: widget.currentColors['text'])),
+                                      selected: isSelected,
+                                      selectedColor:
+                                          widget.currentColors['acc1'],
+                                      backgroundColor:
+                                          widget.currentColors['bg'],
+                                      shape: StadiumBorder(
+                                        side: BorderSide(
+                                          color: widget.currentColors['acc1']!,
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                      labelStyle: TextStyle(
+                                        color: widget.currentColors['text']!,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      onSelected: (bool selected) {
+                                        setState(() {
+                                          if (selected) {
+                                            _selectedTags.add(tag);
+                                          } else {
+                                            _selectedTags.remove(tag);
+                                          }
+                                        });
+                                      },
+                                    );
+                                  }).toList()),
+                            )
+                    
+          ]),
               ),
             ),
             Padding(

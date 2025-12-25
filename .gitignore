@@ -49,3 +49,5 @@ app.*.map.json
 /android/app/.cxx/
 
 linux/flutter/
+macos/flutter/
+windows/flutter/

@@ -32,7 +32,7 @@ class _postCardState extends State<postCard> {
       displayedTags = widget.tags;
     } else {
       displayedTags = widget.tags.take(maxTagCount).toList();
-      displayedTags.add(SizedBox(
+      displayedTags.add(Container(
         height: 30,
         width: 65,
         child: Text(
