@@ -3,38 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Name - Promotional Page</title>
+    <title>App Project - Final Submission</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
     <style>
-        /* --- CSS STYLES --- */
+        /* --- MODERN CSS VARIABLES --- */
         :root {
-            --primary-color: #2563eb; /* Change this hex code to match your app color */
-            --text-dark: #1f2937;
-            --text-light: #6b7280;
-            --bg-light: #f3f4f6;
+            --primary-gradient: linear-gradient(135deg, #bb7cfa 0%, #9452c7 100%);
+            --accent-color: #9452c7;
+            --text-dark: #000000;
+            --text-light: #f0e8e6;
+            --bg-light: #f7f2f0;
+            --bg-dark: #3c312b;
+            --white: #ffffff;
+            --cont-color: #5c5144;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Poppins', sans-serif; /* Modern font */
             margin: 0;
             padding: 0;
             line-height: 1.6;
             color: var(--text-dark);
+            background-color: var(--bg-light);
         }
 
-        /* Container */
         .container {
             max-width: 1100px;
             margin: 0 auto;
             padding: 0 20px;
         }
 
-        /* Hero Section (Top) */
+        /* --- HERO SECTION --- */
         header {
-            padding: 80px 0;
+            /* A nice gradient background for the top area */
+            background: var(--white);
+            padding: 100px 0 60px;
+            border-bottom-left-radius: 50px;
+            border-bottom-right-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            margin-bottom: 50px;
+        }
+
+        .hero-content {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap; /* Wraps on mobile */
+            flex-wrap: wrap;
         }
 
         .hero-text {
@@ -44,189 +60,254 @@
         }
 
         .hero-text h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            line-height: 1.2;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            line-height: 1.1;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; /* Makes text gradient */
         }
 
         .hero-text p {
-            font-size: 1.2rem;
-            color: var(--text-light);
-            margin-bottom: 30px;
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-bottom: 35px;
         }
 
-        .cta-button {
+        .btn {
             display: inline-block;
-            background-color: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
-            padding: 12px 30px;
+            padding: 15px 35px;
             text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: background 0.3s;
+            border-radius: 30px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .cta-button:hover {
-            opacity: 0.9;
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.6);
         }
 
-        /* Visual Placeholders */
-        .mockup-placeholder {
-            flex: 1;
-            min-width: 250px;
-            height: 500px;
-            background-color: #ddd;
-            border-radius: 20px;
+        /* --- CSS PHONE MOCKUP (The trick to looking good without images) --- */
+        .phone-mockup {
+            width: 260px;
+            height: 520px;
+            border: 12px solid #333; /* Phone bezel */
+            border-radius: 40px;
+            background-color: #f0f0f0;
+            position: relative;
+            box-shadow: 20px 20px 50px rgba(0,0,0,0.2);
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px dashed #999;
-            color: #666;
-            font-weight: bold;
+            margin: 20px auto;
         }
 
-        /* Features Section */
-        .features {
-            background-color: var(--bg-light);
-            padding: 60px 0;
+        /* The Notch */
+        .phone-mockup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 120px;
+            height: 25px;
+            background-color: #333;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 2;
+        }
+
+        .placeholder-text {
             text-align: center;
+            color: #999;
+            padding: 20px;
+            font-size: 0.9rem;
         }
 
-        .features h2 {
+        /* --- FEATURES --- */
+        .features {
+            padding: 50px 0;
+        }
+
+        .section-title {
+            text-align: center;
             font-size: 2rem;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
+            color: var(--text-dark);
         }
 
         .feature-grid {
             display: flex;
-            gap: 20px;
+            gap: 30px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .feature-card {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
+            padding: 35px;
+            border-radius: 20px;
             flex: 1;
             min-width: 250px;
-            max-width: 300px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            max-width: 320px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            border-top: 5px solid var(--accent-color);
         }
 
-        /* Screenshots Section */
+        .feature-card:hover {
+            transform: translateY(-10px); /* Pops up on hover */
+        }
+
+        .feature-card h3 {
+            margin-top: 0;
+            color: var(--accent-color);
+        }
+
+        /* --- SCREENSHOTS --- */
         .screenshots {
-            padding: 60px 0;
+            padding: 80px 0;
             text-align: center;
         }
 
-        .screenshot-grid {
+        .screenshot-scroller {
             display: flex;
-            gap: 20px;
-            overflow-x: auto; /* Allows scrolling if many images */
-            padding-bottom: 20px;
+            gap: 30px;
+            overflow-x: auto;
+            padding: 20px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
-        .screen-placeholder {
-            width: 200px;
-            height: 400px;
-            background-color: #eee;
-            border: 2px dashed #bbb;
-            border-radius: 10px;
+        /* Small phone frames for screenshots */
+        .mini-phone {
+            width: 180px;
+            height: 360px;
+            border: 8px solid #333;
+            border-radius: 30px;
+            background: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #888;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
-        /* Footer */
+        .mini-phone img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* --- FOOTER --- */
         footer {
-            background-color: var(--text-dark);
-            color: white;
-            padding: 40px 0;
+            background-color: var(--white);
+            padding: 50px 0;
             text-align: center;
+            border-top: 1px solid #eee;
+            margin-top: 50px;
         }
 
-        footer p {
-            margin: 5px 0;
-            color: #ccc;
+        .student-info {
+            background: #f0f4ff;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 50px;
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-bottom: 20px;
         }
 
-        /* Mobile Adjustments */
+        /* Mobile adjustments */
         @media (max-width: 768px) {
-            header {
+            .hero-content {
                 flex-direction: column-reverse;
                 text-align: center;
-                padding: 40px 0;
             }
             .hero-text {
                 padding-right: 0;
-                margin-top: 30px;
+                margin-top: 40px;
             }
-            .mockup-placeholder {
-                width: 80%; /* Smaller on mobile */
-                height: 400px; 
+            .hero-text h1 {
+                font-size: 2.5rem;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
+    <header>
+        <div class="container hero-content">
             <div class="hero-text">
-                <h1>Your App Name</h1>
-                <p>A brief one-sentence slogan describing what your app does. E.g. "Organize your student life with ease."</p>
-                
-                <a href="https://github.com/YOUR-USERNAME/YOUR-REPO" class="cta-button">View Project on GitHub</a>
+                <h1>ORCA/NET</h1>
+                <p>The smartest way to solve [Problem X]. Designed with simplicity and speed in mind for students everywhere.</p>
+                <a href="https://github.com/M-ismail83/Orcanet" class="btn">Download APK / View GitHub</a>
             </div>
 
-            <div class="mockup-placeholder">
-                App Main Screenshot <br>(Put image here)
+            <div class="phone-mockup">
+                <div class="placeholder-text">
+                    Main App Screen<br>
+                    (Add Image Here)
+                </div>
             </div>
-        </header>
+        </div>
+    </header>
+
+    <div class="container features">
+        <h2 class="section-title">Why use this App?</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3> Secure</h3>
+                <p>End-to-end encryption keeps your data private and secure at all times.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🎨 Intuitive UI</h3>
+                <p>A user interface designed for clarity. No cluttered menus, just the features you need.</p>
+            </div>
+            <div class="feature-card">
+                <h3>☁️ Cloud Sync</h3>
+                <p>Access your data from anywhere. Cloud Firestore integration ensures you never lose progress.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🚀 Fast</h3>
+                <p>Optimized for speed and performance, ensuring a smooth experience on all devices.</p>
+            </div>
+        </div>
     </div>
 
-    <section class="features">
+    <div class="screenshots">
         <div class="container">
-            <h2>Key Features</h2>
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <h3>Feature One</h3>
-                    <p>Description of the first cool thing your app does.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>Feature Two</h3>
-                    <p>Description of the second cool thing your app does.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>Feature Three</h3>
-                    <p>Description of the third cool thing your app does.</p>
-                </div>
+            <h2 class="section-title">App Gallery</h2>
+            <div class="screenshot-scroller">
+                <div class="mini-phone">
+                    <div class="placeholder-text">Login Screen</div>
+                    </div>
+                <div class="mini-phone">
+                    <div class="placeholder-text">Home Dashboard</div>
+                    </div>
+                <div class="mini-phone">
+                    <div class="placeholder-text">Settings Page</div>
+                    </div>
             </div>
         </div>
-    </section>
-
-    <section class="screenshots">
-        <div class="container">
-            <h2>App Screenshots</h2>
-            <div class="screenshot-grid">
-                <div class="screen-placeholder">Screen 1</div>
-                <div class="screen-placeholder">Screen 2</div>
-                <div class="screen-placeholder">Screen 3</div>
-            </div>
-        </div>
-    </section>
+    </div>
 
     <footer>
         <div class="container">
-            <h3>Team Members</h3>
-            <p>Student Name 1 - ID: 12345678</p>
-            <p>Student Name 2 - ID: 12345678</p>
-            <br>
-            <p>&copy; 2025 Mobile Development Course Final Project</p>
+            <div class="student-info">
+                Developed by Sailors
+            </div>
+            <p>
+                <strong>Student 1:</strong> Mahmut İsmail Öztürk (230717024) <br>
+                <strong>Student 2:</strong> Dildar Yılmaz (230717006) <br>
+                <strong>Student 3:</strong> Deniz Orhun Kalender (230717054)
+            </p>
+            <p style="color: #999; font-size: 0.9rem; margin-top: 20px;">
+                SE 3505 Mobile Application Development Final Project
+            </p>
         </div>
     </footer>
 
