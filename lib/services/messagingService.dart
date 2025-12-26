@@ -44,6 +44,7 @@ Future<void> sendMessage({
 }) async {
   final firestore = FirebaseFirestore.instance;
   final chatDocRef = firestore.collection('chats').doc(chatId);
+  final userRef = firestore.collection('users').doc(receiverId[0]);
 
   try {
     // 1️⃣ Build participants list
@@ -107,6 +108,7 @@ Future<void> sendMessage({
         'id': nextId,
         'senderId': senderId,
         'receiverId': receiverId,
+        'recieverName': userRef.get().then((doc) => doc['name']).toString().split(' ')[0],
         'cipherText': base64Encode(cipherText),
         'nonce': base64Encode(nonce),
         'timestamp': FieldValue.serverTimestamp(),

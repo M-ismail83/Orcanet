@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import 'package:orcanet/main.dart';
 import 'package:orcanet/index/pageIndex.dart';
 import 'package:orcanet/index/serviceIndex.dart';
+import 'package:orcanet/widgets/nameCard.dart';
 import 'package:orcanet/widgets/postCard.dart';
 import 'package:orcanet/widgets/tagContainer.dart';
 
@@ -15,97 +16,6 @@ class feedPage extends StatefulWidget {
 }
 
 class _feedPageState extends State<feedPage> {
-  
-
-  Container nameCard(BuildContext context, String name, String tag, String uid) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 3),
-      height: 45,
-      width: 350,
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.transparent),
-          borderRadius: BorderRadius.circular(10)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          ClipOval(
-            child: InkWell(
-              onTap: () {
-                Utilityclass().navigator(
-                    context,
-                    profilePage(
-                      currentColors: widget.currentColors,
-                      uid: "2u6hqirtZTdl7gBI85wUap9qJni1",
-                    ));
-              },
-              splashColor: Colors.transparent,
-              child: Image.asset(
-                "lib/images/placeholder.jpg",
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          SizedBox(width: 10),
-          SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(
-                      color: widget.currentColors['text'],
-                      fontWeight: FontWeight.bold),
-                ),
-                Text(tag,
-                    style: TextStyle(
-                      color: widget.currentColors['text'],
-                    ))
-              ],
-            ),
-          ),
-          Spacer(),
-          Ink(
-            decoration: ShapeDecoration(
-                color: widget.currentColors['acc2'],
-                shape: CircleBorder(
-                    side: BorderSide(color: widget.currentColors['acc2']!))),
-            child: IconButton(
-              onPressed: () {
-                showModalBottomSheet(
-                    elevation: 4.0,
-                    backgroundColor: widget.currentColors['bg'],
-                    context: context,
-                    builder: (BuildContext context) {
-                      return CommentsSection(
-                          currentColorsComment: widget.currentColors);
-                    });
-              },
-              icon: Icon(Icons.message),
-              color: widget.currentColors['text'],
-              iconSize: 18,
-              alignment: Alignment.center,
-            ),
-          ),
-          Ink(
-            decoration: ShapeDecoration(
-                color: widget.currentColors['acc2'],
-                shape: CircleBorder(
-                    side: BorderSide(color: widget.currentColors['acc2']!))),
-            child: IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.group),
-              color: widget.currentColors['text'],
-              iconSize: 20,
-              alignment: Alignment.center,
-            ),
-          )
-        ],
-      ),
-    );
-  }
 
   final ScrollController _scroolController = ScrollController();
   List<DocumentSnapshot> posts = [];
@@ -223,7 +133,7 @@ class _feedPageState extends State<feedPage> {
                 // Use nickname cache, fallback to 'Unknown'
                 _nicknameCache[data['senderUid']] ?? "Unknown User",
                 "Member",
-                data['senderUid'] ?? "", // Or fetch their role if you have it
+                data['senderUid'] ?? "", widget.currentColors // Or fetch their role if you have it
                 ),
           );
         },
