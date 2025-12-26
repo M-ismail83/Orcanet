@@ -193,7 +193,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                             const SizedBox(height: 4),
                             Text(
-                              isMe ? "You" : widget.kisiAdi,
+                              isMe ? "You" : message['senderName'] ?? 'Unknown',
                               style: TextStyle(
                                 fontSize: 12.0,
                                 color: widget.currentColors["text"]?.withAlpha(128),

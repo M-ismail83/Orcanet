@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORCA/NET</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- MODERN CSS VARIABLES --- */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #bb7cfa 0%, #9452c7 100%);
+            --accent-color: #9452c7;
+            --text-dark: #000000;
+            --text-light: #f0e8e6;
+            --bg-light: #f7f2f0;
+            --bg-dark: #180f0f;
+            --white: #ffffff;
+            --cont-color: #392d20;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif; /* Modern font */
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: var(--text-light);
+            background-color: var(--bg-dark);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            color: var(--cont-color);
+        }
+
+        /* --- HERO SECTION --- */
+        header {
+            /* A nice gradient background for the top area */
+            background: var(--cont-color);
+            padding: 100px 0 60px;
+            border-bottom-left-radius: 50px;
+            border-bottom-right-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            margin-bottom: 50px;
+        }
+
+        .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .hero-text {
+            flex: 1;
+            min-width: 300px;
+            padding-right: 40px;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            line-height: 1.1;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; /* Makes text gradient */
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 35px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary-gradient);
+            color: white;
+            padding: 15px 35px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.6);
+        }
+
+        /* --- CSS PHONE MOCKUP (The trick to looking good without images) --- */
+        .phone-mockup {
+            width: 260px;
+            height: 520px;
+            border: 12px solid #333; /* Phone bezel */
+            border-radius: 40px;
+            background-color: #f0f0f0;
+            position: relative;
+            box-shadow: 20px 20px 50px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+        }
+
+        /* The Notch */
+        .phone-mockup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 120px;
+            height: 25px;
+            background-color: #333;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 2;
+        }
+
+        .placeholder-text {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* --- FEATURES --- */
+        .features {
+            padding: 50px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 50px;
+            color: var(--text-light);
+        }
+
+        .feature-grid {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .feature-card {
+            background: var(--cont-color);
+            color: var(--text-light);
+            padding: 35px;
+            border-radius: 20px;
+            flex: 1;
+            min-width: 250px;
+            max-width: 320px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            border-top: 5px solid var(--accent-color);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px); /* Pops up on hover */
+        }
+
+        .feature-card h3 {
+            margin-top: 0;
+            color: var(--accent-color);
+        }
+
+        /* --- SCREENSHOTS --- */
+        .screenshots {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .screenshot-scroller {
+            display: flex;
+            gap: 30px;
+            overflow-x: auto;
+            padding: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        footer p {
+            color: var(--text-light);
+        }
+
+        /* Small phone frames for screenshots */
+        .mini-phone {
+            width: 180px;
+            height: 360px;
+            border: 8px solid #333;
+            border-radius: 30px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .mini-phone img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: var(--cont-color);
+            padding: 50px 0;
+            text-align: center;
+            border-top: 1px solid #eee;
+            margin-top: 50px;
+        }
+
+        .student-info {
+            background: #f0f4ff;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 50px;
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .hero-content {
+                flex-direction: column-reverse;
+                text-align: center;
+            }
+            .hero-text {
+                padding-right: 0;
+                margin-top: 40px;
+            }
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1>ORCA/NET</h1>
+                <p>The smartest way to solve [Problem X]. Designed with simplicity and speed in mind for students everywhere.</p>
+                <a href="https://github.com/M-ismail83/Orcanet" class="btn">Download APK / View GitHub</a>
+            </div>
+
+            <div class="phone-mockup">
+                <div class="placeholder-text">
+                    Main App Screen<br>
+                    (Add Image Here)
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container features">
+        <h2 class="section-title">Why use this App?</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3> Secure</h3>
+                <p>End-to-end encryption keeps your data private and secure at all times.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🎨 Intuitive UI</h3>
+                <p>A user interface designed for clarity. No cluttered menus, just the features you need.</p>
+            </div>
+            <div class="feature-card">
+                <h3>☁️ Cloud Sync</h3>
+                <p>Access your data from anywhere. Cloud Firestore integration ensures you never lose progress.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🚀 Fast</h3>
+                <p>Optimized for speed and performance, ensuring a smooth experience on all devices.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="screenshots">
+        <div class="container">
+            <h2 class="section-title">App Gallery</h2>
+            <div class="screenshot-scroller">
+                <div class="mini-phone">
+                    <div class="placeholder-text">Login Screen</div>
+                    </div>
+                <div class="mini-phone">
+                    <div class="placeholder-text">Home Dashboard</div>
+                    </div>
+                <div class="mini-phone">
+                    <div class="placeholder-text">Settings Page</div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="student-info">
+                Developed by Sailors
+            </div>
+            <p>
+                <strong>Student 1:</strong> Mahmut İsmail Öztürk (230717024) <br>
+                <strong>Student 2:</strong> Dildar Yılmaz (230717006) <br>
+                <strong>Student 3:</strong> Deniz Orhun Kalender (230717054)
+            </p>
+            <p style="color: #999; font-size: 0.9rem; margin-top: 20px;">
+                SE 3505 Mobile Application Development Final Project
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>

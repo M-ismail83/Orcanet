@@ -40,8 +40,8 @@ class _MyHomePageState extends State<MyHomePage> {
       label: 'Search',
     ),
     NavigationDestination(
-      icon: Icon(Icons.coffee),
-      label: 'Donation',
+      icon: Icon(Icons.settings),
+      label: 'Settings',
     ),
   ];
 
