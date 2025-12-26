@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Project - Final Submission</title>
+    <title>ORCA/NET</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
@@ -15,9 +15,9 @@
             --text-dark: #000000;
             --text-light: #f0e8e6;
             --bg-light: #f7f2f0;
-            --bg-dark: #3c312b;
+            --bg-dark: #180f0f;
             --white: #ffffff;
-            --cont-color: #5c5144;
+            --cont-color: #392d20;
         }
 
         body {
@@ -25,20 +25,21 @@
             margin: 0;
             padding: 0;
             line-height: 1.6;
-            color: var(--text-dark);
-            background-color: var(--bg-light);
+            color: var(--text-light);
+            background-color: var(--bg-dark);
         }
 
         .container {
             max-width: 1100px;
             margin: 0 auto;
             padding: 0 20px;
+            color: var(--cont-color);
         }
 
         /* --- HERO SECTION --- */
         header {
             /* A nice gradient background for the top area */
-            background: var(--white);
+            background: var(--cont-color);
             padding: 100px 0 60px;
             border-bottom-left-radius: 50px;
             border-bottom-right-radius: 50px;
@@ -70,7 +71,7 @@
 
         .hero-text p {
             font-size: 1.25rem;
-            color: var(--text-dark);
+            color: var(--text-light);
             margin-bottom: 35px;
         }
 
@@ -136,7 +137,7 @@
             text-align: center;
             font-size: 2rem;
             margin-bottom: 50px;
-            color: var(--text-dark);
+            color: var(--text-light);
         }
 
         .feature-grid {
@@ -147,7 +148,8 @@
         }
 
         .feature-card {
-            background: white;
+            background: var(--cont-color);
+            color: var(--text-light);
             padding: 35px;
             border-radius: 20px;
             flex: 1;
@@ -182,6 +184,10 @@
             flex-wrap: wrap;
         }
 
+        footer p {
+            color: var(--text-light);
+        }
+
         /* Small phone frames for screenshots */
         .mini-phone {
             width: 180px;
@@ -204,7 +210,7 @@
 
         /* --- FOOTER --- */
         footer {
-            background-color: var(--white);
+            background-color: var(--cont-color);
             padding: 50px 0;
             text-align: center;
             border-top: 1px solid #eee;
