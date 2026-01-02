@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:orcanet/pages/loginPage.dart';
 import 'package:orcanet/index/pageIndex.dart';
 import 'package:orcanet/index/serviceIndex.dart';
+import 'package:orcanet/widgets/tagContainer.dart';
 
 class profilePage extends StatefulWidget {
   const profilePage(
@@ -162,7 +163,7 @@ class _profilePageState extends State<profilePage> {
                         'tags': tags
                       }, SetOptions(merge: true));
 
-                      if (mounted) {
+                      if (context.mounted) {
                         Navigator.of(context).pop();
                       }
                       _loadData(); 
@@ -175,26 +176,11 @@ class _profilePageState extends State<profilePage> {
         });
   }
 
-  Container tagContainer(String tagName) {
-    return Container(
-      alignment: Alignment.center,
-      height: 30,
-      width: 65,
-      decoration: BoxDecoration(
-          color: widget.currentColors['acc1'],
-          border: Border.all(color: widget.currentColors['acc1']!),
-          borderRadius: BorderRadius.circular(10)),
-      child: Text(
-        tagName,
-        style: TextStyle(color: widget.currentColors['text']),
-      ),
-    );
-  }
-
   Future<Map<String, dynamic>> getProfileData(String docId) async {
     DocumentSnapshot snapshot = await profRec.get();
     return snapshot.data() as Map<String, dynamic>;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -284,7 +270,8 @@ class _profilePageState extends State<profilePage> {
                           if (auth.currentUser!.uid != widget.uid)
                             ElevatedButton(
                                 onPressed: () {
-                                  
+                                  InviteNotificationService().showPodSelectionDialog(
+                                      context, widget.uid);
                                 }, child: Text("Invite")),
                           if (auth.currentUser!.uid != widget.uid)
                             IconButton(
@@ -333,7 +320,7 @@ class _profilePageState extends State<profilePage> {
                                 spacing: 8.0,
                                 children: List<Widget>.from(
                                   userData!['tags'].map<Widget>(
-                                    (tag) => tagContainer(tag),
+                                    (tag) => tagContainer(tag, widget.currentColors),
                                   ),
                                 ),
                               )
