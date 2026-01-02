@@ -99,12 +99,12 @@ class _makePostPageState extends State<makePostPage> {
                     }
                   } catch (e) {
                     print('Error: $e');
-                    if (mounted) {
+                    if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Upload failed: $e")));
                     }
                   } finally {
-                    if (mounted) {
+                    if (context.mounted) {
                       setState(() {
                         isUploading = false;
                       });

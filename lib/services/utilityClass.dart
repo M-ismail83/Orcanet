@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:orcanet/index/pageIndex.dart';
-import 'package:orcanet/services/serviceIndex.dart';
+import 'package:orcanet/index/serviceIndex.dart';
 
 class Utilityclass {
   static Map<String, Color> ligthModeColor = <String, Color>{
@@ -31,10 +31,10 @@ class Utilityclass {
 
   static Map<String, Color> darkModeColor = {
   'title':     Color.fromRGBO(0, 0, 0, 1.0),
-  'bg':        Color.fromRGBO(60, 49, 43, 1.0),
-  'container': Color.fromRGBO(92, 81, 68, 1.0),
+  'bg':        Color.fromRGBO(24, 15, 15, 1.0),
+  'container': Color.fromRGBO(57, 45, 32, 1.0),
   'contaionerBorder': Color.fromRGBO(145, 118, 104, 0.7),
-  'bar':       Color.fromRGBO(145, 118, 104, 1.0),
+  'bar':       Color.fromRGBO(113, 85, 65, 1.0),
   'selected':  Color.fromRGBO(184, 167, 148, 1.0),
   'text':      Color.fromRGBO(240, 232, 230, 1.0),
   'hintText':  Color.fromRGBO(240, 232, 230, 0.5),

@@ -75,7 +75,7 @@ class _searchPageState extends State<searchPage> {
                                 fontSize: 20,
                                 fontWeight: FontWeight.w500
                               ),
-
+                            
                             decoration: InputDecoration(
                               prefixIcon: Padding(
                                 padding: EdgeInsets.only(left:1, right:1),
@@ -92,10 +92,10 @@ class _searchPageState extends State<searchPage> {
                                 color: widget.currentColors['hintText'],
                                 fontWeight: FontWeight.w500
                               ),
-                            ),
+                            ),),
                             Divider(
-                              thickness:2,
-                              color: widget.currentColors["bar"],
+                              thickness: 2,
+                              color: widget.currentColors['bar']!.withAlpha(150),
                             ),
                             SizedBox(height: 4),
                             SingleChildScrollView(

@@ -57,7 +57,7 @@ Container nameCard(BuildContext context, String name, String tag, String uid, Ma
             decoration: ShapeDecoration(
                 color: currentColors['acc2'],
                 shape: CircleBorder(
-                    side: BorderSide(color: currentColors['acc2']!))),
+                    side: BorderSide(color: currentColors['acc2border']!, width: 2))),
             child: IconButton(
               onPressed: () {
                 showModalBottomSheet(
@@ -79,7 +79,7 @@ Container nameCard(BuildContext context, String name, String tag, String uid, Ma
             decoration: ShapeDecoration(
                 color: currentColors['acc2'],
                 shape: CircleBorder(
-                    side: BorderSide(color: currentColors['acc2']!))),
+                    side: BorderSide(color: currentColors['acc2border']!, width: 2))),
             child: IconButton(
               onPressed: () {},
               icon: Icon(Icons.group),
