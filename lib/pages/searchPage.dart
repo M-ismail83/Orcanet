@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:sodium_libs/sodium_libs.dart';
 import 'package:orcanet/widgets/nameCard.dart';
 
 class searchPage extends StatefulWidget {
@@ -32,51 +33,77 @@ class _searchPageState extends State<searchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: widget.currentColors['bg'],
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-                padding: const EdgeInsets.all(
-                    10.0), // This is the "padding on the outside"
-                child: Column(children: [
+      backgroundColor: widget.currentColors['bg'],
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
                   Container(
                       decoration: BoxDecoration(
-                          color: widget.currentColors['container'],
-                          borderRadius: BorderRadius.circular(17.0)),
-                      padding: const EdgeInsets.all(5.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                        color: widget.currentColors['container'],
+                        borderRadius: BorderRadius.circular(17.0),
+                        border: BoxBorder.all(
+                          color: widget.currentColors['bg']!.withAlpha(160),
+                          width: 3,
+                        ),
+                      ),
+
+                      padding: const EdgeInsets.all(7.0),
                       width: double.infinity,
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             TextField(
+                              textCapitalization: TextCapitalization.words,
+                              textAlignVertical: TextAlignVertical.center,
                               cursorColor: widget.currentColors['hintText'],
+                              cursorWidth: 2.5,
                               style: TextStyle(
                                 color: widget.currentColors['text'],
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500
                               ),
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                hintText: 'Type a message',
-                                hintStyle: TextStyle(
-                                    color: widget.currentColors['hintText']),
+
+                            decoration: InputDecoration(
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.only(left:1, right:1),
+                                child: Icon(Icons.search, color: widget.currentColors['hintText'], size: 35),
+                                ),
+                              border: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              disabledBorder: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+
+                              hintText: 'Search for Orcas...',
+                              hintStyle: TextStyle(
+                                fontSize: 20,
+                                color: widget.currentColors['hintText'],
+                                fontWeight: FontWeight.w500
                               ),
                             ),
                             Divider(
-                              thickness: 2.0,
-                              color: widget.currentColors["bg"],
+                              thickness:2,
+                              color: widget.currentColors["bar"],
                             ),
                             SizedBox(height: 4),
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Wrap(
-                                  spacing: 8.0,
-                                  children: _allTags.map((tag) {
-                                    final isSelected = _isSelected(tag);
+                                spacing: 8.0,
+                                children: _allTags.map((tag){
+                                  final isSelected = _isSelected(tag);
 
                                     return FilterChip(
                                       showCheckmark: false,
@@ -88,13 +115,14 @@ class _searchPageState extends State<searchPage> {
                                           widget.currentColors['container'],
                                       shape: StadiumBorder(
                                         side: BorderSide(
-                                          color: widget.currentColors['acc1']!,
-                                          width: 1.0,
+                                          color: widget.currentColors['acc1border']!,
+                                          width: 3.0,
                                         ),
                                       ),
                                       labelStyle: TextStyle(
                                         color: widget.currentColors['text']!,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
                                       ),
                                       onSelected: (bool selected) {
                                         setState(() {

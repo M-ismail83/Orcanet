@@ -5,7 +5,6 @@ import 'package:orcanet/index/pageIndex.dart';
 import 'package:orcanet/index/serviceIndex.dart';
 import 'package:orcanet/widgets/nameCard.dart';
 import 'package:orcanet/widgets/postCard.dart';
-import 'package:orcanet/widgets/tagContainer.dart';
 
 class feedPage extends StatefulWidget {
   const feedPage({super.key, required this.currentColors});
@@ -118,7 +117,7 @@ class _feedPageState extends State<feedPage> {
 
           // 3. GENERATE TAGS ON THE FLY (Don't use global list)
           List<Container> currentPostTags = (data['tags'] as List<dynamic>?)
-                  ?.map((tag) => tagContainer(tag.toString(), widget.currentColors))
+                  ?.map((tag) => tagContainer(tag.toString()))
                   .toList() ??
               [];
 
@@ -131,6 +130,8 @@ class _feedPageState extends State<feedPage> {
             nameCard: nameCard(
                 context,
                 // Use nickname cache, fallback to 'Unknown'
+                _nicknameCache[data['sednerUid']] ?? "Unknown User",
+                "Member" // Or fetch their role if you have it
                 _nicknameCache[data['senderUid']] ?? "Unknown User",
                 "Member",
                 data['senderUid'] ?? "", widget.currentColors // Or fetch their role if you have it

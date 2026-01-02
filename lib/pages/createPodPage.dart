@@ -132,43 +132,61 @@ class _createPodPageState extends State<createPodPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // pod name field
-                     Text("Pod Details",
+                     Text("Pod Details:",
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold, color: widget.currentColors['text'])),
+                            fontSize: 20, fontWeight: FontWeight.bold, color: widget.currentColors['text'])),
                     const SizedBox(height: 10),
                     TextField(
+
+                      cursorColor: widget.currentColors['text'],
+                      cursorWidth: 1.7,
+                      style: TextStyle(
+                        color: widget.currentColors['text'], fontSize: 18, fontWeight: FontWeight.w500
+                        ),
                       controller: _podNameController,
                       decoration:  InputDecoration(
                         labelText: "Pod Name",
                         hintText: "A Pod is a group for your project teammates",
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.group),
-                        labelStyle: TextStyle(color: widget.currentColors['text']),
-                        hintStyle: TextStyle(color: widget.currentColors['hintText']),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: widget.currentColors['text']!, width: 2),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: widget.currentColors['text']!, width: 2),
+                        ),
+                        prefixIcon: Icon(Icons.group_add, color: widget.currentColors['text'], fontWeight: FontWeight.bold),
+                        labelStyle: TextStyle(color: widget.currentColors['text'], fontSize: 19, fontWeight: FontWeight.bold),
+                        hintStyle: TextStyle(color: widget.currentColors['hintText'], fontWeight: FontWeight.w500, fontSize: 19),
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Text("Pod Details",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold, color: widget.currentColors['text'])),
                     const SizedBox(height: 10),
                     TextField(
+                      cursorColor: widget.currentColors['text'],
+                      cursorWidth: 1.7,
+                      style: TextStyle(
+                        color: widget.currentColors['text'], fontSize: 18, fontWeight: FontWeight.w500
+                      ),
                       controller: _podDescController,
                       decoration:  InputDecoration(
                         labelText: "Pod Description",
-                        hintText: "Describe your pod",
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.group),
-                        labelStyle: TextStyle(color: widget.currentColors['text']),
-                        hintStyle: TextStyle(color: widget.currentColors['hintText']),
+                        hintText: "Describe your pod.",
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: widget.currentColors['text']!, width: 2),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: widget.currentColors['text']!, width: 2),
+                        ),
+                        prefixIcon: Icon(Icons.anchor_sharp, color: widget.currentColors['text'], fontWeight: FontWeight.bold),
+                        labelStyle: TextStyle(color: widget.currentColors['text'], fontSize: 19, fontWeight: FontWeight.bold),
+                        hintStyle: TextStyle(color: widget.currentColors['hintText'], fontWeight: FontWeight.w500, fontSize: 19),
                       ),
                     ),
                     const SizedBox(height: 24),
                     //user field
                      Text(
-                      "Add Tags",
+                      "Add Tags:",
                       style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: widget.currentColors['text']),
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.currentColors['text']),
                     ),
                     const SizedBox(height: 10),
                     SingleChildScrollView(
@@ -188,13 +206,14 @@ class _createPodPageState extends State<createPodPage> {
                                           widget.currentColors['bg'],
                                       shape: StadiumBorder(
                                         side: BorderSide(
-                                          color: widget.currentColors['acc1']!,
-                                          width: 1.0,
+                                          color: widget.currentColors['acc1border']!,
+                                          width: 3.0,
                                         ),
                                       ),
                                       labelStyle: TextStyle(
                                         color: widget.currentColors['text']!,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
                                       ),
                                       onSelected: (bool selected) {
                                         setState(() {
@@ -220,16 +239,20 @@ class _createPodPageState extends State<createPodPage> {
                 child: ElevatedButton(
                   onPressed: _createChatroom,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    foregroundColor: Colors.white,
+                    backgroundColor: widget.currentColors['acc1'],
+                    foregroundColor: widget.currentColors['text'],
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(
+                        color: widget.currentColors['acc1border']!,
+                        width: 3,
+                      ),
+                      borderRadius: BorderRadius.circular(15),
                     ),
                     elevation: 2,
                   ),
                   child: const Text(
-                    "CREATE",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    "CREATE YOUR POD!",
+                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
