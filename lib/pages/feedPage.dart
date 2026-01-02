@@ -2,9 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
 import 'package:orcanet/main.dart';
 import 'package:orcanet/index/pageIndex.dart';
-import 'package:orcanet/index/serviceIndex.dart';
+import 'package:orcanet/services/serviceIndex.dart';
 import 'package:orcanet/widgets/postCard.dart';
-import 'package:orcanet/widgets/tagContainer.dart';
 
 class feedPage extends StatefulWidget {
   const feedPage({super.key, required this.currentColors});
@@ -15,13 +14,30 @@ class feedPage extends StatefulWidget {
 }
 
 class _feedPageState extends State<feedPage> {
-  
-
-  Container nameCard(BuildContext context, String name, String tag, String uid) {
+  Container tagContainer(String tagName) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 3),
-      height: 45,
-      width: 350,
+      alignment: Alignment.center,
+      height: 30,
+      width: 65,
+      decoration: BoxDecoration(
+          color: widget.currentColors['acc1'],
+          border: Border.all(color: widget.currentColors['acc1border']!, width: 3),
+          borderRadius: BorderRadius.circular(10)
+          ),
+      child: Text(
+        "Hello",
+        style: TextStyle(
+          color: widget.currentColors['text'],
+          fontSize: 15,
+          fontWeight: FontWeight.bold
+          ),
+      ),
+    );
+  }
+
+  Container nameCard(BuildContext context, String name, String tag) {
+    return Container(
+      padding: EdgeInsets.only(left: 3, top: 8),
       decoration: BoxDecoration(
           border: Border.all(color: Colors.transparent),
           borderRadius: BorderRadius.circular(10)),
@@ -36,13 +52,14 @@ class _feedPageState extends State<feedPage> {
                     profilePage(
                       currentColors: widget.currentColors,
                       uid: "2u6hqirtZTdl7gBI85wUap9qJni1",
-                    ));
+                    )
+                  );
               },
               splashColor: Colors.transparent,
               child: Image.asset(
                 "lib/images/placeholder.jpg",
-                width: 40,
-                height: 40,
+                width: 50,
+                height: 50,
                 fit: BoxFit.cover,
               ),
             ),
@@ -57,11 +74,13 @@ class _feedPageState extends State<feedPage> {
                   name,
                   style: TextStyle(
                       color: widget.currentColors['text'],
+                      fontSize: 16,
                       fontWeight: FontWeight.bold),
                 ),
                 Text(tag,
                     style: TextStyle(
                       color: widget.currentColors['text'],
+                      fontSize: 15,
                     ))
               ],
             ),
@@ -71,7 +90,12 @@ class _feedPageState extends State<feedPage> {
             decoration: ShapeDecoration(
                 color: widget.currentColors['acc2'],
                 shape: CircleBorder(
-                    side: BorderSide(color: widget.currentColors['acc2']!))),
+                    side: BorderSide(
+                      color: widget.currentColors['acc2border']!,
+                      width: 3
+                      )
+                    )
+                  ),
             child: IconButton(
               onPressed: () {
                 showModalBottomSheet(
@@ -85,20 +109,26 @@ class _feedPageState extends State<feedPage> {
               },
               icon: Icon(Icons.message),
               color: widget.currentColors['text'],
-              iconSize: 18,
+              iconSize: 27,
               alignment: Alignment.center,
             ),
           ),
+          SizedBox(width:10),
           Ink(
             decoration: ShapeDecoration(
                 color: widget.currentColors['acc2'],
                 shape: CircleBorder(
-                    side: BorderSide(color: widget.currentColors['acc2']!))),
+                    side: BorderSide(
+                      color: widget.currentColors['acc2border']!,
+                      width: 3
+                      )
+                    )
+                  ),
             child: IconButton(
               onPressed: () {},
               icon: Icon(Icons.group),
               color: widget.currentColors['text'],
-              iconSize: 20,
+              iconSize: 30,
               alignment: Alignment.center,
             ),
           )
@@ -208,7 +238,7 @@ class _feedPageState extends State<feedPage> {
 
           // 3. GENERATE TAGS ON THE FLY (Don't use global list)
           List<Container> currentPostTags = (data['tags'] as List<dynamic>?)
-                  ?.map((tag) => tagContainer(tag.toString(), widget.currentColors))
+                  ?.map((tag) => tagContainer(tag.toString()))
                   .toList() ??
               [];
 
@@ -221,9 +251,8 @@ class _feedPageState extends State<feedPage> {
             nameCard: nameCard(
                 context,
                 // Use nickname cache, fallback to 'Unknown'
-                _nicknameCache[data['senderUid']] ?? "Unknown User",
-                "Member",
-                data['senderUid'] ?? "", // Or fetch their role if you have it
+                _nicknameCache[data['sednerUid']] ?? "Unknown User",
+                "Member" // Or fetch their role if you have it
                 ),
           );
         },

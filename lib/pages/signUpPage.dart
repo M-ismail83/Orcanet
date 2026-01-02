@@ -104,15 +104,45 @@ class _signUpPageState extends State<signUpPage> {
           child: Column(
             children: [
               TextFormField(
+                style: TextStyle(
+                  color: widget.currentColors['text'],
+                  fontSize: 20,
+                  fontWeight: FontWeight.normal
+                  ),
+                cursorColor: widget.currentColors['text'],
                 controller: _emailController,
                 decoration: InputDecoration(
-                    icon: Icon(Icons.mail),
+                    icon: Icon(
+                      Icons.mail,
+                      size: 30,
+                    ),
                     hintText: 'Your email address',
                     labelText: 'Email *',
                     hintStyle:
-                        TextStyle(color: widget.currentColors['hintText']),
-                    labelStyle: TextStyle(color: widget.currentColors['text']),
-                    iconColor: widget.currentColors['text']),
+                      TextStyle(color: widget.currentColors['hintText'],
+                      fontWeight: FontWeight.w500,
+                      fontSize: 17
+                      ),
+                    labelStyle: 
+                      TextStyle(color: widget.currentColors['text'],
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                      ),
+                    iconColor: widget.currentColors['text'],
+                    
+                    focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: widget.currentColors['bar']!,
+                      width: 3
+                      ),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: widget.currentColors['bar']!,
+                      width: 3
+                      ),
+                    ),
+                  ),
                 validator: (value) {
                   return (value != null && EmailValidator.validate(value))
                       ? null
@@ -120,16 +150,50 @@ class _signUpPageState extends State<signUpPage> {
                 },
               ),
 
+              SizedBox(height: 10,),
+
               TextFormField(
+                style: TextStyle(
+                  color: widget.currentColors['text'],
+                  fontSize: 20,
+                  fontWeight: FontWeight.normal
+                  ),
+                cursorColor: widget.currentColors['text'],
                 controller: _usernameController,
                 decoration: InputDecoration(
-                    icon: Icon(Icons.alternate_email),
+                    icon: Icon(
+                      Icons.alternate_email,
+                      size: 30,
+                      ),
                     hintText: 'Please select a unique username.',
-                    labelText: 'Username *',
+                    labelText: 'Username',
                     hintStyle:
-                        TextStyle(color: widget.currentColors['hintText']),
-                    labelStyle: TextStyle(color: widget.currentColors['text']),
-                    iconColor: widget.currentColors['text']),
+                        TextStyle(
+                          color: widget.currentColors['hintText'],
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500
+                          ),
+                    labelStyle: TextStyle(
+                      color: widget.currentColors['text'],
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                      ),
+                    iconColor: widget.currentColors['text'],
+                    
+                    focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: widget.currentColors['bar']!,
+                      width: 3
+                      ),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: widget.currentColors['bar']!,
+                      width: 3
+                      ),
+                    ),
+
+                    ),
                 validator: (value) {
                   return (value != null && value.contains('@'))
                       ? 'Do not use the @ char.'
@@ -137,16 +201,50 @@ class _signUpPageState extends State<signUpPage> {
                 },
               ),
 
+              SizedBox(height: 10,),
+
               TextFormField(
+                style: TextStyle(
+                  color: widget.currentColors['text'],
+                  fontSize: 20,
+                  fontWeight: FontWeight.normal
+                  ),
+                cursorColor: widget.currentColors['text'],
                 controller: _nicknameController,
                 decoration: InputDecoration(
-                    icon: Icon(Icons.person),
+                    icon: Icon(
+                      Icons.person,
+                      size: 30,
+                      ),
                     hintText: 'What should people call you?',
-                    labelText: 'Nick Name *',
+                    labelText: 'Nick Name',
                     hintStyle:
-                        TextStyle(color: widget.currentColors['hintText']),
-                    labelStyle: TextStyle(color: widget.currentColors['text']),
-                    iconColor: widget.currentColors['text']),
+                        TextStyle(
+                        color: widget.currentColors['hintText'],
+                        fontWeight: FontWeight.w500,
+                        fontSize: 17
+                        ),
+                    labelStyle: TextStyle(
+                      color: widget.currentColors['text'],
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20
+                      ),
+                    iconColor: widget.currentColors['text'],
+                    
+                    focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: widget.currentColors['bar']!,
+                      width: 3
+                      ),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: widget.currentColors['bar']!,
+                      width: 3
+                      ),
+                    ),
+
+                    ),
                 validator: (value) {
                   return (value != null && value.contains('@'))
                       ? 'Do not use the @ char.'
@@ -154,18 +252,48 @@ class _signUpPageState extends State<signUpPage> {
                 },
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
 
               TextFormField(
+                style: TextStyle(
+                  color: widget.currentColors['text'],
+                  fontSize: 20,
+                  fontWeight: FontWeight.normal
+                  ),
+                cursorColor: widget.currentColors['text'],
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                    labelText: "Password",
-                    icon: Icon(Icons.password),
+                    labelText: "Password*",
+                    icon: Icon(
+                      Icons.password,
+                      size: 30,
+                      ),
                     hintStyle:
-                        TextStyle(color: widget.currentColors['hintText']),
-                    labelStyle: TextStyle(color: widget.currentColors['text']),
-                    iconColor: widget.currentColors['text']),
+                        TextStyle(color: widget.currentColors['hintText'],
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500
+                        ),
+                    labelStyle: TextStyle(
+                      color: widget.currentColors['text'],
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                      ),
+                    iconColor: widget.currentColors['text'],
+                    
+                    focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: widget.currentColors['bar']!,
+                      width: 3
+                      ),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: widget.currentColors['bar']!,
+                      width: 3
+                      ),
+                    ),
+                  ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Enter a password';
@@ -177,18 +305,49 @@ class _signUpPageState extends State<signUpPage> {
                 },
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
 
               TextFormField(
+                style: TextStyle(
+                  color: widget.currentColors['text'],
+                  fontSize: 20,
+                  fontWeight: FontWeight.normal
+                  ),
+                cursorColor: widget.currentColors['text'],
                 controller: _confirmPasswordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                    labelText: "Confirm Password",
-                    icon: Icon(Icons.password_outlined),
+                    labelText: "Confirm Password*",
+                    icon: Icon(
+                      Icons.password_outlined,
+                      size: 30,
+                      ),
                     hintStyle:
-                        TextStyle(color: widget.currentColors['hintText']),
-                    labelStyle: TextStyle(color: widget.currentColors['text']),
-                    iconColor: widget.currentColors['text']),
+                        TextStyle(
+                          color: widget.currentColors['hintText'],
+                          fontWeight: FontWeight.w500,
+                          fontSize: 20
+                          ),
+                    labelStyle: TextStyle(
+                      color: widget.currentColors['text'],
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20
+                      ),
+                    iconColor: widget.currentColors['text'],
+                    focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: widget.currentColors['bar']!,
+                      width: 3
+                      ),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: widget.currentColors['bar']!,
+                      width: 3
+                      ),
+                    ),
+
+                    ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Confirm your password';
@@ -204,7 +363,25 @@ class _signUpPageState extends State<signUpPage> {
 
               ElevatedButton(
                 onPressed: _submitForm,
-                child: Text("Sign Up"),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: widget.currentColors['text'],
+                      backgroundColor: widget.currentColors['acc1'],
+                      padding: EdgeInsets.all(16),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          side: BorderSide(
+                            color: widget.currentColors['acc1border']!,
+                            width: 3.5
+                        )
+                    )
+                ),
+                child: Text(
+                  "Sign Up",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
               ),
             ],
           ),

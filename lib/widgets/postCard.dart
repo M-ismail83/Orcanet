@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 
@@ -56,32 +57,42 @@ class _postCardState extends State<postCard> {
         color: widget.currentColorsPost['container'],
         clipBehavior: Clip.antiAlias,
         elevation: 4.0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: widget.currentColorsPost['container']!,
+            width: 3.0,),
+          ),
         child: Padding(
           padding: EdgeInsets.all(15),
           child: AnimatedSize(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch, //////////////
               children: [
                 Text(
-                  widget.title,
-                  style: TextStyle(color: widget.currentColorsPost['text'], fontSize: 18, fontWeight: FontWeight.bold),
+                  widget.title,//title of post
+                  style: TextStyle(
+                    color: widget.currentColorsPost['text'], 
+                    fontSize: 20, 
+                    fontWeight: FontWeight.bold,
+                    ),
+                  
                 ),
-                Divider(
+                Divider(//divider line
                     thickness: 2, color: widget.currentColorsPost['bar']),
                 if (!_isExtended)
                   Text(
-                    widget.bodyText,
-                    style: TextStyle(color: widget.currentColorsPost['text']),
+                    widget.bodyText,//body of post before extending
+                    style: TextStyle(color: widget.currentColorsPost['text'], fontSize: 14, fontWeight: FontWeight.w500),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   )
                 else
                   Text(
-                    widget.bodyText,
-                    style: TextStyle(color: widget.currentColorsPost['text']),
+                    widget.bodyText,//body of post after extending
+                    style: TextStyle(color: widget.currentColorsPost['text'], fontSize: 15, fontWeight: FontWeight.w500),
                   ),
                 SizedBox(height: 7),
                 SingleChildScrollView(
@@ -92,7 +103,7 @@ class _postCardState extends State<postCard> {
                       children: displayedTags,
                     )),
                 SizedBox(height: 7),
-                widget.nameCard
+                widget.nameCard,
               ],
             ),
           ),

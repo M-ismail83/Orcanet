@@ -51,7 +51,7 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   sodium: ^1.0.4
   sodium_libs: ^1.0.4
-
+  google_fonts: ^6.3.3
 
 dev_dependencies:
   flutter_test:

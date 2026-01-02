@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:orcanet/index/pageIndex.dart';
-import 'package:orcanet/index/serviceIndex.dart';
-import '../encryption/message_decryptor.dart';
+import 'package:orcanet/services/serviceIndex.dart';
+import 'package:orcanet/encryption/message_decryptor.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({
@@ -28,6 +28,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   bool _sending = false;
+
+  final Map<String, String> _decryptedCache = {};
 
   Future<void> handleSend() async {
     final text = _controller.text.trim();
@@ -56,10 +58,10 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(60, 49, 43, 1.0),
+      backgroundColor: widget.currentColors['bg'],
       appBar: AppBar(
         title: Text(widget.kisiAdi),
-        backgroundColor: const Color.fromRGBO(145, 118, 104, 1.0),
+        backgroundColor: widget.currentColors['bar'],
         actions: [
           IconButton(
             icon: const Icon(Icons.menu_outlined),
@@ -134,21 +136,41 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final message = messages[index].data() as Map<String, dynamic>;
-                    final bool isMe = message['senderId'] == _auth.currentUser!.uid;
+                    final messageId = messages[index].id;
+                    final bool isMe =
+                        message['senderId'] == _auth.currentUser!.uid;
 
-                    // ✅ If it's an old message (plaintext), show it safely.
-                    final bool hasPlainText = message.containsKey('text') && message['text'] != null;
+                    final bool hasPlainText =
+                        message.containsKey('text') && message['text'] != null;
+
+                    /// ✅ Use cached decrypted message if available
+                    final cachedText = _decryptedCache[messageId];
 
                     return Align(
-                      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                      alignment:
+                          isMe ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
                         margin: const EdgeInsets.all(8.0),
                         padding: const EdgeInsets.all(10.0),
                         decoration: BoxDecoration(
                           color: isMe
                               ? widget.currentColors['msgBubbleSender']
-                              : widget.currentColors['msgBubbleReciever'],
+                              : widget.currentColors['msgBubbleReceiver'],
                           borderRadius: BorderRadius.circular(30.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: widget.currentColors['title']!
+                                  .withAlpha(100),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                          border: Border.all(
+                            width: 2.7,
+                            color: isMe
+                                ? widget.currentColors['mbsBorder']!.withAlpha(175)
+                                : widget.currentColors['mbrBorder']!.withAlpha(175),
+                          ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,7 +180,17 @@ class _ChatScreenState extends State<ChatScreen> {
                                 message['text'].toString(),
                                 style: TextStyle(
                                   fontSize: 16.0,
-                                  color: widget.currentColors["text"],
+                                  color: isMe
+                                      ? widget.currentColors['messageSender']
+                                      : widget.currentColors['messageReceiver'],
+                                ),
+                              )
+                            else if (cachedText != null)
+                              Text(
+                                cachedText,
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: widget.currentColors['messageSender'],
                                 ),
                               )
                             else
@@ -169,34 +201,34 @@ class _ChatScreenState extends State<ChatScreen> {
                                   currentUserId: _auth.currentUser!.uid,
                                 ),
                                 builder: (context, snap) {
-                                  if (snap.connectionState == ConnectionState.waiting) {
+                                  if (snap.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const SizedBox();
+                                  }
+
+                                  if (snap.hasData) {
+                                    _decryptedCache[messageId] = snap.data!;
                                     return Text(
-                                      "Decrypting...",
-                                      style: TextStyle(color: widget.currentColors["text"]),
+                                      snap.data!,
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        color: isMe
+                                            ? widget.currentColors['messageSender']
+                                            : widget.currentColors['messageReceiver'],
+                                      ),
                                     );
                                   }
-                                  if (snap.hasError) {
-                                    // ✅ No crash: show readable error.
-                                    return Text(
-                                      "🔒 Can't decrypt",
-                                      style: TextStyle(color: widget.currentColors["text"]),
-                                    );
-                                  }
-                                  return Text(
-                                    snap.data ?? "🔒 Can't decrypt",
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      color: widget.currentColors["text"],
-                                    ),
-                                  );
+                                  return const SizedBox();
                                 },
                               ),
                             const SizedBox(height: 4),
                             Text(
                               isMe ? "You" : widget.kisiAdi,
                               style: TextStyle(
-                                fontSize: 12.0,
-                                color: widget.currentColors["text"]?.withAlpha(128),
+                                fontSize: 14.0,
+                                color: isMe
+                                  ?widget.currentColors['messageSender']
+                                  :widget.currentColors['text']!.withAlpha(200)
                               ),
                             )
                           ],
@@ -217,10 +249,20 @@ class _ChatScreenState extends State<ChatScreen> {
                     controller: _controller,
                     style: TextStyle(color: widget.currentColors['text']),
                     cursorColor: widget.currentColors['hintText'],
+                    cursorWidth: 3,
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          color: Color.fromRGBO(60, 49, 43, 0.70),
+                        borderSide: BorderSide(
+                          width: 3,
+                          color: widget.currentColors['textFieldBorder']!,
+                        ),
+                        borderRadius: BorderRadius.circular(35.0),
+                      ),
+
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 3,
+                          color: widget.currentColors['textFieldBorder']!,
                         ),
                         borderRadius: BorderRadius.circular(35.0),
                       ),
@@ -231,7 +273,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       border: OutlineInputBorder(
                         borderSide: const BorderSide(
                           style: BorderStyle.solid,
-                          color: Color.fromRGBO(60, 49, 43, 0.70),
+                          color: Color.fromRGBO(60, 49, 43, 1),
                         ),
                         borderRadius: BorderRadius.circular(35.0),
                       ),
@@ -241,14 +283,20 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: ElevatedButton(
                           onPressed: _sending ? null : handleSend,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromRGBO(184, 167, 148, 1),
+                            backgroundColor: widget.currentColors['bar'],
                             shape: const CircleBorder(),
                             padding: const EdgeInsets.all(12.0),
-                            elevation: 0,
+                            elevation: 2.5,
                           ),
                           child: Icon(
+                            shadows: [
+                              Shadow(
+                                color: widget.currentColors['bar']!,
+                                blurRadius: 3,
+                              ),
+                            ],
                             Icons.send,
-                            color: const Color.fromRGBO(60, 49, 43, 1),
+                            color: widget.currentColors['text'],
                             size: 25,
                           ),
                         ),
