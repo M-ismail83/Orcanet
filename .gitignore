@@ -48,6 +48,6 @@ app.*.map.json
 /android/.gradle/
 /android/app/.cxx/
 
-linux/flutter/
-macos/flutter/
-windows/flutter/
+linux/
+macos/
+windows/

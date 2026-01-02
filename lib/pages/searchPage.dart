@@ -1,12 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sodium_libs/sodium_libs.dart';
+import 'package:orcanet/widgets/nameCard.dart';
 
 class searchPage extends StatefulWidget {
   const searchPage({super.key, required this.currentColors});
 
   final Map<String, Color> currentColors;
 
-  @override State<StatefulWidget> createState() => _searchPageState(); //what is this ughhhhhhhhhhh im so tireddd
+  @override
+  State<StatefulWidget> createState() =>
+      _searchPageState(); //what is this ughhhhhhhhhhh im so tireddd
 }
 
 class _searchPageState extends State<searchPage> {
@@ -28,8 +32,6 @@ class _searchPageState extends State<searchPage> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       backgroundColor: widget.currentColors['bg'],
       body: Column(
@@ -60,8 +62,8 @@ class _searchPageState extends State<searchPage> {
                       padding: const EdgeInsets.all(7.0),
                       width: double.infinity,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             TextField(
                               textCapitalization: TextCapitalization.words,
@@ -91,13 +93,10 @@ class _searchPageState extends State<searchPage> {
                                 fontWeight: FontWeight.w500
                               ),
                             ),
-                          ),
-
                             Divider(
                               thickness:2,
                               color: widget.currentColors["bar"],
                             ),
-
                             SizedBox(height: 4),
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
@@ -106,12 +105,14 @@ class _searchPageState extends State<searchPage> {
                                 children: _allTags.map((tag){
                                   final isSelected = _isSelected(tag);
 
-                                  return FilterChip(
+                                    return FilterChip(
                                       showCheckmark: false,
                                       label: Text(tag),
                                       selected: isSelected,
-                                      selectedColor: widget.currentColors['acc1'],
-                                      backgroundColor: widget.currentColors['container'],
+                                      selectedColor:
+                                          widget.currentColors['acc1'],
+                                      backgroundColor:
+                                          widget.currentColors['container'],
                                       shape: StadiumBorder(
                                         side: BorderSide(
                                           color: widget.currentColors['acc1border']!,
@@ -127,24 +128,61 @@ class _searchPageState extends State<searchPage> {
                                         setState(() {
                                           if (selected) {
                                             _selectedTags.add(tag);
-                                          }
-                                          else {
+                                          } else {
                                             _selectedTags.remove(tag);
                                           }
                                         });
                                       },
-                                      );
-                                }).toList()
-                              ),
+                                    );
+                                  }).toList()),
                             ),
-                          ]
-                      )
-                  ),
-                  SizedBox(height: 10),
-                ]
-              )
-          )
-        ],
-      )
-    );
-  }}
+                          ]))
+                ])),
+            SizedBox(height: 10),
+            StreamBuilder(
+                stream: _selectedTags.isEmpty
+                    ? FirebaseFirestore.instance
+                        .collection('profile')
+                        .snapshots()
+                    : FirebaseFirestore.instance
+                        .collection('profile')
+                        .where('tags', arrayContainsAny: _selectedTags.toList())
+                        .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Expanded(
+                        child: Center(
+                      child: CircularProgressIndicator(
+                        color: widget.currentColors['acc1'],
+                      ),
+                    ));
+                  }
+
+                  var docs = snapshot.data!.docs;
+
+                  return Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: docs.length,
+                        itemBuilder: (context, index) {
+                          var userData = docs[index].data();
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: nameCard(
+                                context,
+                                userData['nickname'] ?? 'No Name',
+                                userData['userName'] ?? '@notag',
+                                docs[index].id,
+                                widget.currentColors),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                })
+          ],
+        ));
+  }
+}

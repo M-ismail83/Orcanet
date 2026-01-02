@@ -6,3 +6,4 @@ export 'package:orcanet/services/googleSignIn.dart';
 export 'package:orcanet/services/messagingService.dart';
 export 'package:orcanet/widgets/taskSection.dart';
 export 'package:orcanet/services/utilityClass.dart';
+export 'package:orcanet/services/inviteNotification.dart';

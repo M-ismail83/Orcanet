@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
 import 'package:orcanet/main.dart';
 import 'package:orcanet/index/pageIndex.dart';
-import 'package:orcanet/services/serviceIndex.dart';
+import 'package:orcanet/index/serviceIndex.dart';
+import 'package:orcanet/widgets/nameCard.dart';
 import 'package:orcanet/widgets/postCard.dart';
 
 class feedPage extends StatefulWidget {
@@ -14,128 +15,6 @@ class feedPage extends StatefulWidget {
 }
 
 class _feedPageState extends State<feedPage> {
-  Container tagContainer(String tagName) {
-    return Container(
-      alignment: Alignment.center,
-      height: 30,
-      width: 65,
-      decoration: BoxDecoration(
-          color: widget.currentColors['acc1'],
-          border: Border.all(color: widget.currentColors['acc1border']!, width: 3),
-          borderRadius: BorderRadius.circular(10)
-          ),
-      child: Text(
-        "Hello",
-        style: TextStyle(
-          color: widget.currentColors['text'],
-          fontSize: 15,
-          fontWeight: FontWeight.bold
-          ),
-      ),
-    );
-  }
-
-  Container nameCard(BuildContext context, String name, String tag) {
-    return Container(
-      padding: EdgeInsets.only(left: 3, top: 8),
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.transparent),
-          borderRadius: BorderRadius.circular(10)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          ClipOval(
-            child: InkWell(
-              onTap: () {
-                Utilityclass().navigator(
-                    context,
-                    profilePage(
-                      currentColors: widget.currentColors,
-                      uid: "2u6hqirtZTdl7gBI85wUap9qJni1",
-                    )
-                  );
-              },
-              splashColor: Colors.transparent,
-              child: Image.asset(
-                "lib/images/placeholder.jpg",
-                width: 50,
-                height: 50,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          SizedBox(width: 10),
-          SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(
-                      color: widget.currentColors['text'],
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
-                ),
-                Text(tag,
-                    style: TextStyle(
-                      color: widget.currentColors['text'],
-                      fontSize: 15,
-                    ))
-              ],
-            ),
-          ),
-          Spacer(),
-          Ink(
-            decoration: ShapeDecoration(
-                color: widget.currentColors['acc2'],
-                shape: CircleBorder(
-                    side: BorderSide(
-                      color: widget.currentColors['acc2border']!,
-                      width: 3
-                      )
-                    )
-                  ),
-            child: IconButton(
-              onPressed: () {
-                showModalBottomSheet(
-                    elevation: 4.0,
-                    backgroundColor: widget.currentColors['bg'],
-                    context: context,
-                    builder: (BuildContext context) {
-                      return CommentsSection(
-                          currentColorsComment: widget.currentColors);
-                    });
-              },
-              icon: Icon(Icons.message),
-              color: widget.currentColors['text'],
-              iconSize: 27,
-              alignment: Alignment.center,
-            ),
-          ),
-          SizedBox(width:10),
-          Ink(
-            decoration: ShapeDecoration(
-                color: widget.currentColors['acc2'],
-                shape: CircleBorder(
-                    side: BorderSide(
-                      color: widget.currentColors['acc2border']!,
-                      width: 3
-                      )
-                    )
-                  ),
-            child: IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.group),
-              color: widget.currentColors['text'],
-              iconSize: 30,
-              alignment: Alignment.center,
-            ),
-          )
-        ],
-      ),
-    );
-  }
 
   final ScrollController _scroolController = ScrollController();
   List<DocumentSnapshot> posts = [];
@@ -253,6 +132,9 @@ class _feedPageState extends State<feedPage> {
                 // Use nickname cache, fallback to 'Unknown'
                 _nicknameCache[data['sednerUid']] ?? "Unknown User",
                 "Member" // Or fetch their role if you have it
+                _nicknameCache[data['senderUid']] ?? "Unknown User",
+                "Member",
+                data['senderUid'] ?? "", widget.currentColors // Or fetch their role if you have it
                 ),
           );
         },
