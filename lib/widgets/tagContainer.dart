@@ -7,10 +7,10 @@ Container tagContainer(String tagName, Map<String, Color> currentColors) {
       width: 65,
       decoration: BoxDecoration(
           color: currentColors['acc1'],
-          border: Border.all(color: currentColors['acc1']!),
+          border: Border.all(color: currentColors['acc1border']!, width: 2),
           borderRadius: BorderRadius.circular(10)),
       child: Text(
-        "Hello",
+        tagName,
         style: TextStyle(color: currentColors['text']),
       ),
     );
