@@ -8,29 +8,45 @@ class InviteNotificationService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  // 1. Initialize the plugin (Call this in main.dart or your home page initState)
   Future<void> initialize() async {
-    // Android Setup: Make sure 'ic_launcher' exists in android/app/src/main/res/drawable
-    // If not, use '@mipmap/ic_launcher'
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
+  const InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
 
-    await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) {
-        // Handle what happens when user taps the notification
-        if (response.payload != null) {
-          print('User tapped notification for Pod ID: ${response.payload}');
-          // You can use Navigator here to go to the specific Pod page
-        }
-      },
-    );
-  }
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    
+    onDidReceiveNotificationResponse: (NotificationResponse response) async {
+      final String? actionId = response.actionId;
+      final String? podId = response.payload;
 
-  // 2. Request Permission (Required for Android 13+)
+      final DocumentReference docRef = FirebaseFirestore.instance
+          .collection('pods')
+          .doc(podId);
+
+      if (podId == null) return;
+
+      // Check which button was pressed
+      if (actionId == 'accept_invite') {
+        print("User clicked ACCEPT for Pod: $podId");
+        docRef.update({
+          'members': FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid])
+        });
+        
+      } else if (actionId == 'decline_invite') {
+        print("User clicked DECLINE for Pod: $podId");
+      
+      } else {
+        // User clicked the notification body (not a button)
+        print("User clicked the notification body");
+        // Navigate to the specific page
+      }
+    },
+  );
+}
+
   Future<void> requestPermissions() async {
     // Using permission_handler package
     await Permission.notification.request();
@@ -44,29 +60,64 @@ class InviteNotificationService {
   }
 
   // 3. Show the Notification
-  Future<void> showInviteNotif(
-      String podName, String podId, String inviterName) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'invite_channel',
-      'Pod Invites',
-      channelDescription: 'Notifications for pod invitations',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true, // Shows the time
-    );
+  Future<void> showInviteNotif(String podName, String podId, String inviterName) async {
+  
+  // A. Define the Buttons (Actions)
+  final List<AndroidNotificationAction> actions = [
+    const AndroidNotificationAction(
+      'accept_invite', // actionId (we check this later)
+      'Accept',        // Button Text
+      titleColor: Colors.green,
+      showsUserInterface: true, // true = opens app, false = background task
+      cancelNotification: true, // Close notification on click
+    ),
+    const AndroidNotificationAction(
+      'decline_invite',
+      'Decline',
+      titleColor: Colors.red,
+      showsUserInterface: true,
+      cancelNotification: true,
+    ),
+  ];
 
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+  // B. Define the Style (Big Text for long messages)
+  final BigTextStyleInformation bigTextStyle = BigTextStyleInformation(
+    '$inviterName has invited you to join the pod "$podName". Click to respond.',
+    htmlFormatBigText: true,
+    contentTitle: '<b>Pod Invitation</b>',
+    htmlFormatContentTitle: true,
+    summaryText: '$inviterName invited you',
+    htmlFormatSummaryText: true,
+  );
 
-    await flutterLocalNotificationsPlugin.show(
-      0, // ID (Use a unique random number if you want multiple notifications to stack)
-      'Pod Invitation',
-      '$inviterName has invited you to join "$podName".',
-      platformChannelSpecifics,
-      payload: podId,
-    );
-  }
+  // C. Build the Details
+  final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    'invite_channel',
+    'Pod Invites',
+    channelDescription: 'Notifications for pod invitations',
+    importance: Importance.max,
+    priority: Priority.high,
+    
+    // VISUAL CUSTOMIZATION
+    color: const Color(0xFF5C5344), // Your app's primary color (hex)
+    styleInformation: bigTextStyle,  // Use the style defined above
+    largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'), // Show app icon on the right
+    
+    // BUTTONS
+    actions: actions,
+  );
+
+  NotificationDetails platformDetails = 
+      NotificationDetails(android: androidDetails);
+
+  await flutterLocalNotificationsPlugin.show(
+    0,
+    'Pod Invitation',
+    '$inviterName has invited you to join "$podName".',
+    platformDetails,
+    payload: podId, // We still pass the ID
+  );
+}
 
   Future<void> sendInvite({
     required BuildContext context,
@@ -142,9 +193,7 @@ class InviteNotificationService {
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('pods')
-                    .where('members',
-                        arrayContains:
-                            currentUserId) // Or 'adminId' == currentUserId
+                    .where('creatorId', isEqualTo: currentUserId)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) return CircularProgressIndicator();
@@ -164,7 +213,6 @@ class InviteNotificationService {
                         title: Text(pod['podName']),
                         trailing: Icon(Icons.send),
                         onTap: () {
-                          // CALL THE FUNCTION HERE
                           Navigator.pop(context); // Close the sheet
                           sendInvite(
                             context: context,
