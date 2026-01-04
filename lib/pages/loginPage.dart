@@ -86,6 +86,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: TextField(
+                  obscureText: true,
+                  obscuringCharacter: '*',
                   cursorColor: widget.currentColors['text']!.withAlpha(1200),
                   style: TextStyle(
                     color: widget.currentColors['text'],
