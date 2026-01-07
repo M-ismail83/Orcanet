@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:orcanet/index/pageIndex.dart';
-import 'package:orcanet/services/serviceIndex.dart';
+import 'package:orcanet/index/serviceIndex.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key, required this.currentColors});
@@ -86,6 +86,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: TextField(
+                  obscureText: true,
+                  obscuringCharacter: '*',
                   cursorColor: widget.currentColors['text']!.withAlpha(1200),
                   style: TextStyle(
                     color: widget.currentColors['text'],

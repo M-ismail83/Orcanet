@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:orcanet/index/pageIndex.dart';
-import 'package:orcanet/services/serviceIndex.dart';
+import 'package:orcanet/index/serviceIndex.dart';
 import 'package:orcanet/encryption/message_decryptor.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -223,7 +223,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                             const SizedBox(height: 4),
                             Text(
-                              isMe ? "You" : widget.kisiAdi,
+                              isMe ? "You" : message['senderName'] ?? 'Unknown',
                               style: TextStyle(
                                 fontSize: 14.0,
                                 color: isMe

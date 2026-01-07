@@ -90,7 +90,7 @@ class _VideoCallPageState extends State<VideoCallPage> {
         onUserOffline: (RtcConnection connection, int remoteUid,
             UserOfflineReasonType reason) {
           debugPrint("Remote user $remoteUid left");
-          setState(() => _remoteUid = 0);
+          setState(() => _remoteUid = null);
         },
       ),
     );
@@ -151,9 +151,10 @@ class _VideoCallPageState extends State<VideoCallPage> {
 
   void _onCallEnd() {
     // This is your existing leave logic
+    if (context.mounted) Navigator.pop(context);
     _engine.leaveChannel();
     _engine.release();
-    if (mounted) Navigator.pop(context);
+    
   }
 
   @override

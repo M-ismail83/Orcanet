@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -75,6 +76,39 @@ class _MyHomePageState extends State<MyHomePage> {
     Callnotifservice(context: context).setupNotification();
     Callnotifservice(context: context).listenForCallEvents();
     Callnotifservice(context: context).checkAndNavigationCallingPage();
+
+    final notifService = InviteNotificationService();
+  
+  // 1. Setup Notifications
+  notifService.initialize();
+  notifService.requestPermissions();
+
+  // 2. Listen to Firestore for NEW invites
+  String myUserId = FirebaseAuth.instance.currentUser!.uid;
+  
+  FirebaseFirestore.instance
+      .collection('users')
+      .doc(myUserId)
+      .collection('invites') // Assuming invites are stored here
+      .where('status', isEqualTo: 'pending') // Only get new ones
+      .snapshots()
+      .listen((snapshot) {
+    
+    // Loop through changes to find ADDED documents
+    for (var change in snapshot.docChanges) {
+      if (change.type == DocumentChangeType.added) {
+        var data = change.doc.data() as Map<String, dynamic>;
+        
+        // TRIGGER THE NOTIFICATION
+        notifService.showInviteNotif(
+          data['podName'] ?? 'Unknown Pod',
+          data['podId'] ?? '0',
+          data['inviterName'] ?? 'Someone',
+        );
+      }
+    }
+  });
+
     FirebaseMessaging.instance.getToken().then((token) {
     if (token != null) {
       createAndSaveUser(fcmToken: token);

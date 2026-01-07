@@ -26,6 +26,7 @@ Future<void> createAndSaveUser({required String fcmToken}) async {
       'name': currentUser.displayName ?? 'No Name', // Handle null names
       'email': currentUser.email,
       'lastActive': FieldValue.serverTimestamp(),
+      'isPremium': false
     }, SetOptions(merge: true));
 
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
@@ -44,15 +45,14 @@ Future<void> sendMessage({
 }) async {
   final firestore = FirebaseFirestore.instance;
   final chatDocRef = firestore.collection('chats').doc(chatId);
+  final userRef = firestore.collection('users').doc(receiverId[0]);
 
   try {
-    // 1️⃣ Build participants list
     final List<String> participants = [
       senderId,
       ...receiverId.map((e) => e.toString()),
     ];
 
-    // 2️⃣ ENSURE room key exists (THIS MUST COME FIRST)
     final chatSnapshot = await chatDocRef.get();
     if (!chatSnapshot.exists) {
       await initializeRoomKey(chatId, participants);
@@ -63,7 +63,6 @@ Future<void> sendMessage({
       }
     }
 
-    // 3️⃣ Debug private key presence
     final privateKey = await secureStorage.read(
       key: "${senderId}_privateKey",
     );
@@ -71,10 +70,8 @@ Future<void> sendMessage({
       throw Exception("Private key missing for user $senderId");
     }
 
-    // 4️⃣ NOW safely get room key
     final roomKey = await getRoomKey(chatId, senderId);
 
-    // 5️⃣ Encrypt message
     final nonce = sodium.randombytes.buf(
       sodium.crypto.secretBox.nonceBytes,
     );
@@ -85,7 +82,6 @@ Future<void> sendMessage({
       key: roomKey,
     );
 
-    // 6️⃣ Write message
     await firestore.runTransaction((transaction) async {
       final chatSnapshot = await transaction.get(chatDocRef);
 
@@ -107,6 +103,7 @@ Future<void> sendMessage({
         'id': nextId,
         'senderId': senderId,
         'receiverId': receiverId,
+        'recieverName': userRef.get().then((doc) => doc['name']).toString().split(' ')[0],
         'cipherText': base64Encode(cipherText),
         'nonce': base64Encode(nonce),
         'timestamp': FieldValue.serverTimestamp(),
