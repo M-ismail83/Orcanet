@@ -23,13 +23,13 @@ class _MyHomePageState extends State<MyHomePage> {
   int currentPageIndex = 0;
 
   var colors = <Color>{Colors.red, Colors.green, Colors.blue};
-  List<NavigationDestination> pages = [
+  List<NavigationDestination> get pages => [
     NavigationDestination(
-      selectedIcon: Icon(Icons.home),
       icon: Icon(
-        Icons.home_outlined,
+        Icons.home,
         size: 30,
         fontWeight: FontWeight.w600,
+        color: currentColors['text'],
       ),
       label: 'Home',
     ),
@@ -38,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Icons.plus_one,
         size: 30,
         fontWeight: FontWeight.w600,
+        color: currentColors['text'],
       ),
       label: 'Post',
     ),
@@ -46,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Icons.people,
         size: 30,
         fontWeight: FontWeight.w600,
+        color: currentColors['text'],
       ),
       label: 'Community',
     ),
@@ -54,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Icons.search,
         size: 30,
         fontWeight: FontWeight.w600,
+        color: currentColors['text'],
       ),
       label: 'Search',
     ),
@@ -62,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Icons.settings,
         size: 30,
         fontWeight: FontWeight.w600,
+        color: currentColors['text'],
       ),
       label: 'Settings',
     ),
@@ -186,6 +190,14 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
           bottomNavigationBar: NavigationBar(
+            labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>(
+    (Set<WidgetState> states) {
+      if (states.contains(WidgetState.selected)) {
+        return TextStyle(color: currentColors['text'], fontWeight: FontWeight.bold);
+      }
+      return TextStyle(color: currentColors['text'], fontWeight: FontWeight.normal);
+    },
+  ),
             onDestinationSelected: (int index) {
               setState(() {
                 currentPageIndex = index;
@@ -193,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             selectedIndex: currentPageIndex,
             backgroundColor: currentColors['bar'],
-            indicatorColor: currentColors['selected'],
+            indicatorColor: currentColors['contaionerBorder'],
             destinations: pages,
           ),
           body: <Widget>[
