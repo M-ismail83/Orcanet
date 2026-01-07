@@ -53,8 +53,7 @@ class _profilePageState extends State<profilePage> {
     if (mounted) {
       setState(() {
         userData = result;
-        _selectedAvatarIndex =
-          ((result['avatarIndex'] ?? 0) as num).toInt();
+        _selectedAvatarIndex = ((result['avatarIndex'] ?? 0) as num).toInt();
         isLoading = false;
       });
     }
@@ -74,16 +73,21 @@ class _profilePageState extends State<profilePage> {
   late DocumentReference profRec =
       FirebaseFirestore.instance.collection('profile').doc(widget.uid);
 
-  Future<void> editProfile() async {  
+  Future<void> editProfile() async {
     // BONUS TIP: Pre-fill the boxes with existing data!
     // It's annoying for users to type from scratch every time.
-    TextEditingController descController = TextEditingController(text: userData!['desc'] ?? "");
-    TextEditingController linkGithubController = TextEditingController(text: userData!['links']?['github'] ?? "");
-    TextEditingController linkLinkController = TextEditingController(text: userData!['links']?['linkedin'] ?? "");
-    
-    List<dynamic> tags = List.from(userData!['tags'] ?? []); // Copy existing tags
+    TextEditingController descController =
+        TextEditingController(text: userData!['desc'] ?? "");
+    TextEditingController linkGithubController =
+        TextEditingController(text: userData!['links']?['github'] ?? "");
+    TextEditingController linkLinkController =
+        TextEditingController(text: userData!['links']?['linkedin'] ?? "");
 
-    int selectedAvatarIndex = (userData!['avatarIndex'] ?? _selectedAvatarIndex) as int;
+    List<dynamic> tags =
+        List.from(userData!['tags'] ?? []); // Copy existing tags
+
+    int selectedAvatarIndex =
+        (userData!['avatarIndex'] ?? _selectedAvatarIndex) as int;
 
     bool _isSelected(String tag) {
       return tags.contains(tag);
@@ -93,118 +97,92 @@ class _profilePageState extends State<profilePage> {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return StatefulBuilder( // Use StatefulBuilder to make the Dialog update (for tags)
-            builder: (context, setStateDialog) {
-              return AlertDialog(
-                insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-                contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
-                actionsPadding: const EdgeInsets.fromLTRB(0, 0, 12, 12),
-                actionsAlignment: MainAxisAlignment.end,
-                backgroundColor: widget.currentColors['bg'],
-                title: Text("Customize Your Profile",
-                    style: TextStyle(color: widget.currentColors['text'],
-                    fontWeight: FontWeight.bold
-                    )
-                  ),
-                content: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.60, 
-                    maxWidth: 450,
-                  ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                      mainAxisSize: MainAxisSize.min,
+          return StatefulBuilder(
+              // Use StatefulBuilder to make the Dialog update (for tags)
+              builder: (context, setStateDialog) {
+            return AlertDialog(
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+              contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+              actionsPadding: const EdgeInsets.fromLTRB(0, 0, 12, 12),
+              actionsAlignment: MainAxisAlignment.end,
+              backgroundColor: widget.currentColors['bg'],
+              title: Text("Customize Your Profile",
+                  style: TextStyle(
+                      color: widget.currentColors['text'],
+                      fontWeight: FontWeight.bold)),
+              content: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.60,
+                  maxWidth: 450,
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       TextFormField(
-                        style: TextStyle(
-                          color: widget.currentColors['text']
-                        ),
+                          style: TextStyle(color: widget.currentColors['text']),
                           controller: descController,
                           maxLength: 350,
                           decoration: InputDecoration(
                             focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: widget.currentColors['bar']!,
-                                width: 2
-                              )
-                            ),
+                                borderSide: BorderSide(
+                                    color: widget.currentColors['bar']!,
+                                    width: 2)),
                             enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: widget.currentColors['bar']!,
-                                width: 2
-                              )
-                            ),
+                                borderSide: BorderSide(
+                                    color: widget.currentColors['bar']!,
+                                    width: 2)),
                             label: Text("Description",
                                 style: TextStyle(
                                     color: widget.currentColors['text'],
                                     fontWeight: FontWeight.w600,
-                                    fontSize: 18
-                                    )
-                                  ),
+                                    fontSize: 18)),
                             hintText: "Describe yourself...",
                             hintStyle: TextStyle(
                               color: widget.currentColors['hintText'],
                             ),
                           )),
-                        
                       TextFormField(
-                        style: TextStyle(
-                          color: widget.currentColors['text']
-                        ),
+                        style: TextStyle(color: widget.currentColors['text']),
                         controller: linkGithubController,
                         decoration: InputDecoration(
                           focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: widget.currentColors['bar']!,
-                              width: 2
-                            )
-                          ),
+                              borderSide: BorderSide(
+                                  color: widget.currentColors['bar']!,
+                                  width: 2)),
                           enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: widget.currentColors['bar']!,
-                              width: 2
-                            )
-                          ),
+                              borderSide: BorderSide(
+                                  color: widget.currentColors['bar']!,
+                                  width: 2)),
                           label: Text("GitHub Link",
                               style: TextStyle(
                                   color: widget.currentColors['text'],
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 18
-                                  )
-                                ),
+                                  fontSize: 18)),
                         ),
                       ),
-
-                      const SizedBox(height: 15,),
+                      const SizedBox(
+                        height: 15,
+                      ),
                       TextFormField(
-                        style: TextStyle(
-                          color: widget.currentColors['text']
-                        ),
+                        style: TextStyle(color: widget.currentColors['text']),
                         controller: linkLinkController,
                         decoration: InputDecoration(
                           focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: widget.currentColors['bar']!,
-                              width: 2
-                            )
-                          ),
+                              borderSide: BorderSide(
+                                  color: widget.currentColors['bar']!,
+                                  width: 2)),
                           enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: widget.currentColors['bar']!,
-                              width: 2
-                            )
-                          ),
-
+                              borderSide: BorderSide(
+                                  color: widget.currentColors['bar']!,
+                                  width: 2)),
                           label: Text("LinkedIn Link",
                               style: TextStyle(
                                   color: widget.currentColors['text'],
                                   fontSize: 18,
-                                  fontWeight: FontWeight.w600
-                                  )
-                                ),
+                                  fontWeight: FontWeight.w600)),
                         ),
                       ),
-
                       const SizedBox(height: 15),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
@@ -226,10 +204,9 @@ class _profilePageState extends State<profilePage> {
                                   ),
                                 ),
                                 labelStyle: TextStyle(
-                                  color: widget.currentColors['text']!,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16
-                                ),
+                                    color: widget.currentColors['text']!,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16),
                                 onSelected: (bool selected) {
                                   // Update the DIALOG state, not the page state
                                   setStateDialog(() {
@@ -243,9 +220,9 @@ class _profilePageState extends State<profilePage> {
                               );
                             }).toList()),
                       ),
-
-                      const SizedBox(height: 10,),
-
+                      const SizedBox(
+                        height: 10,
+                      ),
                       Text(
                         "Choose Your Character!!",
                         style: TextStyle(
@@ -254,14 +231,15 @@ class _profilePageState extends State<profilePage> {
                           fontSize: 16,
                         ),
                       ),
-
-                      const SizedBox(height: 8,),
-
+                      const SizedBox(
+                        height: 8,
+                      ),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: List.generate(_avatars.length, (index) {
-                            final bool isSelected = index == selectedAvatarIndex;
+                            final bool isSelected =
+                                index == selectedAvatarIndex;
                             return Padding(
                               padding: const EdgeInsets.only(right: 10.0),
                               child: GestureDetector(
@@ -269,35 +247,37 @@ class _profilePageState extends State<profilePage> {
                                   setStateDialog(() {
                                     selectedAvatarIndex = index;
                                   });
-                                } ,
+                                },
                                 child: Column(
                                   children: [
                                     Container(
                                       decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: isSelected
-                                            ? widget.currentColors['acc1']!
-                                            : widget.currentColors['bar']!,
-                                          width: isSelected ? 3 : 2
-                                        )
-                                      ),
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                              color: isSelected
+                                                  ? widget
+                                                      .currentColors['acc1']!
+                                                  : widget
+                                                      .currentColors['bar']!,
+                                              width: isSelected ? 3 : 2)),
                                       child: CircleAvatar(
                                         radius: 35,
-                                        backgroundColor: widget.currentColors['bg'],
-                                        backgroundImage: AssetImage(_avatars[index]),
+                                        backgroundColor:
+                                            widget.currentColors['bg'],
+                                        backgroundImage:
+                                            AssetImage(_avatars[index]),
                                       ),
                                     )
                                   ],
                                 ),
-                                ),
-                              );
+                              ),
+                            );
                           }),
                         ),
                       ),
-
-                      const SizedBox(height: 18,),
-
+                      const SizedBox(
+                        height: 18,
+                      ),
                       Text(
                         "Here is your hard earned badges!!",
                         style: TextStyle(
@@ -306,76 +286,67 @@ class _profilePageState extends State<profilePage> {
                           fontSize: 16,
                         ),
                       ),
-
                       SizedBox(
-                        height: 64,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: _badges.map((assetPath) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 12.0),
-                                child: _buildBadge(assetPath),
+                          height: 64,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: _badges.map((assetPath) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 12.0),
+                                  child: _buildBadge(assetPath),
                                 );
                               }).toList(),
-                          ),
-                        )
-                      )
-
+                            ),
+                          ))
                     ],
                   ),
                 ),
-                ),
-
-                actions: [
-                  TextButton(
-                    child: Text(
-                      'Approve',
-                      style: TextStyle(
-                        color: widget.currentColors['acc1']
-                      ),
-                      ),
-                    onPressed: () async {
-                      Map<String, String> links = {
-                        "github": linkGithubController.text,
-                        'linkedin': linkLinkController.text
-                      };
-
-                      await profRec.set({
-                        'desc': descController.text,
-                        'links': links,
-                        'tags': tags,
-                        'avatarIndex': selectedAvatarIndex,
-                      }, SetOptions(merge: true));
-
-                      if (context.mounted) {
-                        Navigator.of(context).pop();
-                      }
-                      _loadData(); 
-                    },
+              ),
+              actions: [
+                TextButton(
+                  child: Text(
+                    'Approve',
+                    style: TextStyle(color: widget.currentColors['acc1']),
                   ),
-                ],
-              );
-            }
-          );
+                  onPressed: () async {
+                    Map<String, String> links = {
+                      "github": linkGithubController.text,
+                      'linkedin': linkLinkController.text
+                    };
+
+                    await profRec.set({
+                      'desc': descController.text,
+                      'links': links,
+                      'tags': tags,
+                      'avatarIndex': selectedAvatarIndex,
+                    }, SetOptions(merge: true));
+
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                    }
+                    _loadData();
+                  },
+                ),
+              ],
+            );
+          });
         });
   }
 
   Widget _buildBadge(String assetPath) {
     return Container(
-      width: 60,
-      height: 60,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: widget.currentColors['container']!.withAlpha(170),
-          width: 3
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+              color: widget.currentColors['container']!.withAlpha(170),
+              width: 3),
         ),
-      ),
-      child: ClipOval(
-        child: Image.asset(assetPath, fit: BoxFit.cover),
-      )
-    );
+        child: ClipOval(
+          child: Image.asset(assetPath, fit: BoxFit.cover),
+        ));
   }
 
   Widget _buildBadgeRow() {
@@ -401,9 +372,7 @@ class _profilePageState extends State<profilePage> {
               color: widget.currentColors['text'],
             ),
           ),
-
           const SizedBox(height: 8),
-
           SizedBox(
             height: 60,
             child: ListView.separated(
@@ -424,7 +393,6 @@ class _profilePageState extends State<profilePage> {
     DocumentSnapshot snapshot = await profRec.get();
     return snapshot.data() as Map<String, dynamic>;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -448,7 +416,6 @@ class _profilePageState extends State<profilePage> {
                 padding: EdgeInsets.all(15.0),
                 margin: EdgeInsets.all(15.0),
                 width: double.infinity,
-
                 child: Column(children: [
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -464,18 +431,15 @@ class _profilePageState extends State<profilePage> {
                           ),
                         ),
                         child: ClipOval(
-                          child: Transform.scale(
-                            scale: 1.12,
-                            child: Image.asset(
-                              _avatars[_selectedAvatarIndex],
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        ),
+                            child: Transform.scale(
+                          scale: 1.12,
+                          child: Image.asset(
+                            _avatars[_selectedAvatarIndex],
+                            fit: BoxFit.cover,
+                          ),
+                        )),
                       ),
-                      
                       const SizedBox(width: 12),
-
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -529,9 +493,11 @@ class _profilePageState extends State<profilePage> {
                           if (auth.currentUser!.uid != widget.uid)
                             ElevatedButton(
                                 onPressed: () {
-                                  InviteNotificationService().showPodSelectionDialog(
-                                      context, widget.uid);
-                                }, child: Text("Invite")),
+                                  InviteNotificationService()
+                                      .showPodSelectionDialog(
+                                          context, widget.uid);
+                                },
+                                child: Text("Invite")),
                           if (auth.currentUser!.uid != widget.uid)
                             IconButton(
                                 onPressed: () {
@@ -547,9 +513,7 @@ class _profilePageState extends State<profilePage> {
                       ))
                     ],
                   ),
-
                   _buildBadgeRow(),
-
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -562,7 +526,8 @@ class _profilePageState extends State<profilePage> {
                                 spacing: 8.0,
                                 children: List<Widget>.from(
                                   userData!['tags'].map<Widget>(
-                                    (tag) => tagContainer(tag, widget.currentColors),
+                                    (tag) =>
+                                        tagContainer(tag, widget.currentColors),
                                   ),
                                 ),
                               )
@@ -685,22 +650,7 @@ class _profilePageState extends State<profilePage> {
                     }
                   },
               )),
-              TextButton.icon(
-                onPressed: () async {
-                  await logOut();
-                  await signOutWithGoogle();
-
-                  if (context.mounted) {
-                    Utilityclass().navigator(
-                        context,
-                        LoginScreen(
-                          currentColors: widget.currentColors,
-                        ));
-                  }
-                },
-                icon: const Icon(Icons.logout),
-                label: const Text('Sign Out'),
-              ),
+              
             ],
           ),
         ));
