@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:orcanet/index/pageIndex.dart';
 import 'package:orcanet/index/serviceIndex.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Utilityclass {
   static Map<String, Color> ligthModeColor = <String, Color>{
@@ -105,6 +106,19 @@ class Utilityclass {
         ),
       ),
     );
+  }
+}
+
+Future<void> launchInBrowser(Uri url) async {
+  try {
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception('Could not launch $url');
+    }
+  } catch (e) {
+    debugPrint('Error launching URL: $e');
   }
 }
 
