@@ -88,6 +88,15 @@ class SettingsPageState extends State<settingsPage> {
 
           // --- Section 3: App Info ---
           ListTile(
+            title: Text("Buy Us a Coffee",
+                style: TextStyle(color: widget.currentColors["text"])),
+            leading: const Icon(Icons.coffee),
+            onTap: () async {
+              final Uri url = Uri.parse("https://buymeacoffee.com/sailors");
+              await Utilityclass().launchInBrowser(url);
+            },
+          ),
+          ListTile(
             title: Text("App Version",
                 style: TextStyle(color: widget.currentColors["text"])),
             subtitle: const Text("1.0.0"),
