@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:orcanet/pages/loginPage.dart';
 import 'package:orcanet/index/pageIndex.dart';
 import 'package:orcanet/index/serviceIndex.dart';
+import 'package:orcanet/widgets/postCard.dart';
 import 'package:sodium_libs/sodium_libs.dart';
 import 'package:orcanet/widgets/tagContainer.dart';
 
@@ -567,14 +568,47 @@ class _profilePageState extends State<profilePage> {
                   padding: EdgeInsets.all(15.0),
                   margin: EdgeInsets.all(15.0),
                   width: double.infinity,
-                  child: Text(
-                    userData!['links'] != null
-                        ? "GitHub: ${userData!['links']['github']}\nLinkedIn: ${userData!['links']['linkedin']}"
-                        : "No links provided.",
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: widget.currentColors['text'],
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Links",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: widget.currentColors['text'],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      if (userData!['links'] != null &&
+                          userData!['links']['github'] != null &&
+                          userData!['links']['github'].isNotEmpty)
+                        TextButton.icon(
+                          onPressed: () async {
+                            final Uri url = Uri.parse(userData!['links']['github']);
+                            await Utilityclass().launchInBrowser(url);
+                          },
+                          icon: Icon(Icons.code, color: widget.currentColors['acc1']),
+                          label: Text(
+                            "GitHub",
+                            style: TextStyle(color: widget.currentColors['text']),
+                          ),
+                        ),
+                      if (userData!['links'] != null &&
+                          userData!['links']['linkedin'] != null &&
+                          userData!['links']['linkedin'].isNotEmpty)
+                        TextButton.icon(
+                          onPressed: () async {
+                            final Uri url = Uri.parse(userData!['links']['linkedin']);
+                            await Utilityclass().launchInBrowser(url);
+                          },
+                          icon: Icon(Icons.business, color: widget.currentColors['acc2']),
+                          label: Text(
+                            "LinkedIn",
+                            style: TextStyle(color: widget.currentColors['text']),
+                          ),
+                        ),
+                    ],
                   )),
               Container(
                 decoration: BoxDecoration(
@@ -586,90 +620,37 @@ class _profilePageState extends State<profilePage> {
                 padding: EdgeInsets.all(15.0),
                 margin: EdgeInsets.all(15.0),
                 width: double.infinity,
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: widget.currentColors["bar"],
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                            color: widget.currentColors['container']!,
-                            width: 1.0),
-                      ),
-                      padding: EdgeInsets.all(10.0),
-                      margin: EdgeInsets.all(8.0),
-                      width: 400.0,
-                      height: 80.0,
-                      child: Text(
-                        "asdfghjklşrtyuıowertyuıcv",
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: widget.currentColors['text'],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: widget.currentColors["bar"],
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                            color: widget.currentColors['container']!,
-                            width: 1.0),
-                      ),
-                      padding: EdgeInsets.all(10.0),
-                      margin: EdgeInsets.all(8.0),
-                      width: 400.0,
-                      height: 80.0,
-                      child: Text(
-                        "asdfghjklşrtyuıowertyuıcv",
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: widget.currentColors['text'],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: widget.currentColors["bar"],
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                            color: widget.currentColors['container']!,
-                            width: 1.0),
-                      ),
-                      padding: EdgeInsets.all(10.0),
-                      margin: EdgeInsets.all(8.0),
-                      width: 400.0,
-                      height: 80.0,
-                      child: Text(
-                        "asdfghjklşrtyuıowertyuıcv",
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: widget.currentColors['text'],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              /*
-              TextButton.icon(
-                onPressed: () async {
-                  await logOut();
-                  await signOutWithGoogle();
-
-                  if (context.mounted) {
-                    Utilityclass().navigator(
-                        context,
-                        LoginScreen(
-                          currentColors: widget.currentColors,
-                        ));
-                  }
-                },
-                icon: const Icon(Icons.logout),
-                label: const Text('Sign Out'),
-              ),
-              */
+                child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('posts')
+                      .where('senderUid', isEqualTo: widget.uid)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      List<DocumentSnapshot> posts = snapshot.data!.docs;
+                      return Column(
+                        children: posts.map((post) {
+                          return postCard(
+                            title: post['title'],
+                            bodyText: post['subTitle'],
+                            tags: (post['tags'] as List<dynamic>?)
+                  ?.map((tag) => tagContainer(tag.toString(), widget.currentColors))
+                  .toList() ??
+              [],
+                            nameCard: Container(),
+                            currentColorsPost: widget.currentColors,
+                          );
+                        }).toList(),
+                      );
+                    } else {
+                      return Text(
+                        "No posts available.",
+                        style: TextStyle(color: widget.currentColors['text']),
+                      );
+                    }
+                  },
+              )),
+              
             ],
           ),
         ));

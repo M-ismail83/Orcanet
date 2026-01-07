@@ -9,42 +9,69 @@ class InviteNotificationService {
       FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
+  // 1. Android Settings
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
 
   const InitializationSettings initializationSettings =
       InitializationSettings(android: initializationSettingsAndroid);
 
+  // 2. Initialize
   await flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
     
+    // --- HANDLER FOR FOREGROUND TAPS ---
     onDidReceiveNotificationResponse: (NotificationResponse response) async {
+      // 🛑 DEBUGGING PRINTS - WATCH THE CONSOLE FOR THESE 🛑
+      print("--------------------------------------------------");
+      print("👉 RAW EVENT: Notification Tapped!");
+      print("👉 Payload (Pod ID): ${response.payload}");
+      print("👉 Action ID (Button): ${response.actionId}");
+      print("👉 Input: ${response.input}");
+      print("--------------------------------------------------");
+
       final String? actionId = response.actionId;
       final String? podId = response.payload;
 
-      final DocumentReference docRef = FirebaseFirestore.instance
-          .collection('pods')
-          .doc(podId);
+      // SAFETY CHECK
+      if (podId == null) {
+        print("❌ FAIL: Pod ID is null. Cannot proceed.");
+        return;
+      }
 
-      if (podId == null) return;
-
-      // Check which button was pressed
+      // LOGIC BRANCHING
       if (actionId == 'accept_invite') {
-        print("User clicked ACCEPT for Pod: $podId");
-        docRef.update({
-          'members': FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid])
-        });
-        
-      } else if (actionId == 'decline_invite') {
-        print("User clicked DECLINE for Pod: $podId");
-      
-      } else {
-        // User clicked the notification body (not a button)
-        print("User clicked the notification body");
-        // Navigate to the specific page
+        print("✅ SUCCESS: Code entered 'Accept' block.");
+        await _acceptInvite(podId); // Extract logic to a helper function
+      } 
+      else if (actionId == 'decline_invite') {
+        print("⛔ SUCCESS: Code entered 'Decline' block.");
+      } 
+      else {
+        print("⚠️ NOTE: You clicked the notification BODY (Text), not the button.");
+        print("   (Action ID was null or didn't match 'accept_invite')");
       }
     },
   );
+}
+
+// Helper function to keep code clean
+Future<void> _acceptInvite(String podId) async {
+  print("⏳ FIRESTORE: Starting update for $podId...");
+  try {
+     final user = FirebaseAuth.instance.currentUser;
+     if (user == null) {
+       print("❌ ERROR: User is not logged in!");
+       return;
+     }
+     
+     await FirebaseFirestore.instance.collection('pods').doc(podId).update({
+        'members': FieldValue.arrayUnion([user.uid])
+     });
+     print("🚀 FIRESTORE: Update Complete! User added to pod.");
+  } catch (e) {
+     print("🔥 FIRESTORE ERROR: $e");
+  }
 }
 
   Future<void> requestPermissions() async {
@@ -60,64 +87,66 @@ class InviteNotificationService {
   }
 
   // 3. Show the Notification
-  Future<void> showInviteNotif(String podName, String podId, String inviterName) async {
-  
-  // A. Define the Buttons (Actions)
-  final List<AndroidNotificationAction> actions = [
-    const AndroidNotificationAction(
-      'accept_invite', // actionId (we check this later)
-      'Accept',        // Button Text
-      titleColor: Colors.green,
-      showsUserInterface: true, // true = opens app, false = background task
-      cancelNotification: true, // Close notification on click
-    ),
-    const AndroidNotificationAction(
-      'decline_invite',
-      'Decline',
-      titleColor: Colors.red,
-      showsUserInterface: true,
-      cancelNotification: true,
-    ),
-  ];
+  Future<void> showInviteNotif(
+      String podName, String podId, String inviterName) async {
+    // A. Define the Buttons (Actions)
+    final List<AndroidNotificationAction> actions = [
+      const AndroidNotificationAction(
+        'accept_invite', // actionId (we check this later)
+        'Accept', // Button Text
+        titleColor: Colors.green,
+        showsUserInterface: true, // true = opens app, false = background task
+        cancelNotification: true, // Close notification on click
+      ),
+      const AndroidNotificationAction(
+        'decline_invite',
+        'Decline',
+        titleColor: Colors.red,
+        showsUserInterface: true,
+        cancelNotification: true,
+      ),
+    ];
 
-  // B. Define the Style (Big Text for long messages)
-  final BigTextStyleInformation bigTextStyle = BigTextStyleInformation(
-    '$inviterName has invited you to join the pod "$podName". Click to respond.',
-    htmlFormatBigText: true,
-    contentTitle: '<b>Pod Invitation</b>',
-    htmlFormatContentTitle: true,
-    summaryText: '$inviterName invited you',
-    htmlFormatSummaryText: true,
-  );
+    // B. Define the Style (Big Text for long messages)
+    final BigTextStyleInformation bigTextStyle = BigTextStyleInformation(
+      '$inviterName has invited you to join the pod "$podName". Click to respond.',
+      htmlFormatBigText: true,
+      contentTitle: '<b>Pod Invitation</b>',
+      htmlFormatContentTitle: true,
+      summaryText: '$inviterName invited you',
+      htmlFormatSummaryText: true,
+    );
 
-  // C. Build the Details
-  final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-    'invite_channel',
-    'Pod Invites',
-    channelDescription: 'Notifications for pod invitations',
-    importance: Importance.max,
-    priority: Priority.high,
-    
-    // VISUAL CUSTOMIZATION
-    color: const Color(0xFF5C5344), // Your app's primary color (hex)
-    styleInformation: bigTextStyle,  // Use the style defined above
-    largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'), // Show app icon on the right
-    
-    // BUTTONS
-    actions: actions,
-  );
+    // C. Build the Details
+    final AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      'invite_channel',
+      'Pod Invites',
+      channelDescription: 'Notifications for pod invitations',
+      importance: Importance.max,
+      priority: Priority.high,
 
-  NotificationDetails platformDetails = 
-      NotificationDetails(android: androidDetails);
+      // VISUAL CUSTOMIZATION
+      color: const Color(0xFF5C5344), // Your app's primary color (hex)
+      styleInformation: bigTextStyle, // Use the style defined above
+      largeIcon: const DrawableResourceAndroidBitmap(
+          '@mipmap/ic_launcher'), // Show app icon on the right
 
-  await flutterLocalNotificationsPlugin.show(
-    0,
-    'Pod Invitation',
-    '$inviterName has invited you to join "$podName".',
-    platformDetails,
-    payload: podId, // We still pass the ID
-  );
-}
+      // BUTTONS
+      actions: actions,
+    );
+
+    NotificationDetails platformDetails =
+        NotificationDetails(android: androidDetails);
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Pod Invitation',
+      '$inviterName has invited you to join "$podName".',
+      platformDetails,
+      payload: podId, // We still pass the ID
+    );
+  }
 
   Future<void> sendInvite({
     required BuildContext context,

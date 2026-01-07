@@ -75,7 +75,7 @@ class _createPodPageState extends State<createPodPage> {
 
       await FirebaseFirestore.instance.collection('pods').add({
         "createdAt": FieldValue.serverTimestamp(),
-        "createrId": auth.currentUser!.uid,
+        "creatorId": auth.currentUser!.uid,
         "members": _addedUsers,
         "podId": Utilityclass().getChatId(auth.currentUser!.uid, []),
         "podName": _podNameController.text.trim(),

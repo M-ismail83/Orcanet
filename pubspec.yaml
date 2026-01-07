@@ -52,6 +52,7 @@ dependencies:
   sodium: ^1.0.4
   sodium_libs: ^1.0.4
   google_fonts: ^6.3.3
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
