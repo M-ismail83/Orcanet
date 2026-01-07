@@ -20,7 +20,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ? Utilityclass.darkModeColor
       : Utilityclass.ligthModeColor;
 
-  
   int currentPageIndex = 0;
 
   var colors = <Color>{Colors.red, Colors.green, Colors.blue};
@@ -31,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Icons.home_outlined,
         size: 30,
         fontWeight: FontWeight.w600,
-        ),
+      ),
       label: 'Home',
     ),
     NavigationDestination(
@@ -39,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Icons.plus_one,
         size: 30,
         fontWeight: FontWeight.w600,
-        ),
+      ),
       label: 'Post',
     ),
     NavigationDestination(
@@ -47,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Icons.people,
         size: 30,
         fontWeight: FontWeight.w600,
-        ),
+      ),
       label: 'Community',
     ),
     NavigationDestination(
@@ -55,9 +54,8 @@ class _MyHomePageState extends State<MyHomePage> {
         Icons.search,
         size: 30,
         fontWeight: FontWeight.w600,
-        ),
+      ),
       label: 'Search',
-
     ),
     NavigationDestination(
       icon: Icon(
@@ -78,42 +76,41 @@ class _MyHomePageState extends State<MyHomePage> {
     Callnotifservice(context: context).checkAndNavigationCallingPage();
 
     final notifService = InviteNotificationService();
-  
-  // 1. Setup Notifications
-  notifService.initialize();
-  notifService.requestPermissions();
 
-  // 2. Listen to Firestore for NEW invites
-  String myUserId = FirebaseAuth.instance.currentUser!.uid;
-  
-  FirebaseFirestore.instance
-      .collection('users')
-      .doc(myUserId)
-      .collection('invites') // Assuming invites are stored here
-      .where('status', isEqualTo: 'pending') // Only get new ones
-      .snapshots()
-      .listen((snapshot) {
-    
-    // Loop through changes to find ADDED documents
-    for (var change in snapshot.docChanges) {
-      if (change.type == DocumentChangeType.added) {
-        var data = change.doc.data() as Map<String, dynamic>;
-        
-        // TRIGGER THE NOTIFICATION
-        notifService.showInviteNotif(
-          data['podName'] ?? 'Unknown Pod',
-          data['podId'] ?? '0',
-          data['inviterName'] ?? 'Someone',
-        );
+    // 1. Setup Notifications
+    notifService.initialize();
+    notifService.requestPermissions();
+
+    // 2. Listen to Firestore for NEW invites
+    String myUserId = FirebaseAuth.instance.currentUser!.uid;
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(myUserId)
+        .collection('invites') // Assuming invites are stored here
+        .where('status', isEqualTo: 'pending') // Only get new ones
+        .snapshots()
+        .listen((snapshot) {
+      // Loop through changes to find ADDED documents
+      for (var change in snapshot.docChanges) {
+        if (change.type == DocumentChangeType.added) {
+          var data = change.doc.data() as Map<String, dynamic>;
+
+          // TRIGGER THE NOTIFICATION
+          notifService.showInviteNotif(
+            data['podName'] ?? 'Unknown Pod',
+            data['podId'] ?? '0',
+            data['inviterName'] ?? 'Someone',
+          );
+        }
       }
-    }
-  });
+    });
 
     FirebaseMessaging.instance.getToken().then((token) {
-    if (token != null) {
-      createAndSaveUser(fcmToken: token);
-    }
-  });
+      if (token != null) {
+        createAndSaveUser(fcmToken: token);
+      }
+    });
   }
 
   void _goToFeed() {
@@ -123,90 +120,91 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
+    FirebaseAuth auth = FirebaseAuth.instance;
 
-  FirebaseAuth auth = FirebaseAuth.instance;
+    return ValueListenableBuilder<bool>(
+      valueListenable: isDarkModeNotifier,
+      builder: (context, isDarkMode, _) {
+        final currentColors = isDarkMode
+            ? Utilityclass.darkModeColor
+            : Utilityclass.ligthModeColor;
 
-  return ValueListenableBuilder<bool>(
-    valueListenable: isDarkModeNotifier,
-    builder: (context, isDarkMode, _) {
-      final currentColors = isDarkMode
-          ? Utilityclass.darkModeColor
-          : Utilityclass.ligthModeColor;
-
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: currentColors['bar'],
-          title: Text(
-            "ORCA/NET",
-            style: GoogleFonts.handjet(
-              fontSize: 30,
-              color: currentColors['text'],
-              fontWeight: FontWeight.bold,
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: currentColors['bar'],
+            title: Text(
+              "ORCA/NET",
+              style: GoogleFonts.handjet(
+                fontSize: 30,
+                color: currentColors['text'],
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            leading: InkWell(
+              onTap: () {
+                isDarkModeNotifier.value = !isDarkModeNotifier.value;
+              },
+              splashColor: Colors.transparent,
+              radius: 15,
+              child: CircleAvatar(
+                  backgroundColor: currentColors['bar'],
+                  backgroundImage: Image.asset("lib/images/Logo.png",
+                          fit: BoxFit.fill, scale: 30)
+                      .image),
+            ),
+            leadingWidth: 55,
+            actions: [
+              IconButton(
+                icon: const Icon(
+                  Icons.notifications,
+                  size: 30,
+                ),
+                tooltip: 'Your Notifications',
+                onPressed: () {
+                  // handle the press
+                },
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.person,
+                  size: 30,
+                ),
+                tooltip: 'Open own profile',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (context) => profilePage(
+                        currentColors: currentColors,
+                        uid: auth.currentUser!.uid,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-          leading: InkWell(
-            onTap: () {
-              isDarkModeNotifier.value = !isDarkModeNotifier.value;
+          bottomNavigationBar: NavigationBar(
+            onDestinationSelected: (int index) {
+              setState(() {
+                currentPageIndex = index;
+              });
             },
-            splashColor: Colors.transparent,
-            radius: 15,
-            child: CircleAvatar(
-              backgroundColor: currentColors['bar'],
-              backgroundImage: Image.asset("lib/images/Logo.png", fit: BoxFit.fill, scale: 30).image
-            ),
+            selectedIndex: currentPageIndex,
+            backgroundColor: currentColors['bar'],
+            indicatorColor: currentColors['selected'],
+            destinations: pages,
           ),
-          leadingWidth: 55,
-
-          actions: [
-            IconButton(
-              icon: const Icon(
-                Icons.notifications,
-                size: 30,),
-              tooltip: 'Your Notifications',
-              onPressed: () {
-                // handle the press
-              },
-            ),
-            IconButton(
-              icon: const Icon(
-                Icons.person,
-                size: 30,),
-              tooltip: 'Open own profile',
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (context) => profilePage(currentColors: currentColors, uid: auth.currentUser!.uid,),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-        bottomNavigationBar: NavigationBar(
-          onDestinationSelected: (int index) {
-            setState(() {
-              currentPageIndex = index;
-            });
-          },
-          selectedIndex: currentPageIndex,
-          backgroundColor: currentColors['bar'],
-          indicatorColor: currentColors['selected'],
-          destinations: pages,
-        ),
-        body: <Widget>[
-          feedPage(currentColors: currentColors),
-          makePostPage(currentColors: currentColors, onPost: _goToFeed),
-          chatPage(currentColors: currentColors),
-          searchPage(currentColors: currentColors),
-          Center(
-            child: Text('Donation Page (WORK IN PROGRESS)', style: TextStyle(fontSize: 20, color: currentColors['text'])),
-          ),
-        ][currentPageIndex],
-      );
-    },
-  );
- }
+          body: <Widget>[
+            feedPage(currentColors: currentColors),
+            makePostPage(currentColors: currentColors, onPost: _goToFeed),
+            chatPage(currentColors: currentColors),
+            searchPage(currentColors: currentColors),
+            settingsPage(currentColors: currentColors),
+          ][currentPageIndex],
+        );
+      },
+    );
+  }
 }
-  
