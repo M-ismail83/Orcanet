@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:orcanet/main.dart';
 import 'package:orcanet/index/pageIndex.dart';
 import 'package:orcanet/index/serviceIndex.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -24,23 +27,44 @@ class _MyHomePageState extends State<MyHomePage> {
   List<NavigationDestination> pages = [
     NavigationDestination(
       selectedIcon: Icon(Icons.home),
-      icon: Icon(Icons.home_outlined),
+      icon: Icon(
+        Icons.home_outlined,
+        size: 30,
+        fontWeight: FontWeight.w600,
+        ),
       label: 'Home',
     ),
     NavigationDestination(
-      icon: Icon(Icons.plus_one),
+      icon: Icon(
+        Icons.plus_one,
+        size: 30,
+        fontWeight: FontWeight.w600,
+        ),
       label: 'Post',
     ),
     NavigationDestination(
-      icon: Icon(Icons.people),
+      icon: Icon(
+        Icons.people,
+        size: 30,
+        fontWeight: FontWeight.w600,
+        ),
       label: 'Community',
     ),
     NavigationDestination(
-      icon: Icon(Icons.search),
+      icon: Icon(
+        Icons.search,
+        size: 30,
+        fontWeight: FontWeight.w600,
+        ),
       label: 'Search',
+
     ),
     NavigationDestination(
-      icon: Icon(Icons.settings),
+      icon: Icon(
+        Icons.settings,
+        size: 30,
+        fontWeight: FontWeight.w600,
+      ),
       label: 'Settings',
     ),
   ];
@@ -52,6 +76,39 @@ class _MyHomePageState extends State<MyHomePage> {
     Callnotifservice(context: context).setupNotification();
     Callnotifservice(context: context).listenForCallEvents();
     Callnotifservice(context: context).checkAndNavigationCallingPage();
+
+    final notifService = InviteNotificationService();
+  
+  // 1. Setup Notifications
+  notifService.initialize();
+  notifService.requestPermissions();
+
+  // 2. Listen to Firestore for NEW invites
+  String myUserId = FirebaseAuth.instance.currentUser!.uid;
+  
+  FirebaseFirestore.instance
+      .collection('users')
+      .doc(myUserId)
+      .collection('invites') // Assuming invites are stored here
+      .where('status', isEqualTo: 'pending') // Only get new ones
+      .snapshots()
+      .listen((snapshot) {
+    
+    // Loop through changes to find ADDED documents
+    for (var change in snapshot.docChanges) {
+      if (change.type == DocumentChangeType.added) {
+        var data = change.doc.data() as Map<String, dynamic>;
+        
+        // TRIGGER THE NOTIFICATION
+        notifService.showInviteNotif(
+          data['podName'] ?? 'Unknown Pod',
+          data['podId'] ?? '0',
+          data['inviterName'] ?? 'Someone',
+        );
+      }
+    }
+  });
+
     FirebaseMessaging.instance.getToken().then((token) {
     if (token != null) {
       createAndSaveUser(fcmToken: token);
@@ -82,10 +139,10 @@ Widget build(BuildContext context) {
           backgroundColor: currentColors['bar'],
           title: Text(
             "ORCA/NET",
-            style: TextStyle(
-              fontSize: 17,
+            style: GoogleFonts.handjet(
+              fontSize: 30,
               color: currentColors['text'],
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
             ),
           ),
           leading: InkWell(
@@ -96,22 +153,26 @@ Widget build(BuildContext context) {
             radius: 15,
             child: CircleAvatar(
               backgroundColor: currentColors['bar'],
-              backgroundImage: Image.asset("lib/images/Logo.png", fit: BoxFit.fill,).image
+              backgroundImage: Image.asset("lib/images/Logo.png", fit: BoxFit.fill, scale: 30).image
             ),
           ),
           leadingWidth: 55,
 
           actions: [
             IconButton(
-              icon: const Icon(Icons.notifications_outlined),
+              icon: const Icon(
+                Icons.notifications,
+                size: 30,),
               tooltip: 'Your Notifications',
               onPressed: () {
                 // handle the press
               },
             ),
             IconButton(
-              icon: const Icon(Icons.person_2),
-              tooltip: 'Open shopping cart',
+              icon: const Icon(
+                Icons.person,
+                size: 30,),
+              tooltip: 'Open own profile',
               onPressed: () {
                 Navigator.push(
                   context,

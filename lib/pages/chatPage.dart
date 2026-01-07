@@ -25,8 +25,12 @@ class chatPage extends StatelessWidget {
             //it goes purple whenever it is chosen how does one fix that
             TabBar(
               labelColor: currentColors['text'],
-              unselectedLabelColor: currentColors['text']?.withOpacity(0.7),
-              overlayColor: WidgetStateProperty.all(Colors.transparent),
+              labelStyle: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 20
+              ),
+              unselectedLabelColor: currentColors['text']?.withAlpha(170),
+              overlayColor: WidgetStateProperty.all(currentColors['bg']),
               indicatorColor: currentColors['selected'],
               dividerColor: Colors.transparent,
               tabs: const [
@@ -34,7 +38,8 @@ class chatPage extends StatelessWidget {
                 Tab(text: 'Orcas'),
               ],
             ),
-
+            
+            SizedBox(height: 7),
             //ai helped with this part idk how it works, explain??
             Expanded(
                 child: StreamBuilder<QuerySnapshot>(
@@ -102,7 +107,8 @@ class ChatTabView extends StatelessWidget {
         child: Text(
           'No chat rooms in this section.',
           style: TextStyle(
-              color: currentColorsView['text'], fontWeight: FontWeight.w600),
+              color: currentColorsView['text'], fontWeight: FontWeight.w600, fontSize: 16
+            ),
         ),
       );
     }
@@ -137,8 +143,14 @@ class ChatTabView extends StatelessWidget {
           // create pod page link button
           ElevatedButton(
             style: ElevatedButton.styleFrom(
+              elevation: 5,
               backgroundColor: currentColorsView['acc1'],
+              side: BorderSide(
+                color: currentColorsView['acc1border']!,
+                width: 3,
+                ),
               foregroundColor: currentColorsView['text'],
+
             ),
               onPressed: () {
                 Navigator.push(
@@ -148,7 +160,7 @@ class ChatTabView extends StatelessWidget {
                   ),
                 );
               },
-              child: Text("Create a New Pod!", style: TextStyle(color: currentColorsView['text']),)),
+              child: Text("Create a New Pod!", style: TextStyle(color: currentColorsView['text'], fontWeight: FontWeight.w600, fontSize: 16),)),
           SizedBox(height: 20),
         ],
       );
@@ -181,9 +193,10 @@ class ChatRoomTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 1.0),
       child: Card(
         color: currentColors['container'],
-        elevation: 1,
+        elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: currentColors['bg']!.withAlpha(175), width: 3),
+          borderRadius: BorderRadius.circular(13.0),
         ),
 
         //this part weirds me tf out
@@ -193,6 +206,7 @@ class ChatRoomTile extends StatelessWidget {
             onTap: () {},
             borderRadius: BorderRadius.circular(50),
             child: CircleAvatar(
+              radius: 24,
               backgroundColor: const Color.fromRGBO(137, 139, 139, 1),
               foregroundColor: Colors.white,
               child: Text(
@@ -220,7 +234,7 @@ class ChatRoomTile extends StatelessWidget {
           title: Text(
             name,
             style: TextStyle(
-                color: currentColors['text'], fontWeight: FontWeight.w600),
+                color: currentColors['text'], fontWeight: FontWeight.w600, fontSize: 20),
           ),
 
           subtitle: Text(
@@ -228,14 +242,17 @@ class ChatRoomTile extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-                color: currentColors['text']?.withOpacity(0.8),
-                fontWeight: FontWeight.w400),
+                color: currentColors['text']?.withAlpha(170),
+                fontWeight: FontWeight.w500,
+                fontSize: 18
+                ),
           ),
 
           trailing: Icon(
             Icons.chevron_right,
-            size: 20,
+            size: 27,
             color: currentColors['text']?.withOpacity(0.5),
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),

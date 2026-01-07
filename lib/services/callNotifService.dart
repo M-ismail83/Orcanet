@@ -97,9 +97,9 @@ class Callnotifservice {
               )
             );
           }
-  }
+}
 
-  void listenForCallEvents() {
+void listenForCallEvents() {
     FlutterCallkitIncoming.onEvent.listen((CallEvent? event) {
       if (event == null) return;
 
