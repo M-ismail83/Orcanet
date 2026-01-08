@@ -53,6 +53,28 @@ dependencies:
   sodium_libs: ^1.0.4
   google_fonts: ^6.3.3
   url_launcher: ^6.3.2
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.7
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "lib/images/Logo.png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "lib/images/Logo.png"
+#if want to change write on terminal
+#flutter pub run flutter_launcher_icons
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: lib/images/Logo.png
+  android_12:
+    image: lib/images/Logo.png
+    icon_background_color: "#ffffff"
+#if want to change write on terminal
+#for a better look you can change the background, decide it tomorrow
+#flutter pub run flutter_native_splash:create
+
 
 dev_dependencies:
   flutter_test:
@@ -85,6 +107,9 @@ flutter:
     - lib/images/avatar4.png
     - lib/images/badge1.png
     - lib/images/badge2.png
+    - lib/images/white_logo.png
+    - lib/images/black_logo.png
+    - lib/images/premium_logo.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
