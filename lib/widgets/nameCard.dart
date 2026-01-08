@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:orcanet/index/pageIndex.dart';
 import 'package:orcanet/index/serviceIndex.dart';
 import 'package:orcanet/widgets/commentSection.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:orcanet/services/avatar_paths.dart';
 
 Container nameCard(BuildContext context, String name, String tag, String uid, Map<String, Color> currentColors) {
     return Container(
@@ -14,25 +16,53 @@ Container nameCard(BuildContext context, String name, String tag, String uid, Ma
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          ClipOval(
-            child: InkWell(
-              onTap: () {
-                Utilityclass().navigator(
-                    context,
-                    profilePage(
-                      currentColors: currentColors,
-                      uid: uid,
-                    ));
-              },
-              splashColor: Colors.transparent,
-              child: Image.asset(
-                "lib/images/placeholder.jpg",
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-              ),
-            ),
+          FutureBuilder<int>(
+            future: getAvatarIndex(uid),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting ||
+                  !snapshot.hasData ||
+                  snapshot.hasError) {
+                // loading / error durumunda placeholder
+                return ClipOval(
+                  child: Image.asset(
+                    "lib/images/placeholder.jpg",
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                  ),
+                );
+              }
+
+              final avatarIndex = snapshot.data!;
+              final avatar = avatarPaths[avatarIndex];
+
+              // resmi önceden cache'le
+              precacheImage(AssetImage(avatar), context);
+
+              return ClipOval(
+                child: InkWell(
+                  onTap: () {
+                    Utilityclass().navigator(
+                      context,
+                      profilePage(
+                        currentColors: currentColors,
+                        uid: uid,
+                      ),
+                    );
+                  },
+                  splashColor: Colors.transparent,
+                  child: Image.asset(
+                    avatar,
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                    gaplessPlayback: true,
+                  ),
+                ),
+              );
+            },
           ),
+
           SizedBox(width: 10),
           SingleChildScrollView(
             child: Column(

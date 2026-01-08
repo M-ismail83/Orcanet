@@ -10,6 +10,7 @@ import 'package:orcanet/index/serviceIndex.dart';
 import 'package:orcanet/widgets/postCard.dart';
 import 'package:sodium_libs/sodium_libs.dart';
 import 'package:orcanet/widgets/tagContainer.dart';
+import 'package:orcanet/services/avatar_paths.dart';
 
 class profilePage extends StatefulWidget {
   const profilePage(
@@ -30,13 +31,6 @@ class _profilePageState extends State<profilePage> {
   final List<String> _badges = [
     'lib/images/badge1.png',
     'lib/images/badge2.png',
-  ];
-
-  final List<String> _avatars = [
-    'lib/images/avatar1.png',
-    'lib/images/avatar2.png',
-    'lib/images/avatar3.png',
-    'lib/images/avatar4.png',
   ];
 
   int _selectedAvatarIndex = 0;
@@ -237,7 +231,7 @@ class _profilePageState extends State<profilePage> {
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                          children: List.generate(_avatars.length, (index) {
+                          children: List.generate(avatarPaths.length, (index) {
                             final bool isSelected =
                                 index == selectedAvatarIndex;
                             return Padding(
@@ -265,7 +259,7 @@ class _profilePageState extends State<profilePage> {
                                         backgroundColor:
                                             widget.currentColors['bg'],
                                         backgroundImage:
-                                            AssetImage(_avatars[index]),
+                                            AssetImage(avatarPaths[index]),
                                       ),
                                     )
                                   ],
@@ -434,7 +428,7 @@ class _profilePageState extends State<profilePage> {
                             child: Transform.scale(
                           scale: 1.12,
                           child: Image.asset(
-                            _avatars[_selectedAvatarIndex],
+                            avatarPaths[_selectedAvatarIndex],
                             fit: BoxFit.cover,
                           ),
                         )),

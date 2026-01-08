@@ -21,6 +21,9 @@ class _MyHomePageState extends State<MyHomePage> {
       : Utilityclass.ligthModeColor;
 
   int currentPageIndex = 0;
+  
+  bool _isPremium = false;
+  bool _loadingPremium = true;
 
   var colors = <Color>{Colors.red, Colors.green, Colors.blue};
   List<NavigationDestination> pages = [
@@ -71,6 +74,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
+    _loadPremiumStatus();
+
     Callnotifservice(context: context).setupNotification();
     Callnotifservice(context: context).listenForCallEvents();
     Callnotifservice(context: context).checkAndNavigationCallingPage();
@@ -113,6 +118,25 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+    Future<void> _loadPremiumStatus() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+
+    if (!mounted) return;
+
+    final data = doc.data() as Map<String, dynamic>?;
+
+    setState(() {
+      _isPremium = (data?['isPremium'] ?? false) as bool;
+      _loadingPremium = false;
+    });
+  }   
+
   void _goToFeed() {
     setState(() {
       currentPageIndex = 0; // Assuming Feed is Index 0
@@ -148,11 +172,15 @@ class _MyHomePageState extends State<MyHomePage> {
               splashColor: Colors.transparent,
               radius: 15,
               child: CircleAvatar(
-                  backgroundColor: currentColors['bar'],
-                  backgroundImage: Image.asset("lib/images/Logo.png",
-                          fit: BoxFit.fill, scale: 30)
-                      .image),
+                backgroundColor: currentColors['bar'],
+                backgroundImage: AssetImage(
+                  _isPremium
+                      ? 'lib/images/premium_logo.png'  
+                      : 'lib/images/Logo.png',  
+                ),
+              ),
             ),
+
             leadingWidth: 55,
             actions: [
               IconButton(
